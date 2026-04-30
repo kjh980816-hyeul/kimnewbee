@@ -19,5 +19,9 @@ export const router = createRouter({
     { path: '/clips', name: 'clips', component: () => import('@/views/clips/ClipList.vue') },
     { path: '/clips/write', name: 'clip-write', component: () => import('@/views/clips/ClipWrite.vue') },
     { path: '/clips/:id(\\d+)', name: 'clip-detail', component: () => import('@/views/clips/ClipDetail.vue') },
+
+    { path: '/letters', name: 'letters', component: () => import('@/views/letters/LetterList.vue') },
+    { path: '/letters/write', name: 'letter-write', component: () => import('@/views/letters/LetterWrite.vue') },
+    { path: '/letters/:id(\\d+)', name: 'letter-detail', component: () => import('@/views/letters/LetterDetail.vue') },
   ],
 });

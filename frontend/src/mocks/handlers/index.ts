@@ -4,6 +4,7 @@ import { freeHandlers } from './free';
 import { commentHandlers } from './comment';
 import { fanartHandlers } from './fanart';
 import { clipHandlers } from './clip';
+import { letterHandlers } from './letter';
 
 export const handlers: HttpHandler[] = [
   ...noticeHandlers,
@@ -11,4 +12,5 @@ export const handlers: HttpHandler[] = [
   ...commentHandlers,
   ...fanartHandlers,
   ...clipHandlers,
+  ...letterHandlers,
 ];
