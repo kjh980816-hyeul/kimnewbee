@@ -8,5 +8,15 @@ export const router = createRouter({
       name: 'home',
       component: () => import('@/views/HomeView.vue'),
     },
+    {
+      path: '/notices',
+      name: 'notices',
+      component: () => import('@/views/notice/NoticeList.vue'),
+    },
+    {
+      path: '/notices/:id(\\d+)',
+      name: 'notice-detail',
+      component: () => import('@/views/notice/NoticeDetail.vue'),
+    },
   ],
 });
