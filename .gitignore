@@ -48,3 +48,13 @@ desktop.ini
 coverage/
 .nyc_output/
 .cache/
+
+# ===== v2 잔재 (NestJS apps/ + Next.js packages/, v3 Spring+Vue로 대체) =====
+# 사용자가 명시적으로 정리할 때까지 추적 안 함
+/apps/
+/packages/
+/pnpm-workspace.yaml
+/pnpm-lock.yaml
+/tsconfig.base.json
+/package.json
+
