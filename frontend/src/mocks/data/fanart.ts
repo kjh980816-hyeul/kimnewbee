@@ -1,0 +1,47 @@
+import type { Fanart } from '@/types/fanart';
+
+// 이미지는 picsum.photos seed로 안정적으로 같은 이미지 반환 (네트워크 의존, 실 R2/S3는 INTEGRATION 단계)
+export const fanartFixtures: Fanart[] = [
+  {
+    id: 201,
+    title: '늉비 일러스트',
+    imageUrl: 'https://picsum.photos/seed/fanart-nyungbi-1/800/800',
+    thumbnailUrl: 'https://picsum.photos/seed/fanart-nyungbi-1/400/400',
+    content: '주말에 그렸어요! 머리카락 부분 신경썼습니다.',
+    author: '풋고추',
+    createdAt: '2026-04-30T14:00:00.000Z',
+    updatedAt: '2026-04-30T14:00:00.000Z',
+    viewCount: 142,
+    likeCount: 28,
+    commentCount: 3,
+    likedByMe: false,
+  },
+  {
+    id: 202,
+    title: '하모니카 부는 늉비',
+    imageUrl: 'https://picsum.photos/seed/fanart-nyungbi-2/800/800',
+    thumbnailUrl: 'https://picsum.photos/seed/fanart-nyungbi-2/400/400',
+    content: '방송 중 하모니카 명장면 그려봤어요',
+    author: '옥수수누나',
+    createdAt: '2026-04-29T09:30:00.000Z',
+    updatedAt: '2026-04-29T09:30:00.000Z',
+    viewCount: 98,
+    likeCount: 19,
+    commentCount: 1,
+    likedByMe: false,
+  },
+  {
+    id: 203,
+    title: '도트 늉비',
+    imageUrl: 'https://picsum.photos/seed/fanart-nyungbi-3/800/800',
+    thumbnailUrl: 'https://picsum.photos/seed/fanart-nyungbi-3/400/400',
+    content: '32x32 픽셀로 작업. 게임 캐릭터 같이 만들어봤어요.',
+    author: '도트장인',
+    createdAt: '2026-04-28T18:15:00.000Z',
+    updatedAt: '2026-04-28T18:15:00.000Z',
+    viewCount: 67,
+    likeCount: 14,
+    commentCount: 0,
+    likedByMe: false,
+  },
+];

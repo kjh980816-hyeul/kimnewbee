@@ -33,5 +33,20 @@ export const router = createRouter({
       name: 'free-detail',
       component: () => import('@/views/free/FreeDetail.vue'),
     },
+    {
+      path: '/fanart',
+      name: 'fanart',
+      component: () => import('@/views/fanart/FanartList.vue'),
+    },
+    {
+      path: '/fanart/write',
+      name: 'fanart-write',
+      component: () => import('@/views/fanart/FanartWrite.vue'),
+    },
+    {
+      path: '/fanart/:id(\\d+)',
+      name: 'fanart-detail',
+      component: () => import('@/views/fanart/FanartDetail.vue'),
+    },
   ],
 });
