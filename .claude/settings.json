@@ -1,0 +1,34 @@
+{
+  "_comment": "Claude Code 자동 검증 hook. 응답 끝낼 때마다 typecheck/lint를 돌려서 자잘한 버그를 즉시 잡습니다. 스프린트 1에서 package.json scripts가 셋업된 직후 활성화하세요. 그 전엔 명령이 실패하므로 hooks 객체를 잠시 비워두거나 이 파일을 .claude/settings.disabled.json으로 옮겨두면 됩니다.",
+  "_docs": "https://docs.claude.com/en/docs/claude-code/hooks",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm -s typecheck 2>&1 | tail -40 || true",
+            "_note": "전체 모노레포 typecheck. 실패해도 응답은 차단하지 않고, Claude Code가 결과를 보고 다음 턴에 스스로 수정하게 합니다."
+          },
+          {
+            "type": "command",
+            "command": "pnpm -s lint 2>&1 | tail -20 || true",
+            "_note": "lint 결과도 같이 표시. ESLint 에러가 있으면 Claude Code가 인지하고 다음 작업에서 고침."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] 파일 변경 감지 — 응답 끝나면 자동 typecheck가 실행됩니다.'",
+            "_note": "단순 알림. 매 파일 변경마다 typecheck를 돌리면 너무 느려서 Stop 훅으로 묶어 처리."
+          }
+        ]
+      }
+    ]
+  }
+}
