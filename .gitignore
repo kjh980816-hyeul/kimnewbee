@@ -58,3 +58,7 @@ coverage/
 /tsconfig.base.json
 /package.json
 
+# ===== reviewer agent 부산물 (ts-prune 출력 임시 파일 등) =====
+tsprune*.txt
+review*.txt
+
