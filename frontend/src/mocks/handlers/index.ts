@@ -6,6 +6,7 @@ import { fanartHandlers } from './fanart';
 import { clipHandlers } from './clip';
 import { letterHandlers } from './letter';
 import { petHandlers } from './pet';
+import { songHandlers } from './song';
 
 export const handlers: HttpHandler[] = [
   ...noticeHandlers,
@@ -15,4 +16,5 @@ export const handlers: HttpHandler[] = [
   ...clipHandlers,
   ...letterHandlers,
   ...petHandlers,
+  ...songHandlers,
 ];

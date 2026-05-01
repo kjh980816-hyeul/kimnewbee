@@ -27,5 +27,8 @@ export const router = createRouter({
     { path: '/pets', name: 'pets', component: () => import('@/views/pets/PetList.vue') },
     { path: '/pets/write', name: 'pet-write', component: () => import('@/views/pets/PetWrite.vue') },
     { path: '/pets/:id(\\d+)', name: 'pet-detail', component: () => import('@/views/pets/PetDetail.vue') },
+
+    { path: '/songs', name: 'songs', component: () => import('@/views/songs/SongList.vue') },
+    { path: '/songs/add', name: 'song-add', component: () => import('@/views/songs/SongAdd.vue') },
   ],
 });
