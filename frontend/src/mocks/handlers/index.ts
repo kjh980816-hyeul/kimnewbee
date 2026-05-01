@@ -8,6 +8,7 @@ import { letterHandlers } from './letter';
 import { petHandlers } from './pet';
 import { songHandlers } from './song';
 import { offlineHandlers } from './offline';
+import { chzzkHandlers } from './chzzk';
 
 export const handlers: HttpHandler[] = [
   ...noticeHandlers,
@@ -19,4 +20,5 @@ export const handlers: HttpHandler[] = [
   ...petHandlers,
   ...songHandlers,
   ...offlineHandlers,
+  ...chzzkHandlers,
 ];
