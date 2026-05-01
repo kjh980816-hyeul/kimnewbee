@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchFreePost, toggleFreePostLike } from '@/api/free';
 import type { FreePost } from '@/types/free';
+import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
@@ -50,31 +51,16 @@ async function onLike(): Promise<void> {
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else-if="post">
-      <article class="rounded-md bg-surface p-6">
-        <header class="mb-4 pb-4 border-b border-border">
-          <h1 class="text-xl font-bold text-ink">{{ post.title }}</h1>
-          <div class="mt-2 flex items-center gap-3 text-xs text-ink-muted">
-            <span>{{ post.author }}</span>
-            <span>·</span>
-            <span>{{ new Date(post.createdAt).toLocaleDateString('ko-KR') }}</span>
-            <span>·</span>
-            <span>조회 {{ post.viewCount }}</span>
-          </div>
-        </header>
-        <div class="whitespace-pre-wrap text-ink leading-relaxed">{{ post.content }}</div>
-
-        <div class="mt-6 flex gap-2">
-          <button
-            type="button"
-            class="rounded-md border border-border px-3 py-1.5 text-sm transition-colors"
-            :class="post.likedByMe ? 'bg-cheek text-paper border-cheek' : 'text-ink-muted hover:text-cheek hover:border-cheek'"
-            @click="onLike"
-          >
-            ♥ {{ post.likeCount }}
-          </button>
-        </div>
-      </article>
-
+      <PostArticle
+        :title="post.title"
+        :author="post.author"
+        :created-at="post.createdAt"
+        :view-count="post.viewCount"
+        :content="post.content"
+        :liked-by-me="post.likedByMe"
+        :like-count="post.likeCount"
+        @like="onLike"
+      />
       <CommentSection :post-id="post.id" class="mt-6" />
     </template>
   </main>

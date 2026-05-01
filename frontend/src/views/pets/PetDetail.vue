@@ -1,40 +1,40 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { fetchFanart, toggleFanartLike } from '@/api/fanart';
-import type { Fanart } from '@/types/fanart';
+import { fetchPet, togglePetLike } from '@/api/pet';
+import type { Pet } from '@/types/pet';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
 const router = useRouter();
 
-const fanart = ref<Fanart | null>(null);
+const pet = ref<Pet | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
-const fanartId = computed(() => Number(route.params['id']));
+const petId = computed(() => Number(route.params['id']));
 
 onMounted(async () => {
-  if (Number.isNaN(fanartId.value)) {
-    error.value = '잘못된 팬아트 번호예요';
+  if (Number.isNaN(petId.value)) {
+    error.value = '잘못된 사진 번호예요';
     loading.value = false;
     return;
   }
   try {
-    fanart.value = await fetchFanart(fanartId.value);
+    pet.value = await fetchPet(petId.value);
   } catch (e) {
-    error.value = e instanceof Error ? e.message : '팬아트를 불러올 수 없어요';
+    error.value = e instanceof Error ? e.message : '사진을 불러올 수 없어요';
   } finally {
     loading.value = false;
   }
 });
 
 async function onLike(): Promise<void> {
-  if (!fanart.value) return;
-  const res = await toggleFanartLike(fanart.value.id);
-  fanart.value.likedByMe = res.liked;
-  fanart.value.likeCount = res.likeCount;
+  if (!pet.value) return;
+  const res = await togglePetLike(pet.value.id);
+  pet.value.likedByMe = res.liked;
+  pet.value.likeCount = res.likeCount;
 }
 </script>
 
@@ -50,26 +50,26 @@ async function onLike(): Promise<void> {
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
-    <template v-else-if="fanart">
+    <template v-else-if="pet">
       <PostArticle
-        :title="fanart.title"
-        :author="fanart.author"
-        :created-at="fanart.createdAt"
-        :view-count="fanart.viewCount"
-        :content="fanart.content"
-        :liked-by-me="fanart.likedByMe"
-        :like-count="fanart.likeCount"
+        :title="pet.title"
+        :author="pet.author"
+        :created-at="pet.createdAt"
+        :view-count="pet.viewCount"
+        :content="pet.content"
+        :liked-by-me="pet.likedByMe"
+        :like-count="pet.likeCount"
         @like="onLike"
       >
         <template #media>
           <img
-            :src="fanart.imageUrl"
-            :alt="fanart.title"
+            :src="pet.imageUrl"
+            :alt="pet.title"
             class="w-full max-h-[80vh] object-contain bg-elevated"
           />
         </template>
       </PostArticle>
-      <CommentSection :post-id="fanart.id" class="mt-6" />
+      <CommentSection :post-id="pet.id" class="mt-6" />
     </template>
   </main>
 </template>

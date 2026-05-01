@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchClip, toggleClipLike } from '@/api/clip';
 import type { Clip } from '@/types/clip';
+import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
@@ -60,49 +61,35 @@ async function onLike(): Promise<void> {
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else-if="clip">
-      <article class="rounded-md bg-surface overflow-hidden">
-        <iframe
-          v-if="embedUrl"
-          :src="embedUrl"
-          class="w-full aspect-video bg-elevated"
-          allowfullscreen
-          referrerpolicy="strict-origin-when-cross-origin"
-        />
-        <a
-          v-else
-          :href="clip.videoUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="block aspect-video bg-elevated grid place-items-center text-pepper hover:underline"
-        >
-          원본 영상 보러가기 ↗
-        </a>
-
-        <div class="p-6">
-          <h1 class="text-xl font-bold text-ink">{{ clip.title }}</h1>
-          <div class="mt-2 flex items-center gap-3 text-xs text-ink-muted">
-            <span>{{ clip.author }}</span>
-            <span>·</span>
-            <span>{{ new Date(clip.createdAt).toLocaleDateString('ko-KR') }}</span>
-            <span>·</span>
-            <span>조회 {{ clip.viewCount }}</span>
-          </div>
-          <p v-if="clip.description" class="mt-4 whitespace-pre-wrap text-ink leading-relaxed">
-            {{ clip.description }}
-          </p>
-          <div class="mt-4 flex gap-2">
-            <button
-              type="button"
-              class="rounded-md border border-border px-3 py-1.5 text-sm transition-colors"
-              :class="clip.likedByMe ? 'bg-cheek text-paper border-cheek' : 'text-ink-muted hover:text-cheek hover:border-cheek'"
-              @click="onLike"
-            >
-              ♥ {{ clip.likeCount }}
-            </button>
-          </div>
-        </div>
-      </article>
-
+      <PostArticle
+        :title="clip.title"
+        :author="clip.author"
+        :created-at="clip.createdAt"
+        :view-count="clip.viewCount"
+        :content="clip.description"
+        :liked-by-me="clip.likedByMe"
+        :like-count="clip.likeCount"
+        @like="onLike"
+      >
+        <template #media>
+          <iframe
+            v-if="embedUrl"
+            :src="embedUrl"
+            class="w-full aspect-video bg-elevated"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+          />
+          <a
+            v-else
+            :href="clip.videoUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block aspect-video bg-elevated grid place-items-center text-pepper hover:underline"
+          >
+            원본 영상 보러가기 ↗
+          </a>
+        </template>
+      </PostArticle>
       <CommentSection :post-id="clip.id" class="mt-6" />
     </template>
   </main>
