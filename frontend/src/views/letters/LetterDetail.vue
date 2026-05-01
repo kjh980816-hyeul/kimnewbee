@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
 import { fetchLetter } from '@/api/letter';
+import { isHttpStatus } from '@/api/error';
 import type { Letter } from '@/types/letter';
 
 const route = useRoute();
@@ -24,9 +24,9 @@ onMounted(async () => {
   try {
     letter.value = await fetchLetter(letterId.value);
   } catch (e) {
-    if (axios.isAxiosError(e) && e.response?.status === 403) {
+    if (isHttpStatus(e, 403)) {
       accessDenied.value = true;
-    } else if (axios.isAxiosError(e) && e.response?.status === 404) {
+    } else if (isHttpStatus(e, 404)) {
       error.value = '편지를 찾을 수 없어요';
     } else {
       error.value = e instanceof Error ? e.message : '편지를 불러올 수 없어요';

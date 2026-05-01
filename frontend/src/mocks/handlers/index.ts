@@ -7,6 +7,7 @@ import { clipHandlers } from './clip';
 import { letterHandlers } from './letter';
 import { petHandlers } from './pet';
 import { songHandlers } from './song';
+import { offlineHandlers } from './offline';
 
 export const handlers: HttpHandler[] = [
   ...noticeHandlers,
@@ -17,4 +18,5 @@ export const handlers: HttpHandler[] = [
   ...letterHandlers,
   ...petHandlers,
   ...songHandlers,
+  ...offlineHandlers,
 ];
