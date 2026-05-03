@@ -4,8 +4,7 @@ import com.gochubat.domain.notice.dto.NoticeDetailResponse;
 import com.gochubat.domain.notice.dto.NoticeListResponse;
 import com.gochubat.domain.notice.dto.NoticeWriteRequest;
 import com.gochubat.domain.notice.service.NoticeService;
-import com.gochubat.global.exception.CustomException;
-import com.gochubat.global.exception.ErrorCode;
+import com.gochubat.global.security.AuthenticatedController;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/notices")
-public class NoticeController {
+public class NoticeController extends AuthenticatedController {
 
 	private final NoticeService noticeService;
 
@@ -61,12 +60,5 @@ public class NoticeController {
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		noticeService.delete(id);
 		return ResponseEntity.noContent().build();
-	}
-
-	private Long requireUserId(Authentication authentication) {
-		if (authentication == null || !(authentication.getPrincipal() instanceof Long userId)) {
-			throw new CustomException(ErrorCode.UNAUTHORIZED);
-		}
-		return userId;
 	}
 }

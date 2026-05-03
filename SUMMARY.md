@@ -56,11 +56,18 @@
 | Phase | 내용 | 핵심 산출물 | 커밋 |
 |---|---|---|---|
 | 2-1 | Spring Boot 인프라 | Spring Boot 3.5 + Java 21 (Foojay) + JPA/MyBatis 하이브리드 + Spring Security stateless + JJWT + GlobalExceptionHandler / ErrorCode / CustomException / ErrorResponse + JwtUtil / JwtAuthenticationFilter / JwtProperties + actuator | aa69167 |
-| 2-2 | User 도메인 + 네이버 OAuth + JWT 발급 | User entity (JPA, naverId unique, Tier enum SEED/PEPPER/CORN/OWNER) + UserRepository + CurrentUserResponse / UserStatsResponse + UserService + AuthService (OAuth flow + refresh) + NaverOauthClient (RestClient) + AuthController (`/api/auth/naver/login`, `/naver/callback`, `/refresh`, `/logout` — cookie 기반) + UserController (`/api/me`, `/api/me/stats`) + SecurityConfig 인증 게이트 + JwtAuthenticationFilter cookie/header 둘 다 지원 + JWT typ claim (access/refresh 분리) | (이번 커밋) |
+| 2-2 | User 도메인 + 네이버 OAuth + JWT 발급 | User entity + UserRepository + AuthService + NaverOauthClient + AuthController (cookie 기반) + UserController + SecurityConfig 인증 게이트 + JwtAuthenticationFilter cookie/header + JWT typ claim 분리 | 0b29064 |
+| 2-3 | Notice 도메인 (CRUD) | Notice entity (FK author, viewCount auto-inc) + NoticeRepository (JOIN FETCH 보조 정렬키 `id desc`) + NoticeService + NoticeController (GET 공개, POST/PATCH/DELETE @PreAuthorize OWNER) + @EnableMethodSecurity + AuthorizationDeniedException 핸들러 | cd15af0 |
+| 2-4 | Post 공통 도메인 (자유/팬아트/영상) | 단일 Post entity (BoardType enum + media_url + clip_source) + ClipSource.detect (youtube/chzzk/other) + PostRepository (타입 격리 쿼리) + PostService + 3 컨트롤러(Free/Fanart/Clip) + 보드별 DTO 6종 + ListResponse<T> + AuthenticatedController 추상화 (User/Notice/3보드 5컨트롤러 공유) | (이번 커밋) |
 
-**Phase 2-2 reviewer 결과**: 1차 FAIL (NaverTokenResponse dead 필드, IllegalArgumentException 컨벤션, RuntimeException catch-all, JWT typ claim 누락, 헤더 path 테스트 누락) → 전부 수정 → 2차 PASS.
+**reviewer 결과**:
+- 2-2: 1차 FAIL (NaverTokenResponse dead 4필드 / IllegalArgumentException 컨벤션 / RuntimeException catch-all / JWT typ claim 누락 / 헤더 path 테스트 누락) → 2차 PASS
+- 2-3: 1차 FAIL (NoticeRepository 정렬 비결정성 / GlobalExceptionHandler dead AccessDeniedException path) → 2차 PASS
+- 2-4: 1차 FAIL (`requireUserId` 5중복 누락된 추상화) → 2차 PASS
 
-**테스트**: 백엔드 8 spec / 31 tests (이전 7/25 → +1 spec / +6 tests).
+**테스트**: 백엔드 15 spec / 75 tests (이전 7/25 → +8 spec / +50 tests).
+
+**다음 권장 단위**: Phase 2-5 (Comment 도메인 — 대댓글 포함). 이후 cleanup 후보: `NoticeListResponse`(domain/notice/dto)와 `ListResponse<T>`(domain/post/dto) 통합 → `global/dto/ListResponse<T>` (4번째 use 만남, 별도 chore 단위 권장).
 
 ---
 

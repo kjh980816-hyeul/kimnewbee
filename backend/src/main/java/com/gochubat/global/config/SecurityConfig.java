@@ -42,6 +42,8 @@ public class SecurityConfig {
 						.requestMatchers("/api/me/**").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/notices/**").permitAll()
 						.requestMatchers("/api/notices/**").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/free/**", "/api/fanart/**", "/api/clips/**").permitAll()
+						.requestMatchers("/api/free/**", "/api/fanart/**", "/api/clips/**").authenticated()
 						.anyRequest().permitAll())
 				.exceptionHandling(eh -> eh
 						.authenticationEntryPoint(authenticationEntryPoint())
