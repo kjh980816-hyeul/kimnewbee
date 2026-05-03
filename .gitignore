@@ -6,6 +6,13 @@
 **/application-local.yml
 !**/application-local.example.yml
 
+# 로컬 시크릿 메모 (절대 커밋 금지)
+네이버 api 키.txt
+*비밀번호*.txt
+*비번*.txt
+secrets.txt
+credentials.txt
+
 # ===== Node =====
 node_modules/
 dist/
