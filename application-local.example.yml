@@ -22,6 +22,7 @@ naver:
   client-id: __네이버_Client_ID__
   client-secret: __네이버_Client_Secret__
   callback-url: http://localhost:8080/api/auth/naver/callback
+  success-redirect-url: http://localhost:5173/
 
 jwt:
   secret: __64자_이상_랜덤_문자열__

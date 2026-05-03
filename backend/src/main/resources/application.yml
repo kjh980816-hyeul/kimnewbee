@@ -15,6 +15,12 @@ jwt:
   access-expiration: 1800000
   refresh-expiration: 1209600000
 
+naver:
+  authorize-base-url: https://nid.naver.com/oauth2.0/authorize
+  token-base-url: https://nid.naver.com/oauth2.0/token
+  user-info-base-url: https://openapi.naver.com/v1/nid/me
+  success-redirect-url: http://localhost:5173/
+
 management:
   endpoints:
     web:

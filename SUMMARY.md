@@ -1,7 +1,8 @@
-# 자율 모드 진행 요약 (Phase 1 Mock-First)
+# 자율 모드 진행 요약 (Phase 1 Mock-First → Phase 2 Backend)
 
-> 2026-05-01 ~ 05-01 두 세션에 걸친 자율 모드 결과.
-> 12/14 frontend 단위 완료, 1-13/1-14 미완.
+> 2026-05-01 ~ 05-04 자율 모드 결과.
+> Phase 1: 12/14 frontend 단위 완료 (1-13/1-14 미완).
+> Phase 2: 2-1 인프라 + 2-2 User+OAuth+JWT 완료, 2-3부터 진행 중.
 
 ---
 
@@ -47,6 +48,19 @@
 - 카페 꾸미기 (`AdminCafe.vue`) — 메뉴/배너 커스텀
 
 **의존**: owner 등급 게이트 필요 (현재 mock-tier로 시뮬 가능). 동적 게시판 시스템(CLAUDE.md §11) 검토 필요.
+
+---
+
+## ✅ Phase 2 진척도 (2026-05-04)
+
+| Phase | 내용 | 핵심 산출물 | 커밋 |
+|---|---|---|---|
+| 2-1 | Spring Boot 인프라 | Spring Boot 3.5 + Java 21 (Foojay) + JPA/MyBatis 하이브리드 + Spring Security stateless + JJWT + GlobalExceptionHandler / ErrorCode / CustomException / ErrorResponse + JwtUtil / JwtAuthenticationFilter / JwtProperties + actuator | aa69167 |
+| 2-2 | User 도메인 + 네이버 OAuth + JWT 발급 | User entity (JPA, naverId unique, Tier enum SEED/PEPPER/CORN/OWNER) + UserRepository + CurrentUserResponse / UserStatsResponse + UserService + AuthService (OAuth flow + refresh) + NaverOauthClient (RestClient) + AuthController (`/api/auth/naver/login`, `/naver/callback`, `/refresh`, `/logout` — cookie 기반) + UserController (`/api/me`, `/api/me/stats`) + SecurityConfig 인증 게이트 + JwtAuthenticationFilter cookie/header 둘 다 지원 + JWT typ claim (access/refresh 분리) | (이번 커밋) |
+
+**Phase 2-2 reviewer 결과**: 1차 FAIL (NaverTokenResponse dead 필드, IllegalArgumentException 컨벤션, RuntimeException catch-all, JWT typ claim 누락, 헤더 path 테스트 누락) → 전부 수정 → 2차 PASS.
+
+**테스트**: 백엔드 8 spec / 31 tests (이전 7/25 → +1 spec / +6 tests).
 
 ---
 

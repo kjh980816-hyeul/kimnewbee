@@ -23,21 +23,27 @@ class JwtUtilTest {
 		assertThat(jwtUtil.isValid(token)).isTrue();
 		assertThat(jwtUtil.getUserId(token)).isEqualTo(42L);
 		assertThat(jwtUtil.getRole(token)).isEqualTo("PEPPER");
+		assertThat(jwtUtil.isAccessToken(token)).isTrue();
+		assertThat(jwtUtil.isRefreshToken(token)).isFalse();
 	}
 
 	@Test
-	void refresh_token_has_no_role() {
+	void refresh_token_has_no_role_and_refresh_type() {
 		String token = jwtUtil.generateRefreshToken(7L);
 
 		assertThat(jwtUtil.isValid(token)).isTrue();
 		assertThat(jwtUtil.getUserId(token)).isEqualTo(7L);
 		assertThat(jwtUtil.getRole(token)).isNull();
+		assertThat(jwtUtil.isRefreshToken(token)).isTrue();
+		assertThat(jwtUtil.isAccessToken(token)).isFalse();
 	}
 
 	@Test
-	void invalid_token_returns_false() {
+	void invalid_token_returns_false_for_all_predicates() {
 		assertThat(jwtUtil.isValid("not.a.token")).isFalse();
 		assertThat(jwtUtil.isValid("")).isFalse();
+		assertThat(jwtUtil.isAccessToken("not.a.token")).isFalse();
+		assertThat(jwtUtil.isRefreshToken("not.a.token")).isFalse();
 	}
 
 	@Test

@@ -2,6 +2,7 @@ package com.gochubat.global.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private static final String BEARER_PREFIX = "Bearer ";
+	private static final String ACCESS_COOKIE = "access_token";
 
 	private final JwtUtil jwtUtil;
 
@@ -29,7 +31,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
 		String token = resolveToken(request);
-		if (token != null && jwtUtil.isValid(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
+		if (token != null
+				&& jwtUtil.isValid(token)
+				&& jwtUtil.isAccessToken(token)
+				&& SecurityContextHolder.getContext().getAuthentication() == null) {
 			long userId = jwtUtil.getUserId(token);
 			String role = jwtUtil.getRole(token);
 			List<SimpleGrantedAuthority> authorities = role == null
@@ -45,6 +50,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 		if (header != null && header.startsWith(BEARER_PREFIX)) {
 			return header.substring(BEARER_PREFIX.length());
+		}
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (ACCESS_COOKIE.equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
 		}
 		return null;
 	}
