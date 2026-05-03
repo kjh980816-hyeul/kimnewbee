@@ -6,7 +6,9 @@ import com.gochubat.global.jwt.JwtAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,6 +18,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -37,6 +40,8 @@ public class SecurityConfig {
 						.requestMatchers("/actuator/health/**", "/h2-console/**").permitAll()
 						.requestMatchers("/api/auth/**").permitAll()
 						.requestMatchers("/api/me/**").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/notices/**").permitAll()
+						.requestMatchers("/api/notices/**").authenticated()
 						.anyRequest().permitAll())
 				.exceptionHandling(eh -> eh
 						.authenticationEntryPoint(authenticationEntryPoint())
