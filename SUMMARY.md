@@ -25,34 +25,15 @@
 
 ---
 
-## ⚠️ 미완 단위 (2개)
+## ✅ Phase 1 미완 마무리 (2026-05-04)
 
-### Phase 1-13: 글쓰기/수정 폼 (게시판별)
-**상태**: 글쓰기 폼은 1-3~1-9에서 모두 완료. **수정(Edit) 폼은 자유 1보드 완료, 4보드 미진행.**
+### Phase 1-13 글쓰기/수정 폼 — 전체 완료 (5/5 보드)
+- **1-13a 자유** (d0239cb): FreeEdit.vue + mock PATCH(404/401/403/200) + router + isOwner 수정 버튼. reviewer 2-pass.
+- **1-13b 4보드** (21068d5): Fanart/Clip/Pet/Offline EditView + 5번째 use 트리거로 `composables/useIsOwner.ts` + `mocks/utils/createOwnerOnlyPatch.ts` 추출. Free도 useIsOwner 마이그레이션. Offline은 corn 게이트 inline. reviewer 1-pass.
 
-**1-13a (자유) 완료** (d0239cb): FreeEdit.vue + api.updateFreePost + mock PATCH handler(404/401/403/200) + router /free/:id/edit + FreeDetail isOwner 수정 버튼.
-
-**1-13b (남은 4보드) 필요 작업** (Fanart/Clip/Pet/Offline):
-- 동일 패턴 4번 반복 (FreeEdit 복제 + 도메인별 필드 차이 적용)
-  - Fanart: title/imageUrl/content
-  - Clip: title/videoUrl/description
-  - Pet: title/imageUrl/content
-  - Offline: title/location/meetupDate/imageUrl/content
-- 각 mock handler PATCH 추가 (readMockUser 재사용)
-- 각 router /:id/edit 라우트 + Detail에 isOwner 수정 버튼
-
-**5번째 use 트리거**: 5보드 같은 author check + 401/403 분기 → `mocks/utils/createOwnerOnlyPatch.ts` 또는 composable 검토.
-
-### Phase 1-14: 관리자 페이지
-**상태**: 미착수.
-
-**필요 작업** (CLAUDE.md §9 기준):
-- 관리자 대시보드 (`AdminDashboard.vue`) — 회원/게시글 통계
-- 게시판 관리 (`AdminBoards.vue`) — 드래그&드롭 정렬 (07-admin-boards.jpg 참고)
-- 회원 관리 (`AdminMembers.vue`) — 등급 변경/정지
-- 카페 꾸미기 (`AdminCafe.vue`) — 메뉴/배너 커스텀
-
-**의존**: owner 등급 게이트 필요 (현재 mock-tier로 시뮬 가능). 동적 게시판 시스템(CLAUDE.md §11) 검토 필요.
+### Phase 1-14 관리자 페이지 — 부분 완료
+- **1-14a 대시보드+회원관리** (631e518): types/admin + api/admin (4 함수) + mocks/handlers/admin + AdminLayout(권한 체크)/AdminDashboard(4 카운트)/AdminMembers(tier select + ±100p) + router /admin children. reviewer 2-pass (1차 FAIL: router 미등록 + admin.ts gateOwner 반환타입 generic 누락 — Edit 도구 적용 누락 패턴 재발).
+- **1-14b 미진행**: 게시판 관리 / 카페 꾸미기 — 동적 게시판 시스템 백엔드 신규 도메인 필요 (CLAUDE.md §11). scope 큼, 별도 단위.
 
 ---
 
