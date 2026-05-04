@@ -13,6 +13,7 @@ export const router = createRouter({
     { path: '/free', name: 'free', component: () => import('@/views/free/FreeList.vue') },
     { path: '/free/write', name: 'free-write', component: () => import('@/views/free/FreeWrite.vue') },
     { path: '/free/:id(\\d+)', name: 'free-detail', component: () => import('@/views/free/FreeDetail.vue') },
+    { path: '/free/:id(\\d+)/edit', name: 'free-edit', component: () => import('@/views/free/FreeEdit.vue') },
 
     { path: '/fanart', name: 'fanart', component: () => import('@/views/fanart/FanartList.vue') },
     { path: '/fanart/write', name: 'fanart-write', component: () => import('@/views/fanart/FanartWrite.vue') },

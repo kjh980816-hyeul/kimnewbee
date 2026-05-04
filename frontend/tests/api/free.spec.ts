@@ -5,6 +5,7 @@ import {
   fetchFreePosts,
   fetchFreePost,
   createFreePost,
+  updateFreePost,
   toggleFreePostLike,
 } from '@/api/free';
 import { freePostFixtures } from '@/mocks/data/free';
@@ -50,6 +51,16 @@ const server = setupServer(
     };
     store.unshift(newPost);
     return HttpResponse.json(newPost, { status: 201 });
+  }),
+  http.patch(`${API_URL}/api/free/:id`, async ({ params, request }) => {
+    const id = Number(params['id']);
+    const post = store.find((p) => p.id === id);
+    if (!post) return HttpResponse.json({}, { status: 404 });
+    const body = (await request.json()) as { title: string; content: string };
+    post.title = body.title;
+    post.content = body.content;
+    post.updatedAt = new Date().toISOString();
+    return HttpResponse.json(post);
   }),
   http.post(`${API_URL}/api/free/:id/like`, ({ params }) => {
     const id = Number(params['id']);
@@ -101,6 +112,21 @@ describe('free post api', () => {
     expect(created.title).toBe('테스트');
     expect(created.content).toBe('본문');
     expect(created.author).toBe('초록고추');
+  });
+
+  it('updates existing post title and content', async () => {
+    const fixture = freePostFixtures[0];
+    if (!fixture) throw new Error('freePostFixtures is empty');
+
+    const updated = await updateFreePost(fixture.id, {
+      title: '수정된 제목',
+      content: '수정된 본문',
+    });
+
+    expect(updated.id).toBe(fixture.id);
+    expect(updated.title).toBe('수정된 제목');
+    expect(updated.content).toBe('수정된 본문');
+    expect(updated.updatedAt).not.toBe(fixture.updatedAt);
   });
 
   it('toggles like state and increments/decrements count', async () => {

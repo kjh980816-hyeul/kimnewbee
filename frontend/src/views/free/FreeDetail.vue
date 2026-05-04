@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchFreePost, toggleFreePostLike } from '@/api/free';
 import type { FreePost } from '@/types/free';
+import type { CurrentUser } from '@/types/user';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
@@ -14,6 +15,18 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 
 const postId = computed(() => Number(route.params['id']));
+
+const isOwner = computed(() => {
+  if (!post.value) return false;
+  try {
+    const raw = globalThis.localStorage?.getItem('mock-user');
+    if (!raw) return false;
+    const user = JSON.parse(raw) as CurrentUser;
+    return user.nickname === post.value.author;
+  } catch {
+    return false;
+  }
+});
 
 onMounted(async () => {
   if (Number.isNaN(postId.value)) {
@@ -51,6 +64,14 @@ async function onLike(): Promise<void> {
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else-if="post">
+      <div v-if="isOwner" class="mb-3 flex justify-end">
+        <RouterLink
+          :to="{ name: 'free-edit', params: { id: post.id } }"
+          class="rounded-md border border-border px-3 py-1.5 text-sm text-ink-muted hover:text-pepper hover:border-pepper transition-colors"
+        >
+          수정
+        </RouterLink>
+      </div>
       <PostArticle
         :title="post.title"
         :author="post.author"

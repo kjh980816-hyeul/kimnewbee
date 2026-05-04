@@ -21,6 +21,11 @@ export async function createFreePost(input: CreateFreePostInput): Promise<FreePo
   return res.data;
 }
 
+export async function updateFreePost(id: number, input: CreateFreePostInput): Promise<FreePost> {
+  const res = await apiClient.patch<FreePost>(`/api/free/${id}`, input);
+  return res.data;
+}
+
 export async function toggleFreePostLike(id: number): Promise<LikeToggleResponse> {
   const res = await apiClient.post<LikeToggleResponse>(`/api/free/${id}/like`);
   return res.data;
