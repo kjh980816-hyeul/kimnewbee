@@ -1,12 +1,14 @@
 package com.gochubat.domain.post.controller;
 
-import com.gochubat.domain.comment.service.CommentService;
 import com.gochubat.domain.post.dto.FanartDetailResponse;
 import com.gochubat.domain.post.dto.FanartListItemResponse;
 import com.gochubat.domain.post.dto.FanartWriteRequest;
 import com.gochubat.domain.post.dto.ListResponse;
 import com.gochubat.domain.post.entity.BoardType;
 import com.gochubat.domain.post.entity.Post;
+import com.gochubat.domain.post.service.PostBoardAssembler;
+import com.gochubat.domain.post.service.PostBoardAssembler.DetailCounts;
+import com.gochubat.domain.post.service.PostBoardAssembler.ListCounts;
 import com.gochubat.domain.post.service.PostService;
 import com.gochubat.domain.user.entity.User;
 import com.gochubat.global.security.AuthenticatedController;
@@ -29,28 +31,29 @@ import java.util.Map;
 public class FanartController extends AuthenticatedController {
 
 	private final PostService postService;
-	private final CommentService commentService;
+	private final PostBoardAssembler assembler;
 
-	public FanartController(PostService postService, CommentService commentService) {
+	public FanartController(PostService postService, PostBoardAssembler assembler) {
 		this.postService = postService;
-		this.commentService = commentService;
+		this.assembler = assembler;
 	}
 
 	@GetMapping
 	public ListResponse<FanartListItemResponse> list() {
 		List<Post> posts = postService.list(BoardType.FANART);
-		Map<Long, Long> counts = commentService.countActiveByPostIds(posts.stream().map(Post::getId).toList());
+		Map<Long, ListCounts> counts = assembler.gatherListCounts(posts);
 		return ListResponse.of(
 				posts.stream()
-						.map(p -> FanartListItemResponse.from(p, counts.getOrDefault(p.getId(), 0L)))
+						.map(p -> FanartListItemResponse.from(p, counts.getOrDefault(p.getId(), ListCounts.zero())))
 						.toList()
 		);
 	}
 
 	@GetMapping("/{id}")
-	public FanartDetailResponse detail(@PathVariable Long id) {
+	public FanartDetailResponse detail(@PathVariable Long id, Authentication authentication) {
 		Post post = postService.viewDetail(BoardType.FANART, id);
-		return FanartDetailResponse.from(post, commentService.countActive(post.getId()));
+		DetailCounts counts = assembler.gatherDetailCounts(post.getId(), currentUserIdOrNull(authentication));
+		return FanartDetailResponse.from(post, counts);
 	}
 
 	@PostMapping
@@ -60,6 +63,6 @@ public class FanartController extends AuthenticatedController {
 	) {
 		User author = postService.loadAuthor(requireUserId(authentication));
 		Post saved = postService.save(Post.createFanart(request.title(), request.content(), author, request.imageUrl()));
-		return ResponseEntity.status(HttpStatus.CREATED).body(FanartDetailResponse.from(saved, 0L));
+		return ResponseEntity.status(HttpStatus.CREATED).body(FanartDetailResponse.from(saved, DetailCounts.zero()));
 	}
 }

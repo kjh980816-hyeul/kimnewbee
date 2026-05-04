@@ -12,4 +12,11 @@ public abstract class AuthenticatedController {
 		}
 		return userId;
 	}
+
+	protected final Long currentUserIdOrNull(Authentication authentication) {
+		if (authentication == null || !(authentication.getPrincipal() instanceof Long userId)) {
+			return null;
+		}
+		return userId;
+	}
 }

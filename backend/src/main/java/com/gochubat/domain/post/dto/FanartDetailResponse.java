@@ -1,6 +1,7 @@
 package com.gochubat.domain.post.dto;
 
 import com.gochubat.domain.post.entity.Post;
+import com.gochubat.domain.post.service.PostBoardAssembler.DetailCounts;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +20,7 @@ public record FanartDetailResponse(
 		boolean likedByMe
 ) {
 
-	public static FanartDetailResponse from(Post post, long commentCount) {
+	public static FanartDetailResponse from(Post post, DetailCounts counts) {
 		return new FanartDetailResponse(
 				post.getId(),
 				post.getTitle(),
@@ -30,9 +31,9 @@ public record FanartDetailResponse(
 				post.getCreatedAt(),
 				post.getUpdatedAt(),
 				post.getViewCount(),
-				0L,
-				commentCount,
-				false
+				counts.likeCount(),
+				counts.commentCount(),
+				counts.likedByMe()
 		);
 	}
 }

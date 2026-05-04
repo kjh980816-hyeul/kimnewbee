@@ -1,6 +1,7 @@
 package com.gochubat.domain.post.dto;
 
 import com.gochubat.domain.post.entity.Post;
+import com.gochubat.domain.post.service.PostBoardAssembler.ListCounts;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +16,7 @@ public record ClipListItemResponse(
 		long commentCount
 ) {
 
-	public static ClipListItemResponse from(Post post, long commentCount) {
+	public static ClipListItemResponse from(Post post, ListCounts counts) {
 		return new ClipListItemResponse(
 				post.getId(),
 				post.getTitle(),
@@ -23,8 +24,8 @@ public record ClipListItemResponse(
 				post.getMediaUrl(),
 				post.getClipSource() != null ? post.getClipSource().toApiValue() : null,
 				post.getCreatedAt(),
-				0L,
-				commentCount
+				counts.likeCount(),
+				counts.commentCount()
 		);
 	}
 }

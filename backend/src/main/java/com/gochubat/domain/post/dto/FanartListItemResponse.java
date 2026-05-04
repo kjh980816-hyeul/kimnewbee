@@ -1,6 +1,7 @@
 package com.gochubat.domain.post.dto;
 
 import com.gochubat.domain.post.entity.Post;
+import com.gochubat.domain.post.service.PostBoardAssembler.ListCounts;
 
 import java.time.LocalDateTime;
 
@@ -14,15 +15,15 @@ public record FanartListItemResponse(
 		long commentCount
 ) {
 
-	public static FanartListItemResponse from(Post post, long commentCount) {
+	public static FanartListItemResponse from(Post post, ListCounts counts) {
 		return new FanartListItemResponse(
 				post.getId(),
 				post.getTitle(),
 				post.getAuthor().getNickname(),
 				post.getMediaUrl(),
 				post.getCreatedAt(),
-				0L,
-				commentCount
+				counts.likeCount(),
+				counts.commentCount()
 		);
 	}
 }

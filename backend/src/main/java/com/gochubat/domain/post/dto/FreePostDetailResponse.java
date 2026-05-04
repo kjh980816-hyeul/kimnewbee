@@ -1,6 +1,7 @@
 package com.gochubat.domain.post.dto;
 
 import com.gochubat.domain.post.entity.Post;
+import com.gochubat.domain.post.service.PostBoardAssembler.DetailCounts;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +18,7 @@ public record FreePostDetailResponse(
 		boolean likedByMe
 ) {
 
-	public static FreePostDetailResponse from(Post post, long commentCount) {
+	public static FreePostDetailResponse from(Post post, DetailCounts counts) {
 		return new FreePostDetailResponse(
 				post.getId(),
 				post.getTitle(),
@@ -26,9 +27,9 @@ public record FreePostDetailResponse(
 				post.getCreatedAt(),
 				post.getUpdatedAt(),
 				post.getViewCount(),
-				0L,
-				commentCount,
-				false
+				counts.likeCount(),
+				counts.commentCount(),
+				counts.likedByMe()
 		);
 	}
 }

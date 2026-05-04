@@ -46,6 +46,7 @@ public class SecurityConfig {
 						.requestMatchers("/api/free/**", "/api/fanart/**", "/api/clips/**").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()
 						.requestMatchers("/api/posts/*/comments", "/api/comments/**").authenticated()
+						.requestMatchers(HttpMethod.POST, "/api/free/*/like", "/api/fanart/*/like", "/api/clips/*/like").authenticated()
 						.anyRequest().permitAll())
 				.exceptionHandling(eh -> eh
 						.authenticationEntryPoint(authenticationEntryPoint())
