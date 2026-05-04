@@ -73,6 +73,10 @@ public class User {
 		}
 	}
 
+	public void changeTier(Tier next) {
+		this.tier = next;
+	}
+
 	@PrePersist
 	void prePersist() {
 		if (createdAt == null) {

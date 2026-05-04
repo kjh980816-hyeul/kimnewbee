@@ -53,6 +53,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.POST, "/api/free/*/like", "/api/fanart/*/like", "/api/clips/*/like", "/api/pets/*/like", "/api/offline/*/like").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/songs").permitAll()
 						.requestMatchers("/api/songs/**").authenticated()
+						.requestMatchers("/api/admin/**").authenticated()
 						.anyRequest().permitAll())
 				.exceptionHandling(eh -> eh
 						.authenticationEntryPoint(authenticationEntryPoint())
