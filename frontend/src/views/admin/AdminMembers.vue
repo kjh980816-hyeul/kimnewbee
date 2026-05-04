@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { fetchAdminUsers, changeUserTier, adjustUserPoints } from '@/api/admin';
 import type { AdminUser } from '@/types/admin';
+import type { TierInput } from '@/types/board';
 import type { Tier } from '@/types/offline';
 
 const users = ref<AdminUser[]>([]);
@@ -33,7 +34,7 @@ async function onTierChange(user: AdminUser, next: Tier): Promise<void> {
   if (user.tier === next) return;
   busyId.value = user.id;
   try {
-    const updated = await changeUserTier(user.id, { tier: next.toUpperCase() as 'SEED' | 'PEPPER' | 'CORN' | 'OWNER' });
+    const updated = await changeUserTier(user.id, { tier: next.toUpperCase() as TierInput });
     Object.assign(user, updated);
   } catch (e) {
     error.value = e instanceof Error ? e.message : '등급 변경에 실패했어요';

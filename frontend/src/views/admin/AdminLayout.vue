@@ -46,6 +46,13 @@ onMounted(async () => {
           >
             회원 관리
           </RouterLink>
+          <RouterLink
+            :to="{ name: 'admin-boards' }"
+            class="text-ink-muted hover:text-pepper"
+            active-class="text-pepper"
+          >
+            게시판 관리
+          </RouterLink>
         </nav>
       </header>
 

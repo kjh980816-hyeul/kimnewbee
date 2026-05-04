@@ -1,4 +1,5 @@
 import type { Tier } from './offline';
+import type { TierInput } from './board';
 
 export interface AdminDashboard {
   totalUsers: number;
@@ -22,7 +23,7 @@ export interface AdminUserListResponse {
 }
 
 export interface ChangeTierInput {
-  tier: 'SEED' | 'PEPPER' | 'CORN' | 'OWNER';
+  tier: TierInput;
 }
 
 export interface AdjustPointsInput {

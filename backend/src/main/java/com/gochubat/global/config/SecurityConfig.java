@@ -68,6 +68,8 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.POST, "/api/free/*/like", "/api/fanart/*/like", "/api/clips/*/like", "/api/pets/*/like", "/api/offline/*/like").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/songs").permitAll()
 						.requestMatchers("/api/songs/**").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/boards").permitAll()
+						.requestMatchers("/api/boards/**").authenticated()
 						.requestMatchers("/api/admin/**").authenticated()
 						.anyRequest().permitAll())
 				.exceptionHandling(eh -> eh
@@ -82,7 +84,7 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration cfg = new CorsConfiguration();
 		cfg.setAllowedOrigins(corsProperties.allowedOrigins());
-		cfg.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
+		cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		cfg.setAllowedHeaders(List.of("*"));
 		cfg.setExposedHeaders(List.of("Set-Cookie"));
 		cfg.setAllowCredentials(true);
