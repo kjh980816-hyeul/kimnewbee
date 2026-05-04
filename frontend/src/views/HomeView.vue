@@ -6,12 +6,14 @@ import { fetchFanartList } from '@/api/fanart';
 import { fetchClips } from '@/api/clip';
 import { fetchPets } from '@/api/pet';
 import { fetchSongs } from '@/api/song';
+import { fetchCafeConfig } from '@/api/cafe';
 import type { NoticeListItem } from '@/types/notice';
 import type { FreePostListItem } from '@/types/free';
 import type { FanartListItem } from '@/types/fanart';
 import type { ClipListItem } from '@/types/clip';
 import type { PetListItem } from '@/types/pet';
 import type { SongRecommendation } from '@/types/song';
+import type { CafeConfig } from '@/types/cafe';
 import LiveBanner from '@/components/home/LiveBanner.vue';
 import WidgetCard from '@/components/home/WidgetCard.vue';
 
@@ -21,17 +23,19 @@ const fanarts = ref<FanartListItem[]>([]);
 const clips = ref<ClipListItem[]>([]);
 const pets = ref<PetListItem[]>([]);
 const topSongs = ref<SongRecommendation[]>([]);
+const cafe = ref<CafeConfig | null>(null);
 const loading = ref(true);
 
 onMounted(async () => {
   try {
-    const [noticeRes, freeRes, fanartRes, clipRes, petRes, songRes] = await Promise.all([
+    const [noticeRes, freeRes, fanartRes, clipRes, petRes, songRes, cafeRes] = await Promise.all([
       fetchNotices(),
       fetchFreePosts(),
       fetchFanartList(),
       fetchClips(),
       fetchPets(),
       fetchSongs(),
+      fetchCafeConfig(),
     ]);
     notices.value = noticeRes.data.slice(0, 4);
     freePosts.value = freeRes.data.slice(0, 5);
@@ -39,6 +43,7 @@ onMounted(async () => {
     clips.value = clipRes.data.slice(0, 3);
     pets.value = petRes.data.slice(0, 6);
     topSongs.value = songRes.data.slice(0, 3);
+    cafe.value = cafeRes;
   } finally {
     loading.value = false;
   }
@@ -47,9 +52,23 @@ onMounted(async () => {
 
 <template>
   <main class="min-h-screen bg-paper text-ink p-8">
-    <header class="mb-6">
-      <h1 class="text-3xl font-bold text-pepper">고추밭</h1>
-      <p class="mt-1 text-ink-muted">초록고추들을 위한 공간</p>
+    <header
+      v-if="cafe?.heroBannerUrl"
+      class="mb-6 -mx-8 -mt-8 aspect-[3/1] bg-elevated overflow-hidden relative"
+    >
+      <img
+        :src="cafe.heroBannerUrl"
+        :alt="cafe.heroHeadline"
+        class="w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-paper to-transparent flex flex-col justify-end p-8">
+        <h1 class="text-3xl font-bold text-pepper">{{ cafe.heroHeadline }}</h1>
+        <p v-if="cafe.heroSubtext" class="mt-1 text-ink">{{ cafe.heroSubtext }}</p>
+      </div>
+    </header>
+    <header v-else class="mb-6">
+      <h1 class="text-3xl font-bold text-pepper">{{ cafe?.heroHeadline ?? '고추밭' }}</h1>
+      <p class="mt-1 text-ink-muted">{{ cafe?.heroSubtext ?? '초록고추들을 위한 공간' }}</p>
     </header>
 
     <LiveBanner class="mb-6" />
@@ -170,5 +189,12 @@ onMounted(async () => {
         </ul>
       </WidgetCard>
     </div>
+
+    <footer
+      v-if="cafe?.footerText"
+      class="mt-10 pt-6 border-t border-border text-center text-xs text-ink-muted"
+    >
+      {{ cafe.footerText }}
+    </footer>
   </main>
 </template>
