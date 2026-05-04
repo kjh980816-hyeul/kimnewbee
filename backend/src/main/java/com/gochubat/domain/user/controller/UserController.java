@@ -1,5 +1,6 @@
 package com.gochubat.domain.user.controller;
 
+import com.gochubat.domain.user.dto.AdminViewerInfoResponse;
 import com.gochubat.domain.user.dto.CurrentUserResponse;
 import com.gochubat.domain.user.dto.UserStatsResponse;
 import com.gochubat.domain.user.service.UserService;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/me")
 public class UserController extends AuthenticatedController {
+
+	private static final String OWNER_AUTHORITY = "ROLE_OWNER";
 
 	private final UserService userService;
 
@@ -27,5 +30,14 @@ public class UserController extends AuthenticatedController {
 	@GetMapping("/stats")
 	public UserStatsResponse stats(Authentication authentication) {
 		return userService.getStats(requireUserId(authentication));
+	}
+
+	@GetMapping("/admin")
+	public AdminViewerInfoResponse admin(Authentication authentication) {
+		boolean isAdmin = authentication != null
+				&& authentication.getAuthorities() != null
+				&& authentication.getAuthorities().stream()
+				.anyMatch(a -> OWNER_AUTHORITY.equals(a.getAuthority()));
+		return AdminViewerInfoResponse.of(isAdmin);
 	}
 }

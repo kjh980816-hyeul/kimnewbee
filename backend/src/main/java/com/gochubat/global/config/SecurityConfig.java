@@ -39,7 +39,10 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/actuator/health/**", "/h2-console/**").permitAll()
 						.requestMatchers("/api/auth/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/me/admin").permitAll()
 						.requestMatchers("/api/me/**").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/letters").permitAll()
+						.requestMatchers("/api/letters/**").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/notices/**").permitAll()
 						.requestMatchers("/api/notices/**").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/free/**", "/api/fanart/**", "/api/clips/**").permitAll()
