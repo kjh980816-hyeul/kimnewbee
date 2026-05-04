@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchClip, toggleClipLike } from '@/api/clip';
+import { useIsOwner } from '@/composables/useIsOwner';
 import type { Clip } from '@/types/clip';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
@@ -14,6 +15,7 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 
 const clipId = computed(() => Number(route.params['id']));
+const isOwner = useIsOwner(computed(() => clip.value?.author ?? null));
 
 const embedUrl = computed<string | null>(() => {
   if (!clip.value) return null;
@@ -61,6 +63,14 @@ async function onLike(): Promise<void> {
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else-if="clip">
+      <div v-if="isOwner" class="mb-3 flex justify-end">
+        <RouterLink
+          :to="{ name: 'clip-edit', params: { id: clip.id } }"
+          class="rounded-md border border-border px-3 py-1.5 text-sm text-ink-muted hover:text-pepper hover:border-pepper transition-colors"
+        >
+          수정
+        </RouterLink>
+      </div>
       <PostArticle
         :title="clip.title"
         :author="clip.author"

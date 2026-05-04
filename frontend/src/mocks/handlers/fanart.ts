@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { fanartFixtures } from '../data/fanart';
+import { createOwnerOnlyPatch } from '../utils/createOwnerOnlyPatch';
 import type { Fanart, FanartListItem, CreateFanartInput } from '@/types/fanart';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -51,6 +52,16 @@ export const fanartHandlers = [
     fanartStore.unshift(newFanart);
     return HttpResponse.json(newFanart, { status: 201 });
   }),
+
+  http.patch(
+    `${API_URL}/api/fanart/:id`,
+    createOwnerOnlyPatch<Fanart, CreateFanartInput>(fanartStore, (fanart, body) => {
+      fanart.title = body.title;
+      fanart.imageUrl = body.imageUrl;
+      fanart.thumbnailUrl = body.imageUrl;
+      fanart.content = body.content;
+    }),
+  ),
 
   http.post(`${API_URL}/api/fanart/:id/like`, ({ params }) => {
     const id = Number(params['id']);

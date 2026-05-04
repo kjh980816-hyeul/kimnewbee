@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { offlineReviewFixtures } from '../data/offline';
+import { readMockUser } from './auth';
 import type {
   OfflineReview,
   OfflineReviewListItem,
@@ -104,6 +105,37 @@ export const offlineHandlers = [
     };
     offlineStore.unshift(newReview);
     return HttpResponse.json(newReview, { status: 201 });
+  }),
+
+  http.patch(`${API_URL}/api/offline/:id`, async ({ params, request }) => {
+    if (!hasCornAccess()) {
+      return HttpResponse.json(
+        { message: '옥수수 등급 이상만 수정할 수 있어요' },
+        { status: 403 },
+      );
+    }
+    const id = Number(params['id']);
+    const review = offlineStore.find((r) => r.id === id);
+    if (!review) {
+      return HttpResponse.json({ message: '후기를 찾을 수 없어요' }, { status: 404 });
+    }
+    const user = readMockUser();
+    if (!user) {
+      return HttpResponse.json({ message: '로그인이 필요해요' }, { status: 401 });
+    }
+    if (review.author !== user.nickname) {
+      return HttpResponse.json({ message: '본인만 수정할 수 있어요' }, { status: 403 });
+    }
+    const body = (await request.json()) as CreateOfflineReviewInput;
+    review.title = body.title;
+    review.location = body.location;
+    review.meetupDate = body.meetupDate;
+    review.imageUrl = body.imageUrl;
+    review.thumbnailUrl = body.imageUrl;
+    review.content = body.content;
+    review.preview = body.content.slice(0, 80) + (body.content.length > 80 ? '...' : '');
+    review.updatedAt = new Date().toISOString();
+    return HttpResponse.json(review);
   }),
 
   http.post(`${API_URL}/api/offline/:id/like`, ({ params }) => {

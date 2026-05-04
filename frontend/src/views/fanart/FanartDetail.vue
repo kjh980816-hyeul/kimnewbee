@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchFanart, toggleFanartLike } from '@/api/fanart';
+import { useIsOwner } from '@/composables/useIsOwner';
 import type { Fanart } from '@/types/fanart';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
@@ -14,6 +15,7 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 
 const fanartId = computed(() => Number(route.params['id']));
+const isOwner = useIsOwner(computed(() => fanart.value?.author ?? null));
 
 onMounted(async () => {
   if (Number.isNaN(fanartId.value)) {
@@ -51,6 +53,14 @@ async function onLike(): Promise<void> {
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else-if="fanart">
+      <div v-if="isOwner" class="mb-3 flex justify-end">
+        <RouterLink
+          :to="{ name: 'fanart-edit', params: { id: fanart.id } }"
+          class="rounded-md border border-border px-3 py-1.5 text-sm text-ink-muted hover:text-pepper hover:border-pepper transition-colors"
+        >
+          수정
+        </RouterLink>
+      </div>
       <PostArticle
         :title="fanart.title"
         :author="fanart.author"

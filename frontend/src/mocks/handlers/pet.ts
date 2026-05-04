@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { petFixtures } from '../data/pets';
+import { createOwnerOnlyPatch } from '../utils/createOwnerOnlyPatch';
 import type { Pet, PetListItem, CreatePetInput } from '@/types/pet';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -51,6 +52,16 @@ export const petHandlers = [
     petStore.unshift(newPet);
     return HttpResponse.json(newPet, { status: 201 });
   }),
+
+  http.patch(
+    `${API_URL}/api/pets/:id`,
+    createOwnerOnlyPatch<Pet, CreatePetInput>(petStore, (pet, body) => {
+      pet.title = body.title;
+      pet.imageUrl = body.imageUrl;
+      pet.thumbnailUrl = body.imageUrl;
+      pet.content = body.content;
+    }),
+  ),
 
   http.post(`${API_URL}/api/pets/:id/like`, ({ params }) => {
     const id = Number(params['id']);

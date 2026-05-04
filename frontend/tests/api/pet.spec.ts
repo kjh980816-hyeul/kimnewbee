@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
-import { fetchPets, fetchPet, createPet, togglePetLike } from '@/api/pet';
+import { fetchPets, fetchPet, createPet, updatePet, togglePetLike } from '@/api/pet';
 import { petFixtures } from '@/mocks/data/pets';
 import type { Pet } from '@/types/pet';
 
@@ -47,6 +47,18 @@ const server = setupServer(
     store.unshift(p);
     return HttpResponse.json(p, { status: 201 });
   }),
+  http.patch(`${API_URL}/api/pets/:id`, async ({ params, request }) => {
+    const id = Number(params['id']);
+    const p = store.find((x) => x.id === id);
+    if (!p) return HttpResponse.json({}, { status: 404 });
+    const body = (await request.json()) as { title: string; imageUrl: string; content: string };
+    p.title = body.title;
+    p.imageUrl = body.imageUrl;
+    p.thumbnailUrl = body.imageUrl;
+    p.content = body.content;
+    p.updatedAt = new Date().toISOString();
+    return HttpResponse.json(p);
+  }),
   http.post(`${API_URL}/api/pets/:id/like`, ({ params }) => {
     const id = Number(params['id']);
     const p = store.find((x) => x.id === id);
@@ -88,6 +100,18 @@ describe('pet api', () => {
     });
     expect(created.imageUrl).toBe('https://example.com/cat.png');
     expect(created.thumbnailUrl).toBe('https://example.com/cat.png');
+  });
+
+  it('updatePet updates title/imageUrl/content (thumbnail follows)', async () => {
+    const fixture = petFixtures[0];
+    if (!fixture) throw new Error('petFixtures empty');
+    const updated = await updatePet(fixture.id, {
+      title: '새 제목',
+      imageUrl: 'https://new/dog.png',
+      content: '귀여움 갱신',
+    });
+    expect(updated.imageUrl).toBe('https://new/dog.png');
+    expect(updated.thumbnailUrl).toBe('https://new/dog.png');
   });
 
   it('toggle like flips state and adjusts count', async () => {

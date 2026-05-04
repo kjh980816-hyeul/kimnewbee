@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
-import { fetchClips, fetchClip, createClip, toggleClipLike } from '@/api/clip';
+import { fetchClips, fetchClip, createClip, updateClip, toggleClipLike } from '@/api/clip';
 import { clipFixtures } from '@/mocks/data/clips';
 import type { Clip, ClipSource } from '@/types/clip';
 
@@ -53,6 +53,18 @@ const server = setupServer(
     };
     store.unshift(c);
     return HttpResponse.json(c, { status: 201 });
+  }),
+  http.patch(`${API_URL}/api/clips/:id`, async ({ params, request }) => {
+    const id = Number(params['id']);
+    const c = store.find((x) => x.id === id);
+    if (!c) return HttpResponse.json({}, { status: 404 });
+    const body = (await request.json()) as { title: string; videoUrl: string; description: string };
+    c.title = body.title;
+    c.videoUrl = body.videoUrl;
+    c.source = detectSource(body.videoUrl);
+    c.description = body.description;
+    c.updatedAt = new Date().toISOString();
+    return HttpResponse.json(c);
   }),
   http.post(`${API_URL}/api/clips/:id/like`, ({ params }) => {
     const id = Number(params['id']);
@@ -109,6 +121,19 @@ describe('clip api', () => {
       description: '',
     });
     expect(c.source).toBe('other');
+  });
+
+  it('updateClip changes URL and re-detects source', async () => {
+    const fixture = clipFixtures[0];
+    if (!fixture) throw new Error('clipFixtures empty');
+    const updated = await updateClip(fixture.id, {
+      title: '수정',
+      videoUrl: 'https://chzzk.naver.com/clips/xyz',
+      description: '수정된 설명',
+    });
+    expect(updated.videoUrl).toBe('https://chzzk.naver.com/clips/xyz');
+    expect(updated.source).toBe('chzzk');
+    expect(updated.description).toBe('수정된 설명');
   });
 
   it('toggle like flips state and adjusts count', async () => {

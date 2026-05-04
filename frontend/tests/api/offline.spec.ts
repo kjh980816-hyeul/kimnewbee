@@ -5,6 +5,7 @@ import {
   fetchOfflineReviews,
   fetchOfflineReview,
   createOfflineReview,
+  updateOfflineReview,
   toggleOfflineReviewLike,
 } from '@/api/offline';
 import { offlineReviewFixtures } from '@/mocks/data/offline';
@@ -79,6 +80,28 @@ const server = setupServer(
     store.unshift(r);
     return HttpResponse.json(r, { status: 201 });
   }),
+  http.patch(`${API_URL}/api/offline/:id`, async ({ params, request }) => {
+    if (!hasAccess()) return HttpResponse.json({}, { status: 403 });
+    const id = Number(params['id']);
+    const r = store.find((x) => x.id === id);
+    if (!r) return HttpResponse.json({}, { status: 404 });
+    const body = (await request.json()) as {
+      title: string;
+      location: string;
+      meetupDate: string;
+      imageUrl: string;
+      content: string;
+    };
+    r.title = body.title;
+    r.location = body.location;
+    r.meetupDate = body.meetupDate;
+    r.imageUrl = body.imageUrl;
+    r.thumbnailUrl = body.imageUrl;
+    r.content = body.content;
+    r.preview = body.content.slice(0, 80);
+    r.updatedAt = new Date().toISOString();
+    return HttpResponse.json(r);
+  }),
   http.post(`${API_URL}/api/offline/:id/like`, ({ params }) => {
     if (!hasAccess()) return HttpResponse.json({}, { status: 403 });
     const id = Number(params['id']);
@@ -138,6 +161,35 @@ describe('offline review api', () => {
         meetupDate: '2026-05-01',
         imageUrl: 'https://example.com/img.png',
         content: '본문',
+      }),
+    ).rejects.toThrow();
+  });
+
+  it('corn tier can update review (location/meetupDate/content)', async () => {
+    viewerTier = 'corn';
+    const fixture = offlineReviewFixtures[0];
+    if (!fixture) throw new Error('fixtures empty');
+    const updated = await updateOfflineReview(fixture.id, {
+      title: '수정된 후기',
+      location: '판교',
+      meetupDate: '2026-06-15',
+      imageUrl: 'https://new/img.png',
+      content: '새 본문 내용',
+    });
+    expect(updated.location).toBe('판교');
+    expect(updated.meetupDate).toBe('2026-06-15');
+    expect(updated.thumbnailUrl).toBe('https://new/img.png');
+  });
+
+  it('pepper tier blocked from updating', async () => {
+    viewerTier = 'pepper';
+    await expect(
+      updateOfflineReview(1, {
+        title: 't',
+        location: 'l',
+        meetupDate: '2026-01-01',
+        imageUrl: 'https://x/y.png',
+        content: 'c',
       }),
     ).rejects.toThrow();
   });

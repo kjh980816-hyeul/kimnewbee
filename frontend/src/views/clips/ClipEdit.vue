@@ -1,0 +1,148 @@
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { fetchClip, updateClip } from '@/api/clip';
+import { isHttpStatus } from '@/api/error';
+
+const route = useRoute();
+const router = useRouter();
+
+const postId = computed(() => Number(route.params['id']));
+
+const title = ref('');
+const videoUrl = ref('');
+const description = ref('');
+const loading = ref(true);
+const submitting = ref(false);
+const error = ref<string | null>(null);
+
+const isUrlValid = computed(() => {
+  if (!videoUrl.value) return false;
+  try {
+    const u = new URL(videoUrl.value);
+    return u.protocol === 'https:' || u.protocol === 'http:';
+  } catch {
+    return false;
+  }
+});
+
+onMounted(async () => {
+  if (Number.isNaN(postId.value)) {
+    error.value = '잘못된 게시글 번호예요';
+    loading.value = false;
+    return;
+  }
+  try {
+    const clip = await fetchClip(postId.value);
+    title.value = clip.title;
+    videoUrl.value = clip.videoUrl;
+    description.value = clip.description;
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : '영상을 불러올 수 없어요';
+  } finally {
+    loading.value = false;
+  }
+});
+
+async function onSubmit(): Promise<void> {
+  if (!title.value.trim() || !videoUrl.value.trim()) {
+    error.value = '제목과 영상 URL은 필수예요';
+    return;
+  }
+  if (!isUrlValid.value) {
+    error.value = '유효한 URL이 아니에요 (http(s)://)';
+    return;
+  }
+
+  submitting.value = true;
+  error.value = null;
+
+  try {
+    const updated = await updateClip(postId.value, {
+      title: title.value,
+      videoUrl: videoUrl.value,
+      description: description.value,
+    });
+    await router.push({ name: 'clip-detail', params: { id: updated.id } });
+  } catch (e) {
+    if (isHttpStatus(e, 403)) {
+      error.value = '본인 글만 수정할 수 있어요';
+    } else if (isHttpStatus(e, 401)) {
+      error.value = '로그인이 필요해요';
+    } else {
+      error.value = e instanceof Error ? e.message : '수정에 실패했어요';
+    }
+  } finally {
+    submitting.value = false;
+  }
+}
+</script>
+
+<template>
+  <main class="min-h-screen bg-paper text-ink p-8">
+    <button
+      type="button"
+      class="mb-4 text-sm text-ink-muted hover:text-ink"
+      @click="router.back()"
+    >
+      ← 취소
+    </button>
+
+    <h1 class="text-2xl font-bold text-pepper mb-6">영상/클립 수정</h1>
+
+    <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
+
+    <form v-else class="space-y-4" @submit.prevent="onSubmit">
+      <div>
+        <label class="block text-sm text-ink-muted mb-1" for="clip-title">제목</label>
+        <input
+          id="clip-title"
+          v-model="title"
+          type="text"
+          maxlength="120"
+          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm text-ink-muted mb-1" for="clip-url">영상 URL</label>
+        <input
+          id="clip-url"
+          v-model="videoUrl"
+          type="url"
+          placeholder="https://youtu.be/... 또는 https://chzzk.naver.com/..."
+          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm text-ink-muted mb-1" for="clip-desc">설명</label>
+        <textarea
+          id="clip-desc"
+          v-model="description"
+          rows="6"
+          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper resize-y"
+        />
+      </div>
+
+      <p v-if="error" class="text-cheek text-sm">{{ error }}</p>
+
+      <div class="flex gap-2">
+        <button
+          type="submit"
+          :disabled="submitting"
+          class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep disabled:opacity-50"
+        >
+          {{ submitting ? '저장 중...' : '저장하기' }}
+        </button>
+        <button
+          type="button"
+          class="rounded-md border border-border px-4 py-2 text-sm text-ink-muted hover:text-ink"
+          @click="router.back()"
+        >
+          취소
+        </button>
+      </div>
+    </form>
+  </main>
+</template>

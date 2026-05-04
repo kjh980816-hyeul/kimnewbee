@@ -21,6 +21,11 @@ export async function createFanart(input: CreateFanartInput): Promise<Fanart> {
   return res.data;
 }
 
+export async function updateFanart(id: number, input: CreateFanartInput): Promise<Fanart> {
+  const res = await apiClient.patch<Fanart>(`/api/fanart/${id}`, input);
+  return res.data;
+}
+
 export async function toggleFanartLike(id: number): Promise<LikeToggleResponse> {
   const res = await apiClient.post<LikeToggleResponse>(`/api/fanart/${id}/like`);
   return res.data;

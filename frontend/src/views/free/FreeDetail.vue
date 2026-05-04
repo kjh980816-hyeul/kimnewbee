@@ -2,8 +2,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchFreePost, toggleFreePostLike } from '@/api/free';
+import { useIsOwner } from '@/composables/useIsOwner';
 import type { FreePost } from '@/types/free';
-import type { CurrentUser } from '@/types/user';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
@@ -15,18 +15,7 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 
 const postId = computed(() => Number(route.params['id']));
-
-const isOwner = computed(() => {
-  if (!post.value) return false;
-  try {
-    const raw = globalThis.localStorage?.getItem('mock-user');
-    if (!raw) return false;
-    const user = JSON.parse(raw) as CurrentUser;
-    return user.nickname === post.value.author;
-  } catch {
-    return false;
-  }
-});
+const isOwner = useIsOwner(computed(() => post.value?.author ?? null));
 
 onMounted(async () => {
   if (Number.isNaN(postId.value)) {

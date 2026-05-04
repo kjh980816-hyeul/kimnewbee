@@ -23,6 +23,14 @@ export async function createOfflineReview(
   return res.data;
 }
 
+export async function updateOfflineReview(
+  id: number,
+  input: CreateOfflineReviewInput,
+): Promise<OfflineReview> {
+  const res = await apiClient.patch<OfflineReview>(`/api/offline/${id}`, input);
+  return res.data;
+}
+
 export async function toggleOfflineReviewLike(id: number): Promise<LikeToggleResponse> {
   const res = await apiClient.post<LikeToggleResponse>(`/api/offline/${id}/like`);
   return res.data;

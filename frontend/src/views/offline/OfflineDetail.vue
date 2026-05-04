@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchOfflineReview, toggleOfflineReviewLike } from '@/api/offline';
 import { isHttpStatus } from '@/api/error';
+import { useIsOwner } from '@/composables/useIsOwner';
 import type { OfflineReview } from '@/types/offline';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
@@ -16,6 +17,7 @@ const accessDenied = ref(false);
 const error = ref<string | null>(null);
 
 const reviewId = computed(() => Number(route.params['id']));
+const isOwner = useIsOwner(computed(() => review.value?.author ?? null));
 
 onMounted(async () => {
   if (Number.isNaN(reviewId.value)) {
@@ -69,6 +71,14 @@ async function onLike(): Promise<void> {
     </div>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else-if="review">
+      <div v-if="isOwner" class="mb-3 flex justify-end">
+        <RouterLink
+          :to="{ name: 'offline-edit', params: { id: review.id } }"
+          class="rounded-md border border-border px-3 py-1.5 text-sm text-ink-muted hover:text-pepper hover:border-pepper transition-colors"
+        >
+          수정
+        </RouterLink>
+      </div>
       <div class="mb-2 text-xs text-ink-muted flex gap-3">
         <span>📍 {{ review.location }}</span>
         <span>📅 {{ review.meetupDate }}</span>

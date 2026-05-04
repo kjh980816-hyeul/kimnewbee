@@ -5,6 +5,7 @@ import {
   fetchFanartList,
   fetchFanart,
   createFanart,
+  updateFanart,
   toggleFanartLike,
 } from '@/api/fanart';
 import { fanartFixtures } from '@/mocks/data/fanart';
@@ -52,6 +53,18 @@ const server = setupServer(
     store.unshift(newFanart);
     return HttpResponse.json(newFanart, { status: 201 });
   }),
+  http.patch(`${API_URL}/api/fanart/:id`, async ({ params, request }) => {
+    const id = Number(params['id']);
+    const f = store.find((x) => x.id === id);
+    if (!f) return HttpResponse.json({}, { status: 404 });
+    const body = (await request.json()) as { title: string; imageUrl: string; content: string };
+    f.title = body.title;
+    f.imageUrl = body.imageUrl;
+    f.thumbnailUrl = body.imageUrl;
+    f.content = body.content;
+    f.updatedAt = new Date().toISOString();
+    return HttpResponse.json(f);
+  }),
   http.post(`${API_URL}/api/fanart/:id/like`, ({ params }) => {
     const id = Number(params['id']);
     const f = store.find((x) => x.id === id);
@@ -93,6 +106,19 @@ describe('fanart api', () => {
     });
     expect(created.imageUrl).toBe('https://example.com/img.png');
     expect(created.thumbnailUrl).toBe('https://example.com/img.png');
+  });
+
+  it('updates fanart title/imageUrl/content (thumbnail follows)', async () => {
+    const fixture = fanartFixtures[0];
+    if (!fixture) throw new Error('fanartFixtures is empty');
+    const updated = await updateFanart(fixture.id, {
+      title: '수정',
+      imageUrl: 'https://new.example/img.png',
+      content: '수정 설명',
+    });
+    expect(updated.title).toBe('수정');
+    expect(updated.imageUrl).toBe('https://new.example/img.png');
+    expect(updated.thumbnailUrl).toBe('https://new.example/img.png');
   });
 
   it('toggles fanart like and updates count', async () => {

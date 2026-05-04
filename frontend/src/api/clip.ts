@@ -17,6 +17,11 @@ export async function createClip(input: CreateClipInput): Promise<Clip> {
   return res.data;
 }
 
+export async function updateClip(id: number, input: CreateClipInput): Promise<Clip> {
+  const res = await apiClient.patch<Clip>(`/api/clips/${id}`, input);
+  return res.data;
+}
+
 export async function toggleClipLike(id: number): Promise<LikeToggleResponse> {
   const res = await apiClient.post<LikeToggleResponse>(`/api/clips/${id}/like`);
   return res.data;

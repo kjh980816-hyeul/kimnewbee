@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { clipFixtures } from '../data/clips';
+import { createOwnerOnlyPatch } from '../utils/createOwnerOnlyPatch';
 import type { Clip, ClipListItem, ClipSource, CreateClipInput } from '@/types/clip';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -58,6 +59,16 @@ export const clipHandlers = [
     clipStore.unshift(newClip);
     return HttpResponse.json(newClip, { status: 201 });
   }),
+
+  http.patch(
+    `${API_URL}/api/clips/:id`,
+    createOwnerOnlyPatch<Clip, CreateClipInput>(clipStore, (clip, body) => {
+      clip.title = body.title;
+      clip.videoUrl = body.videoUrl;
+      clip.source = detectSource(body.videoUrl);
+      clip.description = body.description;
+    }),
+  ),
 
   http.post(`${API_URL}/api/clips/:id/like`, ({ params }) => {
     const id = Number(params['id']);

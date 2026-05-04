@@ -17,6 +17,11 @@ export async function createPet(input: CreatePetInput): Promise<Pet> {
   return res.data;
 }
 
+export async function updatePet(id: number, input: CreatePetInput): Promise<Pet> {
+  const res = await apiClient.patch<Pet>(`/api/pets/${id}`, input);
+  return res.data;
+}
+
 export async function togglePetLike(id: number): Promise<LikeToggleResponse> {
   const res = await apiClient.post<LikeToggleResponse>(`/api/pets/${id}/like`);
   return res.data;
