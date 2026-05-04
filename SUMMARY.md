@@ -62,20 +62,25 @@
 | 2-5 | Comment 도메인 (대댓글) | Comment entity (postId/parentId Long FK + soft delete) + 배치 카운트 projection + CommentService (parent-post 일치 검증, owner-only soft delete) + Post DTO 6개 commentCount 연동 + 컨트롤러 PostBoardAssembler 패턴 도입 | fa9936b |
 | 2-6 | Like 도메인 | PostLike entity (unique post_id+user_id) + 배치 countByPostIds + LikeService (BoardType 검증 + 토글) + LikeController 3 endpoints + PostBoardAssembler 추출 (4번째 use 트리거, Comment+Like 통합 조립) + Post Detail DTOs likeCount/likedByMe 진짜 값 | 8a93de5 |
 | 2-7 | FanLetter 도메인 (관리자 권한 필터) | Letter entity (preview/readByAdmin idempotent 마크) + LetterService.detailForAdmin (write tx + 사이드이펙트) + LetterController (GET 공개 / detail @PreAuthorize OWNER + read 자동 마크 / POST 인증) + /api/me/admin (anon false / OWNER true) | ccab8e0 |
-| 2-8 | 특수 게시판 (반려동물/노래/오프후기) | Post에 PET/OFFLINE BoardType 추가 + nullable location/meetupDate 컬럼 + preview() 60자 + Pet/Offline 컨트롤러 (Offline 클래스 레벨 @PreAuthorize CORN/OWNER 등급 게이트) + LikeController에 Pet/Offline 토글 추가 + Song 별도 도메인 (Song + SongVote unique + voteCount 배치 + votedByMe per-user) + SongController (anon viewer 가능) | ab7ba0e |
+| 2-8 | 특수 게시판 (반려동물/노래/오프후기) | Post에 PET/OFFLINE BoardType + nullable location/meetupDate + preview() 60자 + Pet/Offline 컨트롤러(Offline 클래스 레벨 @PreAuthorize CORN/OWNER 등급 게이트) + LikeController Pet/Offline 토글 + Song 별도 도메인(SongVote unique + voteCount 배치 + votedByMe per-user) | ab7ba0e |
+| 2-9 | File 업로드 | **BLOCKED** — 가비아 파일 저장 정책 외부 정보 필요 (BLOCKED.md 참고). 사용자 결정 후 진행. | - |
+| 2-10 | 등급/포인트 도메인 | PointReason enum + PointPolicy(@ConfigurationProperties yml: post=10/comment=2/likeReceived=1/pepper=100/corn=500) + PointService.award (auto tier 승급, OWNER 고정, floor 0) + User.addPoints/promoteTo + UserService.getStats 진짜 카운트 + Post/Comment/Like service에 award 연동 | 6621c0a |
+| 2-11 | Admin API | AdminService(dashboard 4 카운트 / listUsers desc 결정성 / changeTier 강등 가능 / adjustPoints floor 0) + AdminController 클래스 레벨 @PreAuthorize OWNER + User.changeTier 추가 (강등용, promoteTo와 의미 분리) + 4 endpoints | 83de213 |
 
 **reviewer 결과**:
-- 2-2: 1차 FAIL (NaverTokenResponse dead 4필드 / IllegalArgumentException 컨벤션 / RuntimeException catch-all / JWT typ claim 누락 / 헤더 path 테스트 누락) → 2차 PASS
-- 2-3: 1차 FAIL (NoticeRepository 정렬 비결정성 / GlobalExceptionHandler dead AccessDeniedException path) → 2차 PASS
-- 2-4: 1차 FAIL (`requireUserId` 5중복 누락된 추상화) → 2차 PASS
+- 2-2: 1차 FAIL (NaverTokenResponse dead 4필드 / IllegalArgumentException / RuntimeException catch-all / JWT typ claim / 헤더 path 테스트) → 2차 PASS
+- 2-3: 1차 FAIL (NoticeRepository 정렬 비결정성 / GlobalExceptionHandler dead AccessDeniedException) → 2차 PASS
+- 2-4: 1차 FAIL (`requireUserId` 5중복) → 2차 PASS
 - 2-5: 1차 PASS
-- 2-6: 1차 FAIL (LikeService.likedPostIdsByMe + findLikedPostIds dead code) → 2차 PASS
+- 2-6: 1차 FAIL (likedPostIdsByMe + findLikedPostIds dead code) → 2차 PASS
 - 2-7: 1차 PASS
 - 2-8: 1차 PASS
+- 2-10: 1차 FAIL (UserStatsResponse.zero() dead) → 2차 PASS
+- 2-11: 1차 PASS
 
-**테스트**: 백엔드 26 spec / 148 tests (이전 7/25 → +19 spec / +123 tests).
+**테스트**: 백엔드 30 spec / 174 tests (Phase 2 시작 7/25 → +23 spec / +149 tests). **Phase 2 백엔드 10/11 완료** (2-9만 BLOCKED).
 
-**다음 권장 단위**: Phase 2-10 (등급/포인트 도메인). 2-9 (File 업로드)는 가비아 파일 저장 정책 외부 정보 필요 — `BLOCKED.md` 참고, 사용자 결정 후 진행. 이후 cleanup 후보: `NoticeListResponse`(domain/notice/dto)와 `ListResponse<T>`(domain/post/dto) 통합 → `global/dto/ListResponse<T>` (별도 chore 단위 권장).
+**다음 권장 단위**: **Phase 3-1 (도메인별 MSW 끄고 실 API 전환)** — INTEGRATION 단계 시작. Notice → User → Post 순으로 `VITE_USE_MOCK=false` 전환 + CORS/JWT 쿠키 흐름 점검. 또는 Phase 1 미완(1-13 Edit 폼 / 1-14 admin 페이지) 처리. cleanup 후보: NoticeListResponse + ListResponse<T> 통합 → global/dto/ListResponse<T>. AdminController self-protection (자기 자신 강등 차단)은 1-14 admin UI 단위에서 함께 추가.
 
 ---
 
