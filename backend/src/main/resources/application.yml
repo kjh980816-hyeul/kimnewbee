@@ -22,6 +22,8 @@ gochubat:
     like-received: 1
     pepper-threshold: 100
     corn-threshold: 500
+  cors:
+    allowed-origins: http://localhost:5173
 
 naver:
   authorize-base-url: https://nid.naver.com/oauth2.0/authorize
