@@ -54,6 +54,7 @@
 | 2-11 | Admin API | AdminService(dashboard 4 카운트 / listUsers desc 결정성 / changeTier 강등 가능 / adjustPoints floor 0) + AdminController 클래스 레벨 @PreAuthorize OWNER + User.changeTier 추가 (강등용, promoteTo와 의미 분리) + 4 endpoints | 83de213 |
 | 3-0 | INTEGRATION 인프라 | Backend CORS (CorsProperties yml + SecurityConfig.cors() + /api/** /5173 origin/credentials/Set-Cookie expose) + frontend .env.example + 4 CORS preflight 통합 테스트 | 4b0266e |
 | chore | ListResponse 통합 | global/dto/ListResponse<T>로 단일화 (NoticeListResponse + post/dto/ListResponse 제거). 9 컨트롤러 + Service + Test 마이그레이션. JSON contract 동일 | a49ebed |
+| frontend ext | file picker 6 view | api/upload + mocks/handlers/upload + composables/useImageUpload (6번째 use 트리거) + Fanart/Pet/Offline × Write/Edit 6 view에 file picker 통합. 백엔드 2-9 contract 정확 매칭 | c88dbb2 |
 
 **reviewer 결과**:
 - 2-2: 1차 FAIL (NaverTokenResponse dead 4필드 / IllegalArgumentException / RuntimeException catch-all / JWT typ claim / 헤더 path 테스트) → 2차 PASS
