@@ -50,6 +50,7 @@ export const router = createRouter({
         { path: 'dashboard', name: 'admin-dashboard', component: () => import('@/views/admin/AdminDashboard.vue') },
         { path: 'members', name: 'admin-members', component: () => import('@/views/admin/AdminMembers.vue') },
         { path: 'boards', name: 'admin-boards', component: () => import('@/views/admin/AdminBoards.vue') },
+        { path: 'cafe', name: 'admin-cafe', component: () => import('@/views/admin/AdminCafe.vue') },
       ],
     },
   ],

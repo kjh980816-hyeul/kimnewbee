@@ -53,6 +53,13 @@ onMounted(async () => {
           >
             게시판 관리
           </RouterLink>
+          <RouterLink
+            :to="{ name: 'admin-cafe' }"
+            class="text-ink-muted hover:text-pepper"
+            active-class="text-pepper"
+          >
+            카페 꾸미기
+          </RouterLink>
         </nav>
       </header>
 

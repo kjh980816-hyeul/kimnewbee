@@ -70,6 +70,7 @@ public class SecurityConfig {
 						.requestMatchers("/api/songs/**").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/boards").permitAll()
 						.requestMatchers("/api/boards/**").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/cafe/config").permitAll()
 						.requestMatchers("/api/admin/**").authenticated()
 						.anyRequest().permitAll())
 				.exceptionHandling(eh -> eh
