@@ -41,5 +41,15 @@ export const router = createRouter({
     { path: '/offline/write', name: 'offline-write', component: () => import('@/views/offline/OfflineWrite.vue') },
     { path: '/offline/:id(\\d+)', name: 'offline-detail', component: () => import('@/views/offline/OfflineDetail.vue') },
     { path: '/offline/:id(\\d+)/edit', name: 'offline-edit', component: () => import('@/views/offline/OfflineEdit.vue') },
+
+    {
+      path: '/admin',
+      component: () => import('@/views/admin/AdminLayout.vue'),
+      children: [
+        { path: '', redirect: { name: 'admin-dashboard' } },
+        { path: 'dashboard', name: 'admin-dashboard', component: () => import('@/views/admin/AdminDashboard.vue') },
+        { path: 'members', name: 'admin-members', component: () => import('@/views/admin/AdminMembers.vue') },
+      ],
+    },
   ],
 });

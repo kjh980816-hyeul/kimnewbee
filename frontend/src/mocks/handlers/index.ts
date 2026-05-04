@@ -10,6 +10,7 @@ import { songHandlers } from './song';
 import { offlineHandlers } from './offline';
 import { chzzkHandlers } from './chzzk';
 import { authHandlers } from './auth';
+import { adminHandlers } from './admin';
 
 export const handlers: HttpHandler[] = [
   ...noticeHandlers,
@@ -23,4 +24,5 @@ export const handlers: HttpHandler[] = [
   ...offlineHandlers,
   ...chzzkHandlers,
   ...authHandlers,
+  ...adminHandlers,
 ];
