@@ -58,16 +58,24 @@
 | 2-1 | Spring Boot 인프라 | Spring Boot 3.5 + Java 21 (Foojay) + JPA/MyBatis 하이브리드 + Spring Security stateless + JJWT + GlobalExceptionHandler / ErrorCode / CustomException / ErrorResponse + JwtUtil / JwtAuthenticationFilter / JwtProperties + actuator | aa69167 |
 | 2-2 | User 도메인 + 네이버 OAuth + JWT 발급 | User entity + UserRepository + AuthService + NaverOauthClient + AuthController (cookie 기반) + UserController + SecurityConfig 인증 게이트 + JwtAuthenticationFilter cookie/header + JWT typ claim 분리 | 0b29064 |
 | 2-3 | Notice 도메인 (CRUD) | Notice entity (FK author, viewCount auto-inc) + NoticeRepository (JOIN FETCH 보조 정렬키 `id desc`) + NoticeService + NoticeController (GET 공개, POST/PATCH/DELETE @PreAuthorize OWNER) + @EnableMethodSecurity + AuthorizationDeniedException 핸들러 | cd15af0 |
-| 2-4 | Post 공통 도메인 (자유/팬아트/영상) | 단일 Post entity (BoardType enum + media_url + clip_source) + ClipSource.detect (youtube/chzzk/other) + PostRepository (타입 격리 쿼리) + PostService + 3 컨트롤러(Free/Fanart/Clip) + 보드별 DTO 6종 + ListResponse<T> + AuthenticatedController 추상화 (User/Notice/3보드 5컨트롤러 공유) | (이번 커밋) |
+| 2-4 | Post 공통 도메인 (자유/팬아트/영상) | 단일 Post entity (BoardType enum + media_url + clip_source) + ClipSource.detect (youtube/chzzk/other) + PostRepository (타입 격리 쿼리) + PostService + 3 컨트롤러(Free/Fanart/Clip) + 보드별 DTO 6종 + ListResponse<T> + AuthenticatedController 추상화 (User/Notice/3보드 5컨트롤러 공유) | bcea157 |
+| 2-5 | Comment 도메인 (대댓글) | Comment entity (postId/parentId Long FK + soft delete) + 배치 카운트 projection + CommentService (parent-post 일치 검증, owner-only soft delete) + Post DTO 6개 commentCount 연동 + 컨트롤러 PostBoardAssembler 패턴 도입 | fa9936b |
+| 2-6 | Like 도메인 | PostLike entity (unique post_id+user_id) + 배치 countByPostIds + LikeService (BoardType 검증 + 토글) + LikeController 3 endpoints + PostBoardAssembler 추출 (4번째 use 트리거, Comment+Like 통합 조립) + Post Detail DTOs likeCount/likedByMe 진짜 값 | 8a93de5 |
+| 2-7 | FanLetter 도메인 (관리자 권한 필터) | Letter entity (preview/readByAdmin idempotent 마크) + LetterService.detailForAdmin (write tx + 사이드이펙트) + LetterController (GET 공개 / detail @PreAuthorize OWNER + read 자동 마크 / POST 인증) + /api/me/admin (anon false / OWNER true) | ccab8e0 |
+| 2-8 | 특수 게시판 (반려동물/노래/오프후기) | Post에 PET/OFFLINE BoardType 추가 + nullable location/meetupDate 컬럼 + preview() 60자 + Pet/Offline 컨트롤러 (Offline 클래스 레벨 @PreAuthorize CORN/OWNER 등급 게이트) + LikeController에 Pet/Offline 토글 추가 + Song 별도 도메인 (Song + SongVote unique + voteCount 배치 + votedByMe per-user) + SongController (anon viewer 가능) | ab7ba0e |
 
 **reviewer 결과**:
 - 2-2: 1차 FAIL (NaverTokenResponse dead 4필드 / IllegalArgumentException 컨벤션 / RuntimeException catch-all / JWT typ claim 누락 / 헤더 path 테스트 누락) → 2차 PASS
 - 2-3: 1차 FAIL (NoticeRepository 정렬 비결정성 / GlobalExceptionHandler dead AccessDeniedException path) → 2차 PASS
 - 2-4: 1차 FAIL (`requireUserId` 5중복 누락된 추상화) → 2차 PASS
+- 2-5: 1차 PASS
+- 2-6: 1차 FAIL (LikeService.likedPostIdsByMe + findLikedPostIds dead code) → 2차 PASS
+- 2-7: 1차 PASS
+- 2-8: 1차 PASS
 
-**테스트**: 백엔드 15 spec / 75 tests (이전 7/25 → +8 spec / +50 tests).
+**테스트**: 백엔드 26 spec / 148 tests (이전 7/25 → +19 spec / +123 tests).
 
-**다음 권장 단위**: Phase 2-5 (Comment 도메인 — 대댓글 포함). 이후 cleanup 후보: `NoticeListResponse`(domain/notice/dto)와 `ListResponse<T>`(domain/post/dto) 통합 → `global/dto/ListResponse<T>` (4번째 use 만남, 별도 chore 단위 권장).
+**다음 권장 단위**: Phase 2-10 (등급/포인트 도메인). 2-9 (File 업로드)는 가비아 파일 저장 정책 외부 정보 필요 — `BLOCKED.md` 참고, 사용자 결정 후 진행. 이후 cleanup 후보: `NoticeListResponse`(domain/notice/dto)와 `ListResponse<T>`(domain/post/dto) 통합 → `global/dto/ListResponse<T>` (별도 chore 단위 권장).
 
 ---
 
