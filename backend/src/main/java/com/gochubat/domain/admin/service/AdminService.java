@@ -53,7 +53,10 @@ public class AdminService {
 	}
 
 	@Transactional
-	public AdminUserResponse changeTier(Long userId, Tier tier) {
+	public AdminUserResponse changeTier(Long actorId, Long userId, Tier tier) {
+		if (actorId.equals(userId) && tier != Tier.OWNER) {
+			throw new CustomException(ErrorCode.FORBIDDEN);
+		}
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 		user.changeTier(tier);

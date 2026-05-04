@@ -157,6 +157,28 @@ class AdminControllerTest {
 	}
 
 	@Test
+	void change_tier_self_demote_blocked() throws Exception {
+		mockMvc.perform(patch("/api/admin/users/" + owner.getId() + "/tier")
+						.cookie(new Cookie("access_token", ownerToken))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(Map.of("tier", "SEED"))))
+				.andExpect(status().isForbidden())
+				.andExpect(jsonPath("$.code").value("FORBIDDEN"));
+
+		assertThat(userRepository.findById(owner.getId()).orElseThrow().getTier()).isEqualTo(Tier.OWNER);
+	}
+
+	@Test
+	void change_tier_self_to_owner_allowed_idempotent() throws Exception {
+		mockMvc.perform(patch("/api/admin/users/" + owner.getId() + "/tier")
+						.cookie(new Cookie("access_token", ownerToken))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(Map.of("tier", "OWNER"))))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.tier").value("owner"));
+	}
+
+	@Test
 	void adjust_points_adds_delta() throws Exception {
 		mockMvc.perform(patch("/api/admin/users/" + pepper.getId() + "/points")
 						.cookie(new Cookie("access_token", ownerToken))

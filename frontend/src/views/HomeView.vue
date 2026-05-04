@@ -189,12 +189,5 @@ onMounted(async () => {
         </ul>
       </WidgetCard>
     </div>
-
-    <footer
-      v-if="cafe?.footerText"
-      class="mt-10 pt-6 border-t border-border text-center text-xs text-ink-muted"
-    >
-      {{ cafe.footerText }}
-    </footer>
   </main>
 </template>

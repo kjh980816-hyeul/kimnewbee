@@ -9,6 +9,7 @@ import com.gochubat.global.dto.ListResponse;
 import com.gochubat.global.security.AuthenticatedController;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,8 +39,12 @@ public class AdminController extends AuthenticatedController {
 	}
 
 	@PatchMapping("/users/{id}/tier")
-	public AdminUserResponse changeTier(@PathVariable Long id, @Valid @RequestBody ChangeTierRequest request) {
-		return adminService.changeTier(id, request.tier());
+	public AdminUserResponse changeTier(
+			Authentication authentication,
+			@PathVariable Long id,
+			@Valid @RequestBody ChangeTierRequest request
+	) {
+		return adminService.changeTier(requireUserId(authentication), id, request.tier());
 	}
 
 	@PatchMapping("/users/{id}/points")
