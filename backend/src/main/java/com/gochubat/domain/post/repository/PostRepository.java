@@ -16,4 +16,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 	@Query("select p from Post p join fetch p.author where p.id = :id and p.type = :type")
 	Optional<Post> findByIdAndTypeWithAuthor(@Param("id") Long id, @Param("type") BoardType type);
+
+	long countByAuthorId(Long authorId);
 }

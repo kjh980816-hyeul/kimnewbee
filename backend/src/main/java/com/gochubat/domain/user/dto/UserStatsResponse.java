@@ -6,8 +6,4 @@ public record UserStatsResponse(
 		long likeGivenCount,
 		long attendanceStreak
 ) {
-
-	public static UserStatsResponse zero() {
-		return new UserStatsResponse(0L, 0L, 0L, 0L);
-	}
 }

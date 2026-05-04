@@ -1,5 +1,8 @@
 package com.gochubat.domain.user.service;
 
+import com.gochubat.domain.comment.repository.CommentRepository;
+import com.gochubat.domain.like.repository.PostLikeRepository;
+import com.gochubat.domain.post.repository.PostRepository;
 import com.gochubat.domain.user.dto.CurrentUserResponse;
 import com.gochubat.domain.user.dto.UserStatsResponse;
 import com.gochubat.domain.user.entity.User;
@@ -14,9 +17,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final PostRepository postRepository;
+	private final CommentRepository commentRepository;
+	private final PostLikeRepository postLikeRepository;
 
-	public UserService(UserRepository userRepository) {
+	public UserService(
+			UserRepository userRepository,
+			PostRepository postRepository,
+			CommentRepository commentRepository,
+			PostLikeRepository postLikeRepository
+	) {
 		this.userRepository = userRepository;
+		this.postRepository = postRepository;
+		this.commentRepository = commentRepository;
+		this.postLikeRepository = postLikeRepository;
 	}
 
 	public CurrentUserResponse getCurrentUser(Long userId) {
@@ -27,6 +41,11 @@ public class UserService {
 
 	public UserStatsResponse getStats(Long userId) {
 		userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
-		return UserStatsResponse.zero();
+		return new UserStatsResponse(
+				postRepository.countByAuthorId(userId),
+				commentRepository.countActiveByAuthorId(userId),
+				postLikeRepository.countByUserId(userId),
+				0L
+		);
 	}
 }

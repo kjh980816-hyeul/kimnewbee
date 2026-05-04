@@ -4,6 +4,7 @@ import com.gochubat.domain.comment.dto.CommentResponse;
 import com.gochubat.domain.comment.dto.CommentWriteRequest;
 import com.gochubat.domain.comment.entity.Comment;
 import com.gochubat.domain.comment.repository.CommentRepository;
+import com.gochubat.domain.point.PointService;
 import com.gochubat.domain.post.repository.PostRepository;
 import com.gochubat.domain.user.entity.Tier;
 import com.gochubat.domain.user.entity.User;
@@ -26,6 +27,7 @@ class CommentServiceTest {
 	private CommentRepository commentRepository;
 	private PostRepository postRepository;
 	private UserRepository userRepository;
+	private PointService pointService;
 	private CommentService commentService;
 	private User author;
 
@@ -34,7 +36,8 @@ class CommentServiceTest {
 		commentRepository = Mockito.mock(CommentRepository.class);
 		postRepository = Mockito.mock(PostRepository.class);
 		userRepository = Mockito.mock(UserRepository.class);
-		commentService = new CommentService(commentRepository, postRepository, userRepository);
+		pointService = Mockito.mock(PointService.class);
+		commentService = new CommentService(commentRepository, postRepository, userRepository, pointService);
 		author = TestUserFactory.create("nv-c", "작성자", Tier.PEPPER);
 		TestUserFactory.setId(author, 1L);
 	}

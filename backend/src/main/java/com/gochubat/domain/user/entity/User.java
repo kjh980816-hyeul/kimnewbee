@@ -63,6 +63,16 @@ public class User {
 		this.profileImage = profileImage;
 	}
 
+	public void addPoints(long delta) {
+		this.points = Math.max(0L, this.points + delta);
+	}
+
+	public void promoteTo(Tier next) {
+		if (next.ordinal() > this.tier.ordinal()) {
+			this.tier = next;
+		}
+	}
+
 	@PrePersist
 	void prePersist() {
 		if (createdAt == null) {

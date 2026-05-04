@@ -4,6 +4,8 @@ import com.gochubat.domain.comment.dto.CommentResponse;
 import com.gochubat.domain.comment.dto.CommentWriteRequest;
 import com.gochubat.domain.comment.entity.Comment;
 import com.gochubat.domain.comment.repository.CommentRepository;
+import com.gochubat.domain.point.PointReason;
+import com.gochubat.domain.point.PointService;
 import com.gochubat.domain.post.repository.PostRepository;
 import com.gochubat.domain.user.entity.User;
 import com.gochubat.domain.user.repository.UserRepository;
@@ -24,15 +26,18 @@ public class CommentService {
 	private final CommentRepository commentRepository;
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
+	private final PointService pointService;
 
 	public CommentService(
 			CommentRepository commentRepository,
 			PostRepository postRepository,
-			UserRepository userRepository
+			UserRepository userRepository,
+			PointService pointService
 	) {
 		this.commentRepository = commentRepository;
 		this.postRepository = postRepository;
 		this.userRepository = userRepository;
+		this.pointService = pointService;
 	}
 
 	public List<CommentResponse> list(Long postId) {
@@ -55,6 +60,7 @@ public class CommentService {
 		User author = userRepository.findById(userId)
 				.orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
 		Comment saved = commentRepository.save(Comment.create(postId, request.parentId(), author, request.content()));
+		pointService.award(userId, PointReason.COMMENT_CREATED);
 		return CommentResponse.from(saved);
 	}
 

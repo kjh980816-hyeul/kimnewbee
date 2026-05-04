@@ -1,5 +1,8 @@
 package com.gochubat.domain.user.service;
 
+import com.gochubat.domain.comment.repository.CommentRepository;
+import com.gochubat.domain.like.repository.PostLikeRepository;
+import com.gochubat.domain.post.repository.PostRepository;
 import com.gochubat.domain.user.dto.CurrentUserResponse;
 import com.gochubat.domain.user.dto.UserStatsResponse;
 import com.gochubat.domain.user.entity.User;
@@ -18,12 +21,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class UserServiceTest {
 
 	private UserRepository userRepository;
+	private PostRepository postRepository;
+	private CommentRepository commentRepository;
+	private PostLikeRepository postLikeRepository;
 	private UserService userService;
 
 	@BeforeEach
 	void setUp() {
 		userRepository = Mockito.mock(UserRepository.class);
-		userService = new UserService(userRepository);
+		postRepository = Mockito.mock(PostRepository.class);
+		commentRepository = Mockito.mock(CommentRepository.class);
+		postLikeRepository = Mockito.mock(PostLikeRepository.class);
+		userService = new UserService(userRepository, postRepository, commentRepository, postLikeRepository);
 	}
 
 	@Test
@@ -49,12 +58,18 @@ class UserServiceTest {
 	}
 
 	@Test
-	void get_stats_returns_zero_when_user_exists() {
+	void get_stats_aggregates_real_counts_from_repositories() {
 		Mockito.when(userRepository.findById(1L))
 				.thenReturn(Optional.of(User.createFromNaver("n", "n", null)));
+		Mockito.when(postRepository.countByAuthorId(1L)).thenReturn(7L);
+		Mockito.when(commentRepository.countActiveByAuthorId(1L)).thenReturn(23L);
+		Mockito.when(postLikeRepository.countByUserId(1L)).thenReturn(41L);
 
 		UserStatsResponse stats = userService.getStats(1L);
 
-		assertThat(stats).isEqualTo(UserStatsResponse.zero());
+		assertThat(stats.postCount()).isEqualTo(7L);
+		assertThat(stats.commentCount()).isEqualTo(23L);
+		assertThat(stats.likeGivenCount()).isEqualTo(41L);
+		assertThat(stats.attendanceStreak()).isZero();
 	}
 }

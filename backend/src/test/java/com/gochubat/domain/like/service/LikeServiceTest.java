@@ -3,6 +3,7 @@ package com.gochubat.domain.like.service;
 import com.gochubat.domain.like.dto.LikeToggleResponse;
 import com.gochubat.domain.like.entity.PostLike;
 import com.gochubat.domain.like.repository.PostLikeRepository;
+import com.gochubat.domain.point.PointService;
 import com.gochubat.domain.post.entity.BoardType;
 import com.gochubat.domain.post.entity.Post;
 import com.gochubat.domain.post.repository.PostRepository;
@@ -25,6 +26,7 @@ class LikeServiceTest {
 
 	private PostLikeRepository postLikeRepository;
 	private PostRepository postRepository;
+	private PointService pointService;
 	private LikeService likeService;
 	private User author;
 
@@ -32,7 +34,8 @@ class LikeServiceTest {
 	void setUp() {
 		postLikeRepository = Mockito.mock(PostLikeRepository.class);
 		postRepository = Mockito.mock(PostRepository.class);
-		likeService = new LikeService(postLikeRepository, postRepository);
+		pointService = Mockito.mock(PointService.class);
+		likeService = new LikeService(postLikeRepository, postRepository, pointService);
 		author = TestUserFactory.create("nv-a", "A", Tier.PEPPER);
 		TestUserFactory.setId(author, 1L);
 	}
