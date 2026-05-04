@@ -52,6 +52,8 @@
 | 2-9 | File 업로드 | **BLOCKED** — 가비아 파일 저장 정책 외부 정보 필요 (BLOCKED.md 참고). 사용자 결정 후 진행. | - |
 | 2-10 | 등급/포인트 도메인 | PointReason enum + PointPolicy(@ConfigurationProperties yml: post=10/comment=2/likeReceived=1/pepper=100/corn=500) + PointService.award (auto tier 승급, OWNER 고정, floor 0) + User.addPoints/promoteTo + UserService.getStats 진짜 카운트 + Post/Comment/Like service에 award 연동 | 6621c0a |
 | 2-11 | Admin API | AdminService(dashboard 4 카운트 / listUsers desc 결정성 / changeTier 강등 가능 / adjustPoints floor 0) + AdminController 클래스 레벨 @PreAuthorize OWNER + User.changeTier 추가 (강등용, promoteTo와 의미 분리) + 4 endpoints | 83de213 |
+| 3-0 | INTEGRATION 인프라 | Backend CORS (CorsProperties yml + SecurityConfig.cors() + /api/** /5173 origin/credentials/Set-Cookie expose) + frontend .env.example + 4 CORS preflight 통합 테스트 | 4b0266e |
+| chore | ListResponse 통합 | global/dto/ListResponse<T>로 단일화 (NoticeListResponse + post/dto/ListResponse 제거). 9 컨트롤러 + Service + Test 마이그레이션. JSON contract 동일 | a49ebed |
 
 **reviewer 결과**:
 - 2-2: 1차 FAIL (NaverTokenResponse dead 4필드 / IllegalArgumentException / RuntimeException catch-all / JWT typ claim / 헤더 path 테스트) → 2차 PASS
