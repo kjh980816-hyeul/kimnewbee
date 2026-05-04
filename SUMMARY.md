@@ -28,15 +28,20 @@
 ## ⚠️ 미완 단위 (2개)
 
 ### Phase 1-13: 글쓰기/수정 폼 (게시판별)
-**상태**: 글쓰기 폼은 1-3~1-9에서 모두 완료. **수정(Edit) 폼은 0개 보드에서 구현 안 됨.**
+**상태**: 글쓰기 폼은 1-3~1-9에서 모두 완료. **수정(Edit) 폼은 자유 1보드 완료, 4보드 미진행.**
 
-**필요 작업**:
-- API: `PATCH /api/{board}/:id` 추가 (free/fanart/clips/pets/offline 각각)
-- Views: `{Board}EditView.vue` 추가 또는 Detail에서 인라인 수정 모드
-- Router: `/free/:id/edit` 등 라우트 추가
-- 권한: 작성자 본인만 수정 가능 (owner check)
+**1-13a (자유) 완료** (d0239cb): FreeEdit.vue + api.updateFreePost + mock PATCH handler(404/401/403/200) + router /free/:id/edit + FreeDetail isOwner 수정 버튼.
 
-권장 접근: 자유게시판 `FreeEditView.vue` 1개부터 적용 → 패턴 굳어지면 나머지 보드로 확장.
+**1-13b (남은 4보드) 필요 작업** (Fanart/Clip/Pet/Offline):
+- 동일 패턴 4번 반복 (FreeEdit 복제 + 도메인별 필드 차이 적용)
+  - Fanart: title/imageUrl/content
+  - Clip: title/videoUrl/description
+  - Pet: title/imageUrl/content
+  - Offline: title/location/meetupDate/imageUrl/content
+- 각 mock handler PATCH 추가 (readMockUser 재사용)
+- 각 router /:id/edit 라우트 + Detail에 isOwner 수정 버튼
+
+**5번째 use 트리거**: 5보드 같은 author check + 401/403 분기 → `mocks/utils/createOwnerOnlyPatch.ts` 또는 composable 검토.
 
 ### Phase 1-14: 관리자 페이지
 **상태**: 미착수.
