@@ -1,5 +1,6 @@
 package com.gochubat.domain.post.controller;
 
+import com.gochubat.domain.comment.service.CommentService;
 import com.gochubat.domain.post.dto.FreePostDetailResponse;
 import com.gochubat.domain.post.dto.FreePostListItemResponse;
 import com.gochubat.domain.post.dto.FreePostWriteRequest;
@@ -20,28 +21,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/free")
 public class FreePostController extends AuthenticatedController {
 
 	private final PostService postService;
+	private final CommentService commentService;
 
-	public FreePostController(PostService postService) {
+	public FreePostController(PostService postService, CommentService commentService) {
 		this.postService = postService;
+		this.commentService = commentService;
 	}
 
 	@GetMapping
 	public ListResponse<FreePostListItemResponse> list() {
+		List<Post> posts = postService.list(BoardType.FREE);
+		Map<Long, Long> counts = commentService.countActiveByPostIds(posts.stream().map(Post::getId).toList());
 		return ListResponse.of(
-				postService.list(BoardType.FREE).stream()
-						.map(FreePostListItemResponse::from)
+				posts.stream()
+						.map(p -> FreePostListItemResponse.from(p, counts.getOrDefault(p.getId(), 0L)))
 						.toList()
 		);
 	}
 
 	@GetMapping("/{id}")
 	public FreePostDetailResponse detail(@PathVariable Long id) {
-		return FreePostDetailResponse.from(postService.viewDetail(BoardType.FREE, id));
+		Post post = postService.viewDetail(BoardType.FREE, id);
+		return FreePostDetailResponse.from(post, commentService.countActive(post.getId()));
 	}
 
 	@PostMapping
@@ -51,6 +60,6 @@ public class FreePostController extends AuthenticatedController {
 	) {
 		User author = postService.loadAuthor(requireUserId(authentication));
 		Post saved = postService.save(Post.createFree(request.title(), request.content(), author));
-		return ResponseEntity.status(HttpStatus.CREATED).body(FreePostDetailResponse.from(saved));
+		return ResponseEntity.status(HttpStatus.CREATED).body(FreePostDetailResponse.from(saved, 0L));
 	}
 }

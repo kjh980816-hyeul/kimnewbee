@@ -1,5 +1,6 @@
 package com.gochubat.domain.post.controller;
 
+import com.gochubat.domain.comment.service.CommentService;
 import com.gochubat.domain.post.dto.ClipDetailResponse;
 import com.gochubat.domain.post.dto.ClipListItemResponse;
 import com.gochubat.domain.post.dto.ClipWriteRequest;
@@ -20,28 +21,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/clips")
 public class ClipController extends AuthenticatedController {
 
 	private final PostService postService;
+	private final CommentService commentService;
 
-	public ClipController(PostService postService) {
+	public ClipController(PostService postService, CommentService commentService) {
 		this.postService = postService;
+		this.commentService = commentService;
 	}
 
 	@GetMapping
 	public ListResponse<ClipListItemResponse> list() {
+		List<Post> posts = postService.list(BoardType.CLIP);
+		Map<Long, Long> counts = commentService.countActiveByPostIds(posts.stream().map(Post::getId).toList());
 		return ListResponse.of(
-				postService.list(BoardType.CLIP).stream()
-						.map(ClipListItemResponse::from)
+				posts.stream()
+						.map(p -> ClipListItemResponse.from(p, counts.getOrDefault(p.getId(), 0L)))
 						.toList()
 		);
 	}
 
 	@GetMapping("/{id}")
 	public ClipDetailResponse detail(@PathVariable Long id) {
-		return ClipDetailResponse.from(postService.viewDetail(BoardType.CLIP, id));
+		Post post = postService.viewDetail(BoardType.CLIP, id);
+		return ClipDetailResponse.from(post, commentService.countActive(post.getId()));
 	}
 
 	@PostMapping
@@ -51,6 +60,6 @@ public class ClipController extends AuthenticatedController {
 	) {
 		User author = postService.loadAuthor(requireUserId(authentication));
 		Post saved = postService.save(Post.createClip(request.title(), request.description(), author, request.videoUrl()));
-		return ResponseEntity.status(HttpStatus.CREATED).body(ClipDetailResponse.from(saved));
+		return ResponseEntity.status(HttpStatus.CREATED).body(ClipDetailResponse.from(saved, 0L));
 	}
 }

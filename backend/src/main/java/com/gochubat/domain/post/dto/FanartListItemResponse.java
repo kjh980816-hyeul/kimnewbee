@@ -14,7 +14,7 @@ public record FanartListItemResponse(
 		long commentCount
 ) {
 
-	public static FanartListItemResponse from(Post post) {
+	public static FanartListItemResponse from(Post post, long commentCount) {
 		return new FanartListItemResponse(
 				post.getId(),
 				post.getTitle(),
@@ -22,7 +22,7 @@ public record FanartListItemResponse(
 				post.getMediaUrl(),
 				post.getCreatedAt(),
 				0L,
-				0L
+				commentCount
 		);
 	}
 }

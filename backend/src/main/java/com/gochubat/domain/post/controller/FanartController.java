@@ -1,5 +1,6 @@
 package com.gochubat.domain.post.controller;
 
+import com.gochubat.domain.comment.service.CommentService;
 import com.gochubat.domain.post.dto.FanartDetailResponse;
 import com.gochubat.domain.post.dto.FanartListItemResponse;
 import com.gochubat.domain.post.dto.FanartWriteRequest;
@@ -20,28 +21,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/fanart")
 public class FanartController extends AuthenticatedController {
 
 	private final PostService postService;
+	private final CommentService commentService;
 
-	public FanartController(PostService postService) {
+	public FanartController(PostService postService, CommentService commentService) {
 		this.postService = postService;
+		this.commentService = commentService;
 	}
 
 	@GetMapping
 	public ListResponse<FanartListItemResponse> list() {
+		List<Post> posts = postService.list(BoardType.FANART);
+		Map<Long, Long> counts = commentService.countActiveByPostIds(posts.stream().map(Post::getId).toList());
 		return ListResponse.of(
-				postService.list(BoardType.FANART).stream()
-						.map(FanartListItemResponse::from)
+				posts.stream()
+						.map(p -> FanartListItemResponse.from(p, counts.getOrDefault(p.getId(), 0L)))
 						.toList()
 		);
 	}
 
 	@GetMapping("/{id}")
 	public FanartDetailResponse detail(@PathVariable Long id) {
-		return FanartDetailResponse.from(postService.viewDetail(BoardType.FANART, id));
+		Post post = postService.viewDetail(BoardType.FANART, id);
+		return FanartDetailResponse.from(post, commentService.countActive(post.getId()));
 	}
 
 	@PostMapping
@@ -51,6 +60,6 @@ public class FanartController extends AuthenticatedController {
 	) {
 		User author = postService.loadAuthor(requireUserId(authentication));
 		Post saved = postService.save(Post.createFanart(request.title(), request.content(), author, request.imageUrl()));
-		return ResponseEntity.status(HttpStatus.CREATED).body(FanartDetailResponse.from(saved));
+		return ResponseEntity.status(HttpStatus.CREATED).body(FanartDetailResponse.from(saved, 0L));
 	}
 }

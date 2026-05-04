@@ -14,7 +14,7 @@ public record FreePostListItemResponse(
 		long commentCount
 ) {
 
-	public static FreePostListItemResponse from(Post post) {
+	public static FreePostListItemResponse from(Post post, long commentCount) {
 		return new FreePostListItemResponse(
 				post.getId(),
 				post.getTitle(),
@@ -22,7 +22,7 @@ public record FreePostListItemResponse(
 				post.getCreatedAt(),
 				post.getViewCount(),
 				0L,
-				0L
+				commentCount
 		);
 	}
 }

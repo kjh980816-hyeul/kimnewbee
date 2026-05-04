@@ -17,7 +17,7 @@ public record FreePostDetailResponse(
 		boolean likedByMe
 ) {
 
-	public static FreePostDetailResponse from(Post post) {
+	public static FreePostDetailResponse from(Post post, long commentCount) {
 		return new FreePostDetailResponse(
 				post.getId(),
 				post.getTitle(),
@@ -27,7 +27,7 @@ public record FreePostDetailResponse(
 				post.getUpdatedAt(),
 				post.getViewCount(),
 				0L,
-				0L,
+				commentCount,
 				false
 		);
 	}

@@ -19,7 +19,7 @@ public record ClipDetailResponse(
 		boolean likedByMe
 ) {
 
-	public static ClipDetailResponse from(Post post) {
+	public static ClipDetailResponse from(Post post, long commentCount) {
 		return new ClipDetailResponse(
 				post.getId(),
 				post.getTitle(),
@@ -31,7 +31,7 @@ public record ClipDetailResponse(
 				post.getUpdatedAt(),
 				post.getViewCount(),
 				0L,
-				0L,
+				commentCount,
 				false
 		);
 	}

@@ -15,7 +15,7 @@ public record ClipListItemResponse(
 		long commentCount
 ) {
 
-	public static ClipListItemResponse from(Post post) {
+	public static ClipListItemResponse from(Post post, long commentCount) {
 		return new ClipListItemResponse(
 				post.getId(),
 				post.getTitle(),
@@ -24,7 +24,7 @@ public record ClipListItemResponse(
 				post.getClipSource() != null ? post.getClipSource().toApiValue() : null,
 				post.getCreatedAt(),
 				0L,
-				0L
+				commentCount
 		);
 	}
 }

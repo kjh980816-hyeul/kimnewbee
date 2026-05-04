@@ -19,7 +19,7 @@ public record FanartDetailResponse(
 		boolean likedByMe
 ) {
 
-	public static FanartDetailResponse from(Post post) {
+	public static FanartDetailResponse from(Post post, long commentCount) {
 		return new FanartDetailResponse(
 				post.getId(),
 				post.getTitle(),
@@ -31,7 +31,7 @@ public record FanartDetailResponse(
 				post.getUpdatedAt(),
 				post.getViewCount(),
 				0L,
-				0L,
+				commentCount,
 				false
 		);
 	}
