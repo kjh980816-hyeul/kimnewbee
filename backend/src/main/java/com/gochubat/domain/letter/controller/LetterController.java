@@ -4,7 +4,7 @@ import com.gochubat.domain.letter.dto.LetterDetailResponse;
 import com.gochubat.domain.letter.dto.LetterListItemResponse;
 import com.gochubat.domain.letter.dto.LetterWriteRequest;
 import com.gochubat.domain.letter.service.LetterService;
-import com.gochubat.domain.post.dto.ListResponse;
+import com.gochubat.global.dto.ListResponse;
 import com.gochubat.global.security.AuthenticatedController;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

@@ -1,10 +1,10 @@
 package com.gochubat.domain.post.controller;
 
-import com.gochubat.domain.post.dto.ListResponse;
 import com.gochubat.domain.post.dto.OfflineDetailResponse;
 import com.gochubat.domain.post.dto.OfflineListItemResponse;
 import com.gochubat.domain.post.dto.OfflineWriteRequest;
 import com.gochubat.domain.post.entity.BoardType;
+import com.gochubat.global.dto.ListResponse;
 import com.gochubat.domain.post.entity.Post;
 import com.gochubat.domain.post.service.PostBoardAssembler;
 import com.gochubat.domain.post.service.PostBoardAssembler.DetailCounts;

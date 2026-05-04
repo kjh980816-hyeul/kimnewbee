@@ -1,6 +1,6 @@
 package com.gochubat.domain.post.controller;
 
-import com.gochubat.domain.post.dto.ListResponse;
+import com.gochubat.global.dto.ListResponse;
 import com.gochubat.domain.post.dto.PetDetailResponse;
 import com.gochubat.domain.post.dto.PetListItemResponse;
 import com.gochubat.domain.post.dto.PetWriteRequest;

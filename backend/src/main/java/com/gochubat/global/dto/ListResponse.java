@@ -1,4 +1,4 @@
-package com.gochubat.domain.post.dto;
+package com.gochubat.global.dto;
 
 import java.util.List;
 

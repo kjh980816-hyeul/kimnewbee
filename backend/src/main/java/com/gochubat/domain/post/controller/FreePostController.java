@@ -3,7 +3,7 @@ package com.gochubat.domain.post.controller;
 import com.gochubat.domain.post.dto.FreePostDetailResponse;
 import com.gochubat.domain.post.dto.FreePostListItemResponse;
 import com.gochubat.domain.post.dto.FreePostWriteRequest;
-import com.gochubat.domain.post.dto.ListResponse;
+import com.gochubat.global.dto.ListResponse;
 import com.gochubat.domain.post.entity.BoardType;
 import com.gochubat.domain.post.entity.Post;
 import com.gochubat.domain.post.service.PostBoardAssembler;

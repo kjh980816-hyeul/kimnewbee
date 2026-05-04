@@ -2,12 +2,12 @@ package com.gochubat.domain.notice.service;
 
 import com.gochubat.domain.notice.dto.NoticeDetailResponse;
 import com.gochubat.domain.notice.dto.NoticeListItemResponse;
-import com.gochubat.domain.notice.dto.NoticeListResponse;
 import com.gochubat.domain.notice.dto.NoticeWriteRequest;
 import com.gochubat.domain.notice.entity.Notice;
 import com.gochubat.domain.notice.repository.NoticeRepository;
 import com.gochubat.domain.user.entity.User;
 import com.gochubat.domain.user.repository.UserRepository;
+import com.gochubat.global.dto.ListResponse;
 import com.gochubat.global.exception.CustomException;
 import com.gochubat.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
@@ -25,8 +25,8 @@ public class NoticeService {
 		this.userRepository = userRepository;
 	}
 
-	public NoticeListResponse list() {
-		return NoticeListResponse.of(
+	public ListResponse<NoticeListItemResponse> list() {
+		return ListResponse.of(
 				noticeRepository.findAllWithAuthor().stream()
 						.map(NoticeListItemResponse::from)
 						.toList()

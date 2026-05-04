@@ -1,7 +1,7 @@
 package com.gochubat.domain.song.controller;
 
-import com.gochubat.domain.post.dto.ListResponse;
 import com.gochubat.domain.song.dto.SongResponse;
+import com.gochubat.global.dto.ListResponse;
 import com.gochubat.domain.song.dto.SongWriteRequest;
 import com.gochubat.domain.song.dto.VoteToggleResponse;
 import com.gochubat.domain.song.service.SongService;

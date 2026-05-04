@@ -5,7 +5,7 @@ import com.gochubat.domain.admin.dto.AdminDashboardResponse;
 import com.gochubat.domain.admin.dto.AdminUserResponse;
 import com.gochubat.domain.admin.dto.ChangeTierRequest;
 import com.gochubat.domain.admin.service.AdminService;
-import com.gochubat.domain.post.dto.ListResponse;
+import com.gochubat.global.dto.ListResponse;
 import com.gochubat.global.security.AuthenticatedController;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
