@@ -55,6 +55,9 @@
 | 3-0 | INTEGRATION 인프라 | Backend CORS (CorsProperties yml + SecurityConfig.cors() + /api/** /5173 origin/credentials/Set-Cookie expose) + frontend .env.example + 4 CORS preflight 통합 테스트 | 4b0266e |
 | chore | ListResponse 통합 | global/dto/ListResponse<T>로 단일화 (NoticeListResponse + post/dto/ListResponse 제거). 9 컨트롤러 + Service + Test 마이그레이션. JSON contract 동일 | a49ebed |
 | frontend ext | file picker 6 view | api/upload + mocks/handlers/upload + composables/useImageUpload (6번째 use 트리거) + Fanart/Pet/Offline × Write/Edit 6 view에 file picker 통합. 백엔드 2-9 contract 정확 매칭 | c88dbb2 |
+| 1-14b-1 | 게시판 메타데이터 관리 | Board entity (slug unique + BoardLayout 6종 + readTier/writeTier + orderIndex + active) + BoardSeeder 8보드 + Admin CRUD + 순서 PUT + AdminBoards.vue (인라인 편집 + ↑↓ + 신규 추가 form) + types/board에 TierInput/BoardLayoutInput 공용 alias 추출 + CORS PUT 추가 | 2a7dcf8 |
+| 1-14b-2 | 카페 꾸미기 (config) | CafeConfig single-row (heroBannerUrl/heroHeadline/heroSubtext/footerText 4필드 + lazy seed defaults) + GET 공개 / PUT @PreAuthorize OWNER + AdminCafe.vue (file picker 7번째 use 적용 + 3:1 미리보기) + AdminLayout 메뉴 | 7874f70 |
+| display | 카페 config display 통합 | HomeView에 fetchCafeConfig 통합 — heroBannerUrl 있으면 3:1 배너 + gradient overlay + 동적 headline/subtext, 없으면 기존 텍스트 헤더 graceful degrade. footerText 있으면 하단 footer 표시. admin → home 미싱 링크 해소 | b6e920e |
 
 **reviewer 결과**:
 - 2-2: 1차 FAIL (NaverTokenResponse dead 4필드 / IllegalArgumentException / RuntimeException catch-all / JWT typ claim / 헤더 path 테스트) → 2차 PASS
