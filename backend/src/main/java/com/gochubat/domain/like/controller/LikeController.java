@@ -4,6 +4,7 @@ import com.gochubat.domain.like.dto.LikeToggleResponse;
 import com.gochubat.domain.like.service.LikeService;
 import com.gochubat.domain.post.entity.BoardType;
 import com.gochubat.global.security.AuthenticatedController;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,5 +32,16 @@ public class LikeController extends AuthenticatedController {
 	@PostMapping("/api/clips/{id}/like")
 	public LikeToggleResponse toggleClip(@PathVariable Long id, Authentication authentication) {
 		return likeService.toggle(BoardType.CLIP, id, requireUserId(authentication));
+	}
+
+	@PostMapping("/api/pets/{id}/like")
+	public LikeToggleResponse togglePet(@PathVariable Long id, Authentication authentication) {
+		return likeService.toggle(BoardType.PET, id, requireUserId(authentication));
+	}
+
+	@PostMapping("/api/offline/{id}/like")
+	@PreAuthorize("hasAnyRole('CORN','OWNER')")
+	public LikeToggleResponse toggleOffline(@PathVariable Long id, Authentication authentication) {
+		return likeService.toggle(BoardType.OFFLINE, id, requireUserId(authentication));
 	}
 }

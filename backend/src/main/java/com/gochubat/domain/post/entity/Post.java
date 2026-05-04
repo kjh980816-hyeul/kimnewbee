@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,6 +27,8 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post {
+
+	private static final int PREVIEW_MAX_LENGTH = 60;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,36 +59,75 @@ public class Post {
 	@Column(name = "clip_source", length = 16)
 	private ClipSource clipSource;
 
+	@Column(name = "location", length = 200)
+	private String location;
+
+	@Column(name = "meetup_date")
+	private LocalDate meetupDate;
+
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
-	private Post(BoardType type, String title, String content, User author, String mediaUrl, ClipSource clipSource) {
+	private Post(
+			BoardType type,
+			String title,
+			String content,
+			User author,
+			String mediaUrl,
+			ClipSource clipSource,
+			String location,
+			LocalDate meetupDate
+	) {
 		this.type = type;
 		this.title = title;
 		this.content = content;
 		this.author = author;
 		this.mediaUrl = mediaUrl;
 		this.clipSource = clipSource;
+		this.location = location;
+		this.meetupDate = meetupDate;
 		this.viewCount = 0L;
 	}
 
 	public static Post createFree(String title, String content, User author) {
-		return new Post(BoardType.FREE, title, content, author, null, null);
+		return new Post(BoardType.FREE, title, content, author, null, null, null, null);
 	}
 
 	public static Post createFanart(String title, String content, User author, String imageUrl) {
-		return new Post(BoardType.FANART, title, content, author, imageUrl, null);
+		return new Post(BoardType.FANART, title, content, author, imageUrl, null, null, null);
 	}
 
 	public static Post createClip(String title, String description, User author, String videoUrl) {
-		return new Post(BoardType.CLIP, title, description, author, videoUrl, ClipSource.detect(videoUrl));
+		return new Post(BoardType.CLIP, title, description, author, videoUrl, ClipSource.detect(videoUrl), null, null);
+	}
+
+	public static Post createPet(String title, String content, User author, String imageUrl) {
+		return new Post(BoardType.PET, title, content, author, imageUrl, null, null, null);
+	}
+
+	public static Post createOffline(
+			String title,
+			String content,
+			User author,
+			String imageUrl,
+			String location,
+			LocalDate meetupDate
+	) {
+		return new Post(BoardType.OFFLINE, title, content, author, imageUrl, null, location, meetupDate);
 	}
 
 	public void incrementViewCount() {
 		this.viewCount++;
+	}
+
+	public String preview() {
+		if (content.length() <= PREVIEW_MAX_LENGTH) {
+			return content;
+		}
+		return content.substring(0, PREVIEW_MAX_LENGTH) + "...";
 	}
 
 	@PrePersist
