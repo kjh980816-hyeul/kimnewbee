@@ -2,12 +2,14 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { createFanart } from '@/api/fanart';
+import { useImageUpload } from '@/composables/useImageUpload';
 
 const router = useRouter();
 
 const title = ref('');
 const imageUrl = ref('');
 const content = ref('');
+const { uploading, uploadError, pickAndUpload } = useImageUpload(imageUrl);
 const submitting = ref(false);
 const error = ref<string | null>(null);
 
@@ -75,17 +77,24 @@ async function onSubmit(): Promise<void> {
       </div>
 
       <div>
-        <label class="block text-sm text-ink-muted mb-1" for="fanart-image">이미지 URL</label>
-        <input
-          id="fanart-image"
-          v-model="imageUrl"
-          type="url"
-          placeholder="https://..."
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
-        />
-        <p class="mt-1 text-xs text-ink-muted">
-          현재는 URL만 입력. 직접 업로드는 후속 단위에서 추가됩니다 (R2 presigned URL).
-        </p>
+        <label class="block text-sm text-ink-muted mb-1" for="fanart-image">이미지</label>
+        <div class="flex gap-2 items-center">
+          <input
+            id="fanart-image"
+            v-model="imageUrl"
+            type="url"
+            placeholder="https://... 또는 우측 업로드"
+            class="flex-1 rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          />
+          <label
+            class="cursor-pointer rounded-md border border-border px-3 py-2 text-sm text-ink-muted hover:text-pepper hover:border-pepper"
+            :class="{ 'opacity-50 pointer-events-none': uploading }"
+          >
+            {{ uploading ? '업로드 중...' : '파일 선택' }}
+            <input type="file" accept="image/*" class="hidden" @change="pickAndUpload" />
+          </label>
+        </div>
+        <p v-if="uploadError" class="mt-1 text-xs text-cheek">{{ uploadError }}</p>
         <div v-if="isImageUrlValid" class="mt-2 aspect-square w-48 overflow-hidden rounded-md bg-elevated">
           <img :src="imageUrl" alt="미리보기" class="w-full h-full object-cover" />
         </div>

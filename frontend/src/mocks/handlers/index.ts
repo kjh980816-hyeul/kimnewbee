@@ -11,6 +11,7 @@ import { offlineHandlers } from './offline';
 import { chzzkHandlers } from './chzzk';
 import { authHandlers } from './auth';
 import { adminHandlers } from './admin';
+import { uploadHandlers } from './upload';
 
 export const handlers: HttpHandler[] = [
   ...noticeHandlers,
@@ -25,4 +26,5 @@ export const handlers: HttpHandler[] = [
   ...chzzkHandlers,
   ...authHandlers,
   ...adminHandlers,
+  ...uploadHandlers,
 ];

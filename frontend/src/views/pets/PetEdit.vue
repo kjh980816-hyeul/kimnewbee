@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchPet, updatePet } from '@/api/pet';
 import { isHttpStatus } from '@/api/error';
+import { useImageUpload } from '@/composables/useImageUpload';
 
 const route = useRoute();
 const router = useRouter();
@@ -13,6 +14,7 @@ const title = ref('');
 const imageUrl = ref('');
 const content = ref('');
 const loading = ref(true);
+const { uploading, uploadError, pickAndUpload } = useImageUpload(imageUrl);
 const submitting = ref(false);
 const error = ref<string | null>(null);
 
@@ -105,14 +107,24 @@ async function onSubmit(): Promise<void> {
       </div>
 
       <div>
-        <label class="block text-sm text-ink-muted mb-1" for="pet-image">이미지 URL</label>
-        <input
-          id="pet-image"
-          v-model="imageUrl"
-          type="url"
-          placeholder="https://..."
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
-        />
+        <label class="block text-sm text-ink-muted mb-1" for="pet-image">이미지</label>
+        <div class="flex gap-2 items-center">
+          <input
+            id="pet-image"
+            v-model="imageUrl"
+            type="url"
+            placeholder="https://... 또는 우측 업로드"
+            class="flex-1 rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          />
+          <label
+            class="cursor-pointer rounded-md border border-border px-3 py-2 text-sm text-ink-muted hover:text-pepper hover:border-pepper"
+            :class="{ 'opacity-50 pointer-events-none': uploading }"
+          >
+            {{ uploading ? '업로드 중...' : '파일 선택' }}
+            <input type="file" accept="image/*" class="hidden" @change="pickAndUpload" />
+          </label>
+        </div>
+        <p v-if="uploadError" class="mt-1 text-xs text-cheek">{{ uploadError }}</p>
       </div>
 
       <div>
