@@ -45,9 +45,12 @@ hs_err_pid*
 Thumbs.db
 desktop.ini
 
-# ===== 자율 모드 부산물 (커밋해도 됨, 일단은 X) =====
-# BLOCKED.md      <- 이건 커밋해서 다음 세션이 읽도록 둠
-# SUMMARY.md      <- 이것도 커밋
+# ===== 로컬 작업 메모 (GitHub 공개 X, 로컬엔 보존) =====
+CLAUDE.md
+AUTONOMOUS_PROMPT.md
+SUMMARY.md
+BLOCKED.md
+.claude/
 
 # ===== 기타 =====
 *.swp
