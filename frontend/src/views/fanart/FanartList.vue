@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { RouterLink } from 'vue-router';
 import { fetchFanartList } from '@/api/fanart';
 import type { FanartListItem } from '@/types/fanart';
 
 const items = ref<FanartListItem[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
+
+const categories = ['전체', '일러스트', '낙서·스케치', '만화', '도트', '영상'];
+const activeCategory = ref('전체');
+
+const NEW_DAYS = 3;
 
 onMounted(async () => {
   try {
@@ -17,55 +23,87 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+function isNew(iso: string): boolean {
+  return Date.now() - new Date(iso).getTime() < NEW_DAYS * 86400000;
+}
 </script>
 
 <template>
-  <main class="min-h-screen bg-paper text-ink p-8">
-    <header class="mb-6 flex items-end justify-between">
+  <div class="p-8 max-w-6xl">
+    <nav class="text-xs text-ink-muted mb-3">
+      <RouterLink to="/" class="hover:text-ink">🌶️ 고추밭</RouterLink>
+      <span class="mx-2">›</span>
+      <span class="text-ink">팬아트 갤러리</span>
+    </nav>
+
+    <header class="mb-6 flex items-end justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-pepper">팬아트 갤러리</h1>
-        <p class="mt-1 text-ink-muted text-sm">늉비를 그림으로 남겨주세요</p>
+        <h1 class="text-4xl font-extrabold text-ink leading-tight">팬아트 갤러리</h1>
+        <p class="mt-2 text-sm text-ink-muted">늉비의 귀여운 순간들을 그림으로 남겨주세요 🎨</p>
       </div>
       <RouterLink
         :to="{ name: 'fanart-write' }"
-        class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep transition-colors"
+        class="rounded-lg bg-pepper px-4 py-2 text-sm font-semibold text-paper hover:bg-pepper-deep transition-colors whitespace-nowrap"
       >
-        그림 올리기
+        ✏ 그림 올리기
       </RouterLink>
     </header>
+
+    <div class="flex items-center gap-2 mb-6 flex-wrap">
+      <button
+        v-for="cat in categories"
+        :key="cat"
+        class="px-4 py-1.5 rounded-full text-sm transition-colors"
+        :class="
+          activeCategory === cat
+            ? 'bg-violet text-ink font-semibold'
+            : 'bg-elevated text-ink-muted hover:text-ink'
+        "
+        @click="activeCategory = cat"
+      >
+        {{ cat }}
+      </button>
+    </div>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <ul
-      v-else
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+      v-else-if="items.length > 0"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
     >
-      <li
-        v-for="item in items"
-        :key="item.id"
-        class="rounded-md bg-surface overflow-hidden hover:bg-elevated transition-colors"
-      >
-        <RouterLink :to="{ name: 'fanart-detail', params: { id: item.id } }">
-          <div class="aspect-square overflow-hidden bg-elevated">
+      <li v-for="item in items" :key="item.id">
+        <RouterLink
+          :to="{ name: 'fanart-detail', params: { id: item.id } }"
+          class="block rounded-2xl bg-elevated border border-border overflow-hidden hover:border-violet transition-colors group"
+        >
+          <div class="relative aspect-square overflow-hidden bg-gradient-to-br from-violet/40 to-corn/30">
             <img
               :src="item.thumbnailUrl"
               :alt="item.title"
-              class="w-full h-full object-cover"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
             />
-          </div>
-          <div class="p-3">
-            <div class="text-sm text-ink truncate">{{ item.title }}</div>
-            <div class="mt-1 flex items-center justify-between text-xs text-ink-muted">
-              <span class="truncate">{{ item.author }}</span>
-              <span class="flex gap-2 whitespace-nowrap ml-2">
-                <span>♥ {{ item.likeCount }}</span>
-                <span v-if="item.commentCount > 0" class="text-corn">[{{ item.commentCount }}]</span>
-              </span>
+            <span
+              v-if="isNew(item.createdAt)"
+              class="absolute left-3 top-3 px-2 py-0.5 rounded bg-cheek text-white text-[10px] font-bold tracking-wider"
+            >
+              NEW
+            </span>
+            <div class="absolute left-3 right-3 bottom-3 px-3 py-1.5 rounded-lg bg-paper/70 backdrop-blur-sm">
+              <div class="text-sm font-semibold text-ink truncate">{{ item.title }}</div>
             </div>
+          </div>
+          <div class="px-4 py-3 flex items-center justify-between text-xs text-ink-muted">
+            <span class="truncate">{{ item.author }}</span>
+            <span class="flex gap-2 whitespace-nowrap ml-2">
+              <span class="text-cheek">♥ {{ item.likeCount }}</span>
+              <span v-if="item.commentCount > 0" class="text-corn">[{{ item.commentCount }}]</span>
+            </span>
           </div>
         </RouterLink>
       </li>
     </ul>
-  </main>
+    <p v-else class="py-10 text-center text-sm text-ink-muted">아직 팬아트가 없어요. 첫 그림을 남겨주세요!</p>
+  </div>
 </template>
