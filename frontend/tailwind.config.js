@@ -17,6 +17,8 @@ export default {
         'ink-muted': 'var(--color-ink-muted)',
         chzzk: 'var(--color-chzzk)',
         naver: 'var(--color-naver)',
+        violet: 'var(--color-violet)',
+        'violet-deep': 'var(--color-violet-deep)',
       },
       fontFamily: {
         sans: ['Pretendard', 'system-ui', '-apple-system', 'sans-serif'],
