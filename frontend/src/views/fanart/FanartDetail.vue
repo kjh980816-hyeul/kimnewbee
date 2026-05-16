@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 import { fetchFanart, toggleFanartLike } from '@/api/fanart';
 import { useIsOwner } from '@/composables/useIsOwner';
 import type { Fanart } from '@/types/fanart';
@@ -8,7 +8,6 @@ import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
-const router = useRouter();
 
 const fanart = ref<Fanart | null>(null);
 const loading = ref(true);
@@ -41,14 +40,14 @@ async function onLike(): Promise<void> {
 </script>
 
 <template>
-  <main class="min-h-screen bg-paper text-ink p-8">
-    <button
-      type="button"
-      class="mb-4 text-sm text-ink-muted hover:text-ink"
-      @click="router.back()"
-    >
-      ← 갤러리로
-    </button>
+  <div class="p-8 max-w-3xl">
+    <nav class="text-xs text-ink-muted mb-3">
+      <RouterLink to="/" class="hover:text-ink">🌶️ 고추밭</RouterLink>
+      <span class="mx-2">›</span>
+      <RouterLink :to="{ name: 'fanart' }" class="hover:text-ink">팬아트 갤러리</RouterLink>
+      <span class="mx-2">›</span>
+      <span class="text-ink">일러스트</span>
+    </nav>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
@@ -69,17 +68,18 @@ async function onLike(): Promise<void> {
         :content="fanart.content"
         :liked-by-me="fanart.likedByMe"
         :like-count="fanart.likeCount"
+        category="일러스트"
         @like="onLike"
       >
         <template #media>
           <img
             :src="fanart.imageUrl"
             :alt="fanart.title"
-            class="w-full max-h-[80vh] object-contain bg-elevated"
+            class="w-full max-h-[80vh] object-contain bg-elevated rounded-xl mb-6"
           />
         </template>
       </PostArticle>
-      <CommentSection :post-id="fanart.id" class="mt-6" />
+      <CommentSection :post-id="fanart.id" class="mt-10" />
     </template>
-  </main>
+  </div>
 </template>

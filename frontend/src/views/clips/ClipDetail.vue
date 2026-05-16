@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 import { fetchClip, toggleClipLike } from '@/api/clip';
 import { useIsOwner } from '@/composables/useIsOwner';
 import type { Clip } from '@/types/clip';
@@ -8,7 +8,6 @@ import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
-const router = useRouter();
 
 const clip = ref<Clip | null>(null);
 const loading = ref(true);
@@ -51,14 +50,14 @@ async function onLike(): Promise<void> {
 </script>
 
 <template>
-  <main class="min-h-screen bg-paper text-ink p-8">
-    <button
-      type="button"
-      class="mb-4 text-sm text-ink-muted hover:text-ink"
-      @click="router.back()"
-    >
-      ← 목록으로
-    </button>
+  <div class="p-8 max-w-3xl">
+    <nav class="text-xs text-ink-muted mb-3">
+      <RouterLink to="/" class="hover:text-ink">🌶️ 고추밭</RouterLink>
+      <span class="mx-2">›</span>
+      <RouterLink :to="{ name: 'clips' }" class="hover:text-ink">영상/클립</RouterLink>
+      <span class="mx-2">›</span>
+      <span class="text-ink">클립</span>
+    </nav>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
@@ -79,13 +78,14 @@ async function onLike(): Promise<void> {
         :content="clip.description"
         :liked-by-me="clip.likedByMe"
         :like-count="clip.likeCount"
+        category="클립"
         @like="onLike"
       >
         <template #media>
           <iframe
             v-if="embedUrl"
             :src="embedUrl"
-            class="w-full aspect-video bg-elevated"
+            class="w-full aspect-video bg-elevated rounded-xl mb-6"
             allowfullscreen
             referrerpolicy="strict-origin-when-cross-origin"
           />
@@ -94,13 +94,13 @@ async function onLike(): Promise<void> {
             :href="clip.videoUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="block aspect-video bg-elevated grid place-items-center text-pepper hover:underline"
+            class="block aspect-video bg-elevated rounded-xl mb-6 grid place-items-center text-pepper hover:underline"
           >
             원본 영상 보러가기 ↗
           </a>
         </template>
       </PostArticle>
-      <CommentSection :post-id="clip.id" class="mt-6" />
+      <CommentSection :post-id="clip.id" class="mt-10" />
     </template>
-  </main>
+  </div>
 </template>

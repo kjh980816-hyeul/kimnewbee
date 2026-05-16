@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 import { fetchFreePost, toggleFreePostLike } from '@/api/free';
 import { useIsOwner } from '@/composables/useIsOwner';
 import type { FreePost } from '@/types/free';
@@ -8,7 +8,6 @@ import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
-const router = useRouter();
 
 const post = ref<FreePost | null>(null);
 const loading = ref(true);
@@ -41,14 +40,14 @@ async function onLike(): Promise<void> {
 </script>
 
 <template>
-  <main class="min-h-screen bg-paper text-ink p-8">
-    <button
-      type="button"
-      class="mb-4 text-sm text-ink-muted hover:text-ink"
-      @click="router.back()"
-    >
-      ← 목록으로
-    </button>
+  <div class="p-8 max-w-3xl">
+    <nav class="text-xs text-ink-muted mb-3">
+      <RouterLink to="/" class="hover:text-ink">🌶️ 고추밭</RouterLink>
+      <span class="mx-2">›</span>
+      <RouterLink :to="{ name: 'free' }" class="hover:text-ink">자유게시판</RouterLink>
+      <span class="mx-2">›</span>
+      <span class="text-ink">잡담</span>
+    </nav>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
@@ -69,9 +68,10 @@ async function onLike(): Promise<void> {
         :content="post.content"
         :liked-by-me="post.likedByMe"
         :like-count="post.likeCount"
+        category="잡담"
         @like="onLike"
       />
-      <CommentSection :post-id="post.id" class="mt-6" />
+      <CommentSection :post-id="post.id" class="mt-10" />
     </template>
-  </main>
+  </div>
 </template>

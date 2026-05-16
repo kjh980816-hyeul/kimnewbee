@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 import { fetchOfflineReview, toggleOfflineReviewLike } from '@/api/offline';
 import { isHttpStatus } from '@/api/error';
 import { useIsOwner } from '@/composables/useIsOwner';
@@ -9,7 +9,6 @@ import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
-const router = useRouter();
 
 const review = ref<OfflineReview | null>(null);
 const loading = ref(true);
@@ -49,22 +48,22 @@ async function onLike(): Promise<void> {
 </script>
 
 <template>
-  <main class="min-h-screen bg-paper text-ink p-8">
-    <button
-      type="button"
-      class="mb-4 text-sm text-ink-muted hover:text-ink"
-      @click="router.back()"
-    >
-      ← 후기 목록으로
-    </button>
+  <div class="p-8 max-w-3xl">
+    <nav class="text-xs text-ink-muted mb-3">
+      <RouterLink to="/" class="hover:text-ink">🌶️ 고추밭</RouterLink>
+      <span class="mx-2">›</span>
+      <RouterLink :to="{ name: 'offline' }" class="hover:text-ink">오프후기</RouterLink>
+      <span class="mx-2">›</span>
+      <span class="text-ink">후기</span>
+    </nav>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <div
       v-else-if="accessDenied"
-      class="rounded-md bg-surface p-8 text-center"
+      class="rounded-2xl bg-elevated border border-border p-8 text-center"
     >
-      <p class="text-2xl">🌽</p>
-      <p class="mt-2 text-ink">옥수수 등급 이상만 볼 수 있어요</p>
+      <p class="text-3xl">🌽</p>
+      <p class="mt-3 text-ink">옥수수 등급 이상만 볼 수 있어요</p>
       <p class="mt-1 text-sm text-ink-muted">
         고정/후원 팬에게만 공개되는 게시판입니다
       </p>
@@ -79,7 +78,7 @@ async function onLike(): Promise<void> {
           수정
         </RouterLink>
       </div>
-      <div class="mb-2 text-xs text-ink-muted flex gap-3">
+      <div class="mb-4 text-xs text-ink-muted flex gap-3">
         <span>📍 {{ review.location }}</span>
         <span>📅 {{ review.meetupDate }}</span>
       </div>
@@ -91,17 +90,18 @@ async function onLike(): Promise<void> {
         :content="review.content"
         :liked-by-me="review.likedByMe"
         :like-count="review.likeCount"
+        category="후기"
         @like="onLike"
       >
         <template #media>
           <img
             :src="review.imageUrl"
             :alt="review.title"
-            class="w-full max-h-[60vh] object-cover bg-elevated"
+            class="w-full max-h-[60vh] object-cover bg-elevated rounded-xl mb-6"
           />
         </template>
       </PostArticle>
-      <CommentSection :post-id="review.id" class="mt-6" />
+      <CommentSection :post-id="review.id" class="mt-10" />
     </template>
-  </main>
+  </div>
 </template>

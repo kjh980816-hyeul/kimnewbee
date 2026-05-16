@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 import { fetchNotice } from '@/api/notice';
 import type { Notice } from '@/types/notice';
 
 const route = useRoute();
-const router = useRouter();
 
 const notice = ref<Notice | null>(null);
 const loading = ref(true);
@@ -27,32 +26,52 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  const yy = String(d.getFullYear()).slice(2);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mi = String(d.getMinutes()).padStart(2, '0');
+  return `20${yy}.${mm}.${dd} · ${hh}:${mi}`;
+}
 </script>
 
 <template>
-  <main class="min-h-screen bg-paper text-ink p-8">
-    <button
-      type="button"
-      class="mb-4 text-sm text-ink-muted hover:text-ink"
-      @click="router.back()"
-    >
-      ← 목록으로
-    </button>
+  <div class="p-8 max-w-3xl">
+    <nav class="text-xs text-ink-muted mb-3">
+      <RouterLink to="/" class="hover:text-ink">🌶️ 고추밭</RouterLink>
+      <span class="mx-2">›</span>
+      <RouterLink :to="{ name: 'notices' }" class="hover:text-ink">공지사항</RouterLink>
+      <span class="mx-2">›</span>
+      <span class="text-ink">공지</span>
+    </nav>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
-    <article v-else-if="notice" class="rounded-md bg-surface p-6">
-      <header class="mb-4 pb-4 border-b border-border">
-        <h1 class="text-xl font-bold text-ink">{{ notice.title }}</h1>
-        <div class="mt-2 flex items-center gap-3 text-xs text-ink-muted">
-          <span>{{ notice.author }}</span>
-          <span>·</span>
-          <span>{{ new Date(notice.createdAt).toLocaleDateString('ko-KR') }}</span>
-          <span>·</span>
-          <span>조회 {{ notice.viewCount }}</span>
+    <article v-else-if="notice">
+      <div class="mb-4 inline-block">
+        <span class="px-4 py-1.5 rounded-full bg-corn/20 text-corn text-sm font-semibold">
+          🌶 공지
+        </span>
+      </div>
+      <h1 class="text-3xl font-extrabold text-ink leading-tight mb-5">{{ notice.title }}</h1>
+      <div class="flex items-center gap-3 pb-5 mb-6 border-b border-border">
+        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-corn to-cheek flex items-center justify-center text-lg shrink-0">
+          👑
         </div>
-      </header>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold text-ink">{{ notice.author }}</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-cheek/20 text-cheek font-semibold">발주인</span>
+          </div>
+          <div class="mt-0.5 text-xs text-ink-muted">
+            {{ formatDate(notice.createdAt) }} · 조회 {{ notice.viewCount }}
+          </div>
+        </div>
+      </div>
       <div class="whitespace-pre-wrap text-ink leading-relaxed">{{ notice.content }}</div>
     </article>
-  </main>
+  </div>
 </template>
