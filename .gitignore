@@ -13,6 +13,10 @@
 secrets.txt
 credentials.txt
 
+# 운영 배포 산출물 (Naver client-secret / DB 비번 / JWT secret 평문 포함)
+/.deploy/
+/.deploy_secrets.tmp.json
+
 # ===== Node =====
 node_modules/
 dist/
