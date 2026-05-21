@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { fetchAdminUsers, changeUserTier, adjustUserPoints } from '@/api/admin';
 import type { AdminUser } from '@/types/admin';
 import type { TierInput } from '@/types/board';
@@ -9,15 +9,28 @@ const users = ref<AdminUser[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
 const busyId = ref<number | null>(null);
+const search = ref('');
 
-const tierLabel: Record<Tier, string> = {
-  seed: '🌱 새싹',
-  pepper: '🌶️ 고추',
-  corn: '🌽 옥수수',
-  owner: '👑 밭주인',
+const tierMeta: Record<Tier, { label: string; emoji: string; chip: string }> = {
+  seed: { label: '새싹', emoji: '🌱', chip: 'bg-pepper/20 text-pepper' },
+  pepper: { label: '고추', emoji: '🌶', chip: 'bg-violet/25 text-violet' },
+  corn: { label: '옥수수', emoji: '🌽', chip: 'bg-corn/20 text-corn' },
+  owner: { label: '발주인', emoji: '👑', chip: 'bg-cheek/20 text-cheek' },
 };
 
 const tierOrder: Tier[] = ['seed', 'pepper', 'corn', 'owner'];
+
+const filteredUsers = computed(() => {
+  const q = search.value.trim().toLowerCase();
+  if (!q) return users.value;
+  return users.value.filter(u => u.nickname.toLowerCase().includes(q) || u.naverId.toLowerCase().includes(q));
+});
+
+const tierCounts = computed(() => {
+  const counts: Record<Tier, number> = { seed: 0, pepper: 0, corn: 0, owner: 0 };
+  users.value.forEach(u => { counts[u.tier]++; });
+  return counts;
+});
 
 onMounted(async () => {
   try {
@@ -54,73 +67,114 @@ async function onPointAdjust(user: AdminUser, delta: number): Promise<void> {
     busyId.value = null;
   }
 }
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function authorInitial(name: string): string {
+  return name ? name.charAt(0) : '?';
+}
 </script>
 
 <template>
-  <div>
-    <h2 class="text-2xl font-bold text-ink mb-4">회원 관리</h2>
+  <div class="p-8">
+    <header class="mb-6">
+      <h1 class="text-4xl font-extrabold text-ink leading-tight">회원 관리 👥</h1>
+      <p class="mt-2 text-sm text-ink-muted">회원 등급 변경 · 포인트 조정 · 활동 이력 확인</p>
+    </header>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div
+        v-for="t in tierOrder"
+        :key="t"
+        class="rounded-xl bg-surface border border-border p-3 flex items-center gap-3"
+      >
+        <span class="text-2xl">{{ tierMeta[t].emoji }}</span>
+        <div class="min-w-0">
+          <div class="text-[11px] text-ink-muted">{{ tierMeta[t].label }}</div>
+          <div class="text-lg font-extrabold text-ink tabular-nums">{{ tierCounts[t] }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="relative max-w-md">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted text-sm">🔍</span>
+        <input
+          v-model="search"
+          type="text"
+          placeholder="닉네임 또는 네이버 ID로 검색..."
+          class="w-full pl-9 pr-3 py-2 rounded-full bg-surface border border-border text-sm text-ink placeholder:text-ink-muted/60 focus:outline-none focus:border-violet/40"
+        />
+      </div>
+    </div>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek mb-3">{{ error }}</p>
 
-    <table v-if="!loading && users.length > 0" class="w-full text-sm">
-      <thead class="bg-surface text-ink-muted">
-        <tr>
-          <th class="px-3 py-2 text-left">닉네임</th>
-          <th class="px-3 py-2 text-left">등급</th>
-          <th class="px-3 py-2 text-right">포인트</th>
-          <th class="px-3 py-2 text-left">가입일</th>
-          <th class="px-3 py-2 text-left">관리</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="user in users"
+    <div v-else class="rounded-2xl bg-surface border border-border overflow-hidden">
+      <div class="grid grid-cols-[1fr_120px_140px_120px_180px] gap-3 px-5 py-3 text-[11px] text-ink-muted border-b border-border tracking-wide">
+        <span>회원</span>
+        <span>등급</span>
+        <span class="text-right">포인트</span>
+        <span>가입일</span>
+        <span class="text-right">관리</span>
+      </div>
+      <ul v-if="filteredUsers.length > 0" class="divide-y divide-border">
+        <li
+          v-for="user in filteredUsers"
           :key="user.id"
-          class="border-b border-border"
+          class="grid grid-cols-[1fr_120px_140px_120px_180px] gap-3 px-5 py-3 items-center text-sm hover:bg-elevated transition-colors"
         >
-          <td class="px-3 py-2 text-ink">
-            {{ user.nickname }}
-            <span class="ml-1 text-xs text-ink-muted">({{ user.naverId }})</span>
-          </td>
-          <td class="px-3 py-2">
-            <select
-              :value="user.tier"
-              :disabled="busyId === user.id"
-              class="rounded-md bg-elevated border border-border px-2 py-1 text-ink"
-              @change="onTierChange(user, ($event.target as HTMLSelectElement).value as Tier)"
-            >
-              <option v-for="t in tierOrder" :key="t" :value="t">
-                {{ tierLabel[t] }}
-              </option>
-            </select>
-          </td>
-          <td class="px-3 py-2 text-right text-corn font-medium">
-            {{ user.points.toLocaleString('ko-KR') }}
-          </td>
-          <td class="px-3 py-2 text-ink-muted">
-            {{ new Date(user.createdAt).toLocaleDateString('ko-KR') }}
-          </td>
-          <td class="px-3 py-2">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="w-9 h-9 rounded-full bg-violet/30 flex items-center justify-center text-sm font-bold text-ink shrink-0">
+              {{ authorInitial(user.nickname) }}
+            </span>
+            <div class="min-w-0">
+              <div class="text-ink font-semibold truncate">{{ user.nickname }}</div>
+              <div class="text-[10px] text-ink-muted font-mono truncate">{{ user.naverId }}</div>
+            </div>
+          </div>
+          <select
+            :value="user.tier"
+            :disabled="busyId === user.id"
+            class="rounded-full bg-elevated border border-border px-3 py-1 text-xs text-ink focus:outline-none focus:border-violet/40"
+            @change="onTierChange(user, ($event.target as HTMLSelectElement).value as Tier)"
+          >
+            <option v-for="t in tierOrder" :key="t" :value="t">
+              {{ tierMeta[t].emoji }} {{ tierMeta[t].label }}
+            </option>
+          </select>
+          <div class="text-right">
+            <span class="font-bold text-corn tabular-nums">{{ user.points.toLocaleString() }}</span>
+            <span class="text-[10px] text-ink-muted ml-0.5">P</span>
+          </div>
+          <span class="text-xs text-ink-muted whitespace-nowrap">{{ formatDate(user.createdAt) }}</span>
+          <div class="flex items-center justify-end gap-1">
             <button
               type="button"
               :disabled="busyId === user.id"
-              class="rounded-md border border-border px-2 py-0.5 text-xs text-ink-muted hover:text-pepper hover:border-pepper disabled:opacity-50"
+              class="rounded-full bg-pepper/15 text-pepper px-2.5 py-1 text-[11px] font-semibold hover:bg-pepper/25 disabled:opacity-50 transition-colors"
               @click="onPointAdjust(user, 100)"
             >
-              +100p
+              +100P
             </button>
             <button
               type="button"
               :disabled="busyId === user.id"
-              class="ml-1 rounded-md border border-border px-2 py-0.5 text-xs text-ink-muted hover:text-cheek hover:border-cheek disabled:opacity-50"
+              class="rounded-full bg-cheek/15 text-cheek px-2.5 py-1 text-[11px] font-semibold hover:bg-cheek/25 disabled:opacity-50 transition-colors"
               @click="onPointAdjust(user, -100)"
             >
-              -100p
+              -100P
             </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
+        </li>
+      </ul>
+      <p v-else class="px-5 py-10 text-sm text-ink-muted text-center">
+        {{ search ? '검색 결과가 없어요' : '아직 회원이 없어요' }}
+      </p>
+    </div>
   </div>
 </template>

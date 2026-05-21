@@ -19,19 +19,26 @@ onMounted(async () => {
   }
 });
 
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  const yy = String(d.getFullYear()).slice(2);
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yy}.${mm}.${dd}`;
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return '방금';
+  if (m < 60) return `${m}분 전`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}시간 전`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d}일 전`;
+  const w = Math.floor(d / 7);
+  if (w < 5) return `${w}주 전`;
+  const dt = new Date(iso);
+  return `${String(dt.getFullYear()).slice(2)}.${String(dt.getMonth() + 1).padStart(2, '0')}.${String(dt.getDate()).padStart(2, '0')}`;
 }
 </script>
 
 <template>
-  <div class="p-8 max-w-5xl">
+  <div class="p-8">
     <nav class="text-xs text-ink-muted mb-3">
-      <RouterLink to="/" class="hover:text-ink">🌶️ 고추밭</RouterLink>
+      <RouterLink to="/" class="hover:text-ink">🌶 고추밭</RouterLink>
       <span class="mx-2">›</span>
       <span class="text-ink">공지사항</span>
     </nav>
@@ -41,30 +48,26 @@ function formatDate(iso: string): string {
       <p class="mt-2 text-sm text-ink-muted">밭주인의 공식 공지를 확인하세요 📢</p>
     </header>
 
-    <div class="flex items-center gap-2 mb-5">
-      <span class="px-4 py-1.5 rounded-full bg-violet text-ink text-sm font-semibold">전체</span>
-    </div>
-
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else>
-      <div class="rounded-2xl bg-elevated border border-border overflow-hidden">
-        <div class="grid grid-cols-[80px_1fr_100px] gap-4 px-5 py-3 text-xs text-ink-muted border-b border-border">
+      <div class="rounded-2xl bg-surface border border-border overflow-hidden">
+        <div class="grid grid-cols-[70px_1fr_120px] gap-3 px-5 py-3 text-[11px] text-ink-muted border-b border-border tracking-wide">
           <span>분류</span>
           <span>제목</span>
-          <span class="text-right">날짜</span>
+          <span class="text-right">작성시간</span>
         </div>
         <ul v-if="notices.length > 0" class="divide-y divide-border">
-          <li v-for="n in notices" :key="n.id" class="hover:bg-surface transition-colors">
+          <li v-for="n in notices" :key="n.id" class="hover:bg-elevated transition-colors">
             <RouterLink
               :to="{ name: 'notice-detail', params: { id: n.id } }"
-              class="grid grid-cols-[80px_1fr_100px] gap-4 px-5 py-3 items-center"
+              class="grid grid-cols-[70px_1fr_120px] gap-3 px-5 py-3 items-center text-sm"
             >
-              <span class="px-2 py-1 rounded text-[11px] font-semibold bg-corn/20 text-corn text-center">
-                🌶 공지
+              <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-corn/20 text-corn text-center">
+                공지
               </span>
               <span class="text-ink truncate">{{ n.title }}</span>
-              <span class="text-xs text-ink-muted text-right whitespace-nowrap">{{ formatDate(n.createdAt) }}</span>
+              <span class="text-xs text-ink-muted text-right whitespace-nowrap">{{ relativeTime(n.createdAt) }}</span>
             </RouterLink>
           </li>
         </ul>

@@ -28,42 +28,63 @@ async function onLogin(): Promise<void> {
 </script>
 
 <template>
-  <main class="min-h-screen relative overflow-hidden bg-gradient-to-br from-violet-deep via-paper to-paper">
-    <div class="absolute left-[10%] top-[15%] text-5xl opacity-50 select-none animate-pulse">🐹</div>
-    <div class="absolute left-[55%] top-[20%] text-4xl opacity-40 rotate-12 select-none">🎼</div>
-    <div class="absolute left-[20%] bottom-[15%] text-3xl opacity-30 select-none">🌽</div>
-    <div class="absolute right-[45%] top-[55%] text-4xl opacity-40 -rotate-6 select-none">🌶️</div>
+  <main class="min-h-screen relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-violet-deep via-paper to-paper">
+    <div class="absolute left-[8%] top-[18%] text-6xl opacity-40 select-none animate-pulse">🐹</div>
+    <div class="absolute right-[12%] top-[15%] text-5xl opacity-40 rotate-12 select-none">🎼</div>
+    <div class="absolute left-[15%] bottom-[18%] text-4xl opacity-30 select-none">🌽</div>
+    <div class="absolute right-[10%] bottom-[15%] text-5xl opacity-40 -rotate-6 select-none">🌶</div>
+    <div class="absolute left-[40%] top-[8%] text-3xl opacity-20 select-none">✨</div>
+    <div class="absolute right-[30%] bottom-[8%] text-3xl opacity-25 select-none">🍃</div>
 
-    <div class="absolute right-4 bottom-4 sm:right-16 sm:bottom-16 w-full max-w-md sm:w-[420px]">
-      <div class="rounded-3xl bg-elevated/95 backdrop-blur-md border border-border p-10 shadow-2xl">
-        <h1 class="text-5xl font-extrabold leading-tight">
-          <span class="text-pepper">🌶</span>
-          <span class="text-ink">김늉비고</span>
-          <br />
-          <span class="text-ink pl-14">추밭</span>
-        </h1>
-
-        <p class="mt-5 text-sm text-ink-muted leading-relaxed">
-          초록고추 여러분, 어서와요~<br />
-          🌽 우리아기 불고노는 하모니카는~
-        </p>
+    <div class="relative w-full max-w-md px-4">
+      <div class="rounded-3xl bg-surface/95 backdrop-blur-md border border-border p-10 shadow-2xl">
+        <div class="text-center">
+          <div class="flex items-center justify-center gap-2 mb-4">
+            <span class="text-3xl">🌶</span>
+            <h1 class="text-3xl font-extrabold text-ink leading-none">
+              김늉비<span class="text-pepper">고추밭</span>
+            </h1>
+          </div>
+          <p class="text-sm text-ink-muted leading-relaxed">
+            초록고추 여러분, 어서와요~<br />
+            우리아기 부르고노는 하모니카는~
+          </p>
+        </div>
 
         <button
           type="button"
           :disabled="submitting"
-          class="mt-8 w-full rounded-xl bg-naver text-white px-4 py-3.5 font-bold hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center justify-center gap-3"
+          class="mt-8 w-full rounded-2xl bg-violet-deep text-ink px-4 py-4 font-bold hover:bg-violet-deep/80 disabled:opacity-50 transition-colors flex items-center justify-center gap-3"
           @click="onLogin"
         >
-          <span class="w-6 h-6 rounded bg-white text-naver font-extrabold flex items-center justify-center text-sm">N</span>
+          <span class="w-6 h-6 rounded bg-naver text-white font-extrabold flex items-center justify-center text-sm">N</span>
           <span>{{ submitting ? '이동 중...' : '네이버로 간편 로그인' }}</span>
         </button>
 
         <p v-if="error" class="mt-3 text-cheek text-xs text-center">{{ error }}</p>
 
-        <p class="mt-5 text-[11px] text-ink-muted text-center leading-relaxed">
+        <p class="mt-4 text-[11px] text-ink-muted text-center leading-relaxed">
           김늉비 고추밭은 <span class="text-ink">네이버 계정</span>으로만 가입할 수 있어요<br />
           로그인 시 <a href="#" class="underline hover:text-ink">이용약관</a>과 <a href="#" class="underline hover:text-ink">개인정보처리방침</a>에 동의하게 됩니다
         </p>
+
+        <div class="mt-6 pt-5 border-t border-border">
+          <p class="text-[11px] font-semibold text-violet mb-2">🌟 첫 방문이세요?</p>
+          <ul class="text-[11px] text-ink-muted space-y-1 leading-relaxed">
+            <li>· 네이버 로그인 시 닉네임 자동으로 부여돼요</li>
+            <li>· 활동에 따라 등급이 올라가요</li>
+            <li class="flex items-center gap-1.5">
+              <span>· 등급:</span>
+              <span class="px-1.5 py-0.5 rounded bg-elevated text-ink-muted">🌱 새싹</span>
+              <span>›</span>
+              <span class="px-1.5 py-0.5 rounded bg-pepper/20 text-pepper">🌶 고추</span>
+              <span>›</span>
+              <span class="px-1.5 py-0.5 rounded bg-corn/20 text-corn">🌽 옥수수</span>
+              <span>›</span>
+              <span class="px-1.5 py-0.5 rounded bg-violet/30 text-violet">👑 발주인</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </main>

@@ -30,21 +30,21 @@ function isNew(iso: string): boolean {
 </script>
 
 <template>
-  <div class="p-8 max-w-6xl">
+  <div class="p-8">
     <nav class="text-xs text-ink-muted mb-3">
-      <RouterLink to="/" class="hover:text-ink">🌶️ 고추밭</RouterLink>
+      <RouterLink to="/" class="hover:text-ink">🌶 고추밭</RouterLink>
       <span class="mx-2">›</span>
       <span class="text-ink">팬아트 갤러리</span>
     </nav>
 
-    <header class="mb-6 flex items-end justify-between gap-4">
+    <header class="mb-6 flex items-end justify-between gap-4 flex-wrap">
       <div>
-        <h1 class="text-4xl font-extrabold text-ink leading-tight">팬아트 갤러리</h1>
-        <p class="mt-2 text-sm text-ink-muted">늉비의 귀여운 순간들을 그림으로 남겨주세요 🎨</p>
+        <h1 class="text-4xl font-extrabold text-ink leading-tight">팬아트 갤러리 🎨</h1>
+        <p class="mt-2 text-sm text-ink-muted">늉비의 귀여운 순간들을 그림으로 남겨주세요</p>
       </div>
       <RouterLink
         :to="{ name: 'fanart-write' }"
-        class="rounded-lg bg-pepper px-4 py-2 text-sm font-semibold text-paper hover:bg-pepper-deep transition-colors whitespace-nowrap"
+        class="rounded-full bg-violet-deep px-5 py-2 text-sm font-semibold text-ink hover:bg-violet-deep/80 transition-colors whitespace-nowrap"
       >
         ✏ 그림 올리기
       </RouterLink>
@@ -57,7 +57,7 @@ function isNew(iso: string): boolean {
         class="px-4 py-1.5 rounded-full text-sm transition-colors"
         :class="
           activeCategory === cat
-            ? 'bg-violet text-ink font-semibold'
+            ? 'bg-violet-deep/40 text-ink font-semibold'
             : 'bg-elevated text-ink-muted hover:text-ink'
         "
         @click="activeCategory = cat"
@@ -70,12 +70,12 @@ function isNew(iso: string): boolean {
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <ul
       v-else-if="items.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
     >
       <li v-for="item in items" :key="item.id">
         <RouterLink
           :to="{ name: 'fanart-detail', params: { id: item.id } }"
-          class="block rounded-2xl bg-elevated border border-border overflow-hidden hover:border-violet transition-colors group"
+          class="block rounded-2xl bg-surface border border-border overflow-hidden hover:border-violet/40 transition-colors group"
         >
           <div class="relative aspect-square overflow-hidden bg-gradient-to-br from-violet/40 to-corn/30">
             <img
@@ -86,20 +86,20 @@ function isNew(iso: string): boolean {
             />
             <span
               v-if="isNew(item.createdAt)"
-              class="absolute left-3 top-3 px-2 py-0.5 rounded bg-cheek text-white text-[10px] font-bold tracking-wider"
+              class="absolute left-3 top-3 px-2 py-0.5 rounded bg-cheek text-paper text-[10px] font-bold tracking-wider"
             >
               NEW
             </span>
-            <div class="absolute left-3 right-3 bottom-3 px-3 py-1.5 rounded-lg bg-paper/70 backdrop-blur-sm">
-              <div class="text-sm font-semibold text-ink truncate">{{ item.title }}</div>
-            </div>
           </div>
-          <div class="px-4 py-3 flex items-center justify-between text-xs text-ink-muted">
-            <span class="truncate">{{ item.author }}</span>
-            <span class="flex gap-2 whitespace-nowrap ml-2">
-              <span class="text-cheek">♥ {{ item.likeCount }}</span>
-              <span v-if="item.commentCount > 0" class="text-corn">[{{ item.commentCount }}]</span>
-            </span>
+          <div class="px-4 py-3">
+            <div class="text-sm font-semibold text-ink truncate mb-1">{{ item.title }}</div>
+            <div class="flex items-center justify-between text-xs text-ink-muted">
+              <span class="truncate">{{ item.author }}</span>
+              <span class="flex gap-2 whitespace-nowrap ml-2">
+                <span class="text-cheek">♥ {{ item.likeCount }}</span>
+                <span v-if="item.commentCount > 0" class="text-corn">💬 {{ item.commentCount }}</span>
+              </span>
+            </div>
           </div>
         </RouterLink>
       </li>

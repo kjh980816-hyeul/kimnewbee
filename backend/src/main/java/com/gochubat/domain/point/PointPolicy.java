@@ -8,6 +8,7 @@ public record PointPolicy(
 		long postCreated,
 		long commentCreated,
 		long likeReceived,
+		long attendance,
 		long pepperThreshold,
 		long cornThreshold
 ) {
@@ -18,6 +19,7 @@ public record PointPolicy(
 			case COMMENT_CREATED -> commentCreated;
 			case LIKE_RECEIVED -> likeReceived;
 			case LIKE_REVOKED -> -likeReceived;
+			case ATTENDANCE -> attendance;
 		};
 	}
 

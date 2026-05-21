@@ -24,6 +24,7 @@ gochubat:
     post-created: 10
     comment-created: 2
     like-received: 1
+    attendance: 5
     pepper-threshold: 100
     corn-threshold: 500
   cors:

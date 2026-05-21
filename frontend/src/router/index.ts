@@ -6,6 +6,8 @@ export const router = createRouter({
     { path: '/', name: 'home', component: () => import('@/views/HomeView.vue') },
     { path: '/login', name: 'login', component: () => import('@/views/auth/LoginView.vue') },
     { path: '/me', name: 'me', component: () => import('@/views/me/MyPageView.vue') },
+    { path: '/checkin', name: 'checkin', component: () => import('@/views/me/CheckinView.vue') },
+    { path: '/search', name: 'search', component: () => import('@/views/SearchView.vue') },
 
     { path: '/notices', name: 'notices', component: () => import('@/views/notice/NoticeList.vue') },
     { path: '/notices/:id(\\d+)', name: 'notice-detail', component: () => import('@/views/notice/NoticeDetail.vue') },
@@ -50,6 +52,9 @@ export const router = createRouter({
         { path: 'dashboard', name: 'admin-dashboard', component: () => import('@/views/admin/AdminDashboard.vue') },
         { path: 'members', name: 'admin-members', component: () => import('@/views/admin/AdminMembers.vue') },
         { path: 'boards', name: 'admin-boards', component: () => import('@/views/admin/AdminBoards.vue') },
+        { path: 'roles', name: 'admin-roles', component: () => import('@/views/admin/AdminRoles.vue') },
+        { path: 'notices', name: 'admin-notices', component: () => import('@/views/admin/AdminNotices.vue') },
+        { path: 'stats', name: 'admin-stats', component: () => import('@/views/admin/AdminStats.vue') },
         { path: 'cafe', name: 'admin-cafe', component: () => import('@/views/admin/AdminCafe.vue') },
       ],
     },

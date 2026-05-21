@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, toRef } from 'vue';
 import { fetchCafeConfig, updateCafeConfig } from '@/api/cafe';
 import { useImageUpload } from '@/composables/useImageUpload';
-import { toRef } from 'vue';
 
 const form = reactive({
+  heroBannerUrl: '',
+  heroHeadline: '',
+  heroSubtext: '',
+  footerText: '',
+});
+const original = reactive({
   heroBannerUrl: '',
   heroHeadline: '',
   heroSubtext: '',
@@ -18,6 +23,17 @@ const ok = ref(false);
 const heroBannerUrlRef = toRef(form, 'heroBannerUrl');
 const { uploading, uploadError, pickAndUpload } = useImageUpload(heroBannerUrlRef);
 
+const isDirty = computed(() =>
+  form.heroBannerUrl !== original.heroBannerUrl ||
+  form.heroHeadline !== original.heroHeadline ||
+  form.heroSubtext !== original.heroSubtext ||
+  form.footerText !== original.footerText
+);
+
+const headlineCount = computed(() => form.heroHeadline.length);
+const subtextCount = computed(() => form.heroSubtext.length);
+const footerCount = computed(() => form.footerText.length);
+
 onMounted(async () => {
   try {
     const cfg = await fetchCafeConfig();
@@ -25,6 +41,7 @@ onMounted(async () => {
     form.heroHeadline = cfg.heroHeadline;
     form.heroSubtext = cfg.heroSubtext ?? '';
     form.footerText = cfg.footerText ?? '';
+    Object.assign(original, form);
   } catch (e) {
     error.value = e instanceof Error ? e.message : '카페 설정을 불러올 수 없어요';
   } finally {
@@ -45,6 +62,7 @@ async function onSubmit(): Promise<void> {
     form.heroBannerUrl = updated.heroBannerUrl ?? '';
     form.heroSubtext = updated.heroSubtext ?? '';
     form.footerText = updated.footerText ?? '';
+    Object.assign(original, form);
     ok.value = true;
   } catch (e) {
     error.value = e instanceof Error ? e.message : '저장에 실패했어요';
@@ -52,82 +70,223 @@ async function onSubmit(): Promise<void> {
     submitting.value = false;
   }
 }
+
+function resetChanges(): void {
+  Object.assign(form, original);
+  error.value = null;
+  ok.value = false;
+}
 </script>
 
 <template>
-  <div>
-    <h2 class="text-2xl font-bold text-ink mb-4">카페 꾸미기</h2>
+  <div class="p-8">
+    <header class="mb-6 flex items-end justify-between gap-4 flex-wrap">
+      <div>
+        <h1 class="text-4xl font-extrabold text-ink leading-tight">카페 꾸미기 🎨</h1>
+        <p class="mt-2 text-sm text-ink-muted">홈 화면의 배너·인사말·푸터를 자유롭게 꾸며보세요</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span
+          v-if="isDirty"
+          class="text-[11px] px-2.5 py-1 rounded-full bg-corn/20 text-corn font-semibold"
+        >
+          • 저장 안 된 변경 있음
+        </span>
+        <button
+          v-if="isDirty"
+          type="button"
+          class="rounded-full border border-border px-4 py-2 text-sm text-ink-muted hover:text-ink hover:border-ink/40 transition-colors"
+          @click="resetChanges"
+        >
+          취소
+        </button>
+        <button
+          type="button"
+          :disabled="submitting || !isDirty"
+          class="rounded-full px-6 py-2 text-sm font-bold text-ink transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          :class="isDirty ? 'bg-gradient-to-r from-violet-deep to-violet/60 hover:shadow-lg hover:shadow-violet/20' : 'bg-elevated'"
+          @click="onSubmit"
+        >
+          {{ submitting ? '저장 중...' : '✓ 저장하기' }}
+        </button>
+      </div>
+    </header>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
 
-    <form v-else class="space-y-4 max-w-2xl" @submit.prevent="onSubmit">
-      <div>
-        <label class="block text-sm text-ink-muted mb-1" for="cafe-banner">대표 배너 이미지</label>
-        <div class="flex gap-2 items-center">
-          <input
-            id="cafe-banner"
-            v-model="form.heroBannerUrl"
-            type="url"
-            placeholder="https://... (비우면 그라데이션 배경)"
-            class="flex-1 rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
-          />
+    <div v-else class="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
+      <div class="space-y-5">
+        <section class="rounded-3xl bg-gradient-to-br from-surface to-paper/50 border border-border p-6 shadow-xl shadow-black/20">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="w-7 h-7 rounded-lg bg-violet/20 flex items-center justify-center text-violet text-sm">🖼</span>
+            <h3 class="text-sm font-bold text-ink">대표 배너</h3>
+            <span class="text-[10px] text-ink-muted">권장 3:1 비율 · 최대 10MB</span>
+          </div>
+
           <label
-            class="cursor-pointer rounded-md border border-border px-3 py-2 text-sm text-ink-muted hover:text-pepper hover:border-pepper"
-            :class="{ 'opacity-50 pointer-events-none': uploading }"
+            class="block relative aspect-[3/1] rounded-2xl border-2 border-dashed border-violet/30 bg-paper/40 overflow-hidden cursor-pointer hover:border-violet/60 hover:bg-paper/60 transition-colors group"
+            :class="{ 'opacity-60 pointer-events-none': uploading }"
           >
-            {{ uploading ? '업로드 중...' : '파일 선택' }}
             <input type="file" accept="image/*" class="hidden" @change="pickAndUpload" />
+            <img
+              v-if="form.heroBannerUrl"
+              :src="form.heroBannerUrl"
+              alt="배너 미리보기"
+              class="absolute inset-0 w-full h-full object-cover"
+            />
+            <div
+              v-if="!form.heroBannerUrl"
+              class="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center"
+            >
+              <span class="w-12 h-12 rounded-full bg-violet/20 flex items-center justify-center text-2xl text-violet group-hover:scale-110 transition-transform">+</span>
+              <div class="text-xs text-ink">클릭해서 이미지 선택</div>
+              <div class="text-[10px] text-ink-muted">또는 끌어다 놓기</div>
+            </div>
+            <div
+              v-else
+              class="absolute inset-0 bg-paper/0 group-hover:bg-paper/60 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100"
+            >
+              <span class="text-xs text-ink font-semibold">↻ 다른 이미지로 교체</span>
+            </div>
+            <div
+              v-if="uploading"
+              class="absolute inset-0 bg-paper/80 flex items-center justify-center text-sm text-violet font-semibold"
+            >
+              업로드 중...
+            </div>
           </label>
+
+          <div v-if="form.heroBannerUrl" class="mt-2 flex items-center gap-2">
+            <input
+              v-model="form.heroBannerUrl"
+              type="url"
+              placeholder="https://..."
+              class="flex-1 rounded-full bg-elevated border border-border px-3 py-1.5 text-[11px] text-ink-muted font-mono"
+            />
+            <button
+              type="button"
+              class="text-[11px] text-cheek hover:underline whitespace-nowrap"
+              @click="form.heroBannerUrl = ''"
+            >
+              제거
+            </button>
+          </div>
+
+          <p v-if="uploadError" class="mt-2 text-xs text-cheek">{{ uploadError }}</p>
+        </section>
+
+        <section class="rounded-3xl bg-gradient-to-br from-surface to-paper/50 border border-border p-6 shadow-xl shadow-black/20 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-corn/20 flex items-center justify-center text-corn text-sm">✏</span>
+            <h3 class="text-sm font-bold text-ink">메시지</h3>
+          </div>
+
+          <label class="block">
+            <div class="flex items-baseline justify-between mb-1.5">
+              <span class="text-xs font-semibold text-ink">헤드라인</span>
+              <span class="text-[10px] text-ink-muted tabular-nums">{{ headlineCount }} / 80</span>
+            </div>
+            <input
+              v-model="form.heroHeadline"
+              type="text"
+              maxlength="80"
+              placeholder="오늘도 늉비랑 고추밭에 놀자!"
+              class="w-full rounded-xl bg-elevated border border-border px-4 py-2.5 text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none focus:border-violet/50 focus:bg-paper transition-colors"
+            />
+          </label>
+
+          <label class="block">
+            <div class="flex items-baseline justify-between mb-1.5">
+              <span class="text-xs font-semibold text-ink">서브 문구 <span class="text-ink-muted font-normal">(선택)</span></span>
+              <span class="text-[10px] text-ink-muted tabular-nums">{{ subtextCount }} / 200</span>
+            </div>
+            <input
+              v-model="form.heroSubtext"
+              type="text"
+              maxlength="200"
+              placeholder="초록고추 여러분 안녕~"
+              class="w-full rounded-xl bg-elevated border border-border px-4 py-2.5 text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none focus:border-violet/50 focus:bg-paper transition-colors"
+            />
+          </label>
+
+          <label class="block">
+            <div class="flex items-baseline justify-between mb-1.5">
+              <span class="text-xs font-semibold text-ink">하단 푸터 <span class="text-ink-muted font-normal">(선택)</span></span>
+              <span class="text-[10px] text-ink-muted tabular-nums">{{ footerCount }} / 200</span>
+            </div>
+            <input
+              v-model="form.footerText"
+              type="text"
+              maxlength="200"
+              placeholder="© 김늉비 고추밭 · 비공식 팬카페"
+              class="w-full rounded-xl bg-elevated border border-border px-4 py-2.5 text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none focus:border-violet/50 focus:bg-paper transition-colors"
+            />
+          </label>
+        </section>
+
+        <p v-if="error" class="text-cheek text-sm">⚠ {{ error }}</p>
+        <p v-else-if="ok" class="text-pepper text-sm">✓ 저장됐어요. 홈 화면에서 확인해보세요!</p>
+      </div>
+
+      <section class="rounded-3xl bg-gradient-to-br from-violet-deep/15 via-surface to-paper border border-violet/20 shadow-2xl shadow-violet/10 overflow-hidden">
+        <header class="px-6 py-3 border-b border-border flex items-center justify-between bg-paper/30 backdrop-blur-sm">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-pepper"></span>
+            <span class="text-xs font-semibold text-ink">홈 화면 미리보기</span>
+          </div>
+          <div class="text-[10px] text-ink-muted">corncorntea.com/</div>
+        </header>
+
+        <div class="p-6 space-y-4">
+          <div class="rounded-2xl border border-border p-4 flex items-center gap-3 bg-elevated">
+            <div class="w-10 h-10 rounded-lg bg-violet-deep/30 flex items-center justify-center text-lg">📺</div>
+            <div class="text-sm text-ink-muted">늉비가 지금은 자리 비웠어요. 곧 봐요!</div>
+          </div>
+
+          <div
+            class="relative rounded-2xl overflow-hidden border border-border"
+            :class="form.heroBannerUrl ? '' : 'bg-gradient-to-br from-violet-deep/40 via-violet/20 to-corn/20'"
+          >
+            <img
+              v-if="form.heroBannerUrl"
+              :src="form.heroBannerUrl"
+              alt=""
+              class="absolute inset-0 w-full h-full object-cover"
+            />
+            <div
+              class="relative p-6 min-h-[140px] flex flex-col justify-center"
+              :class="form.heroBannerUrl ? 'bg-gradient-to-r from-paper/85 via-paper/40 to-paper/0' : ''"
+            >
+              <div class="flex items-center gap-1.5 text-xs text-corn font-semibold mb-2">
+                <span class="text-base">🌽</span>
+                <span>초록고추 여러분 안녕~</span>
+              </div>
+              <h1 class="text-2xl font-extrabold text-ink leading-tight">
+                {{ form.heroHeadline || '오늘도 늉비랑 고추밭에 놀자!' }}
+              </h1>
+              <p v-if="form.heroSubtext" class="mt-2 text-sm text-ink/80">
+                {{ form.heroSubtext }}
+              </p>
+            </div>
+          </div>
+
+          <div class="rounded-xl bg-corn/10 border border-corn/30 px-4 py-2.5 flex items-center gap-3">
+            <span class="px-2 py-0.5 rounded bg-corn text-paper text-[10px] font-bold shrink-0">공지</span>
+            <span class="text-xs text-ink truncate">[필독] 고추밭 운영 규칙 및 운영 원칙</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div v-for="i in 2" :key="i" class="rounded-xl bg-surface border border-border p-3 h-20"></div>
+          </div>
+
+          <div
+            v-if="form.footerText"
+            class="mt-6 pt-4 border-t border-border text-[11px] text-ink-muted text-center"
+          >
+            {{ form.footerText }}
+          </div>
         </div>
-        <p v-if="uploadError" class="mt-1 text-xs text-cheek">{{ uploadError }}</p>
-        <div v-if="form.heroBannerUrl" class="mt-2 aspect-[3/1] w-full overflow-hidden rounded-md bg-elevated">
-          <img :src="form.heroBannerUrl" alt="배너 미리보기" class="w-full h-full object-cover" />
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm text-ink-muted mb-1" for="cafe-headline">헤드라인 (필수, 최대 80자)</label>
-        <input
-          id="cafe-headline"
-          v-model="form.heroHeadline"
-          type="text"
-          maxlength="80"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink focus:outline-none focus:border-pepper"
-        />
-      </div>
-
-      <div>
-        <label class="block text-sm text-ink-muted mb-1" for="cafe-subtext">서브 문구 (선택, 최대 200자)</label>
-        <input
-          id="cafe-subtext"
-          v-model="form.heroSubtext"
-          type="text"
-          maxlength="200"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink focus:outline-none focus:border-pepper"
-        />
-      </div>
-
-      <div>
-        <label class="block text-sm text-ink-muted mb-1" for="cafe-footer">하단 푸터 (선택, 최대 200자)</label>
-        <input
-          id="cafe-footer"
-          v-model="form.footerText"
-          type="text"
-          maxlength="200"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink focus:outline-none focus:border-pepper"
-        />
-      </div>
-
-      <p v-if="error" class="text-cheek text-sm">{{ error }}</p>
-      <p v-else-if="ok" class="text-pepper text-sm">저장됐어요</p>
-
-      <button
-        type="submit"
-        :disabled="submitting"
-        class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep disabled:opacity-50"
-      >
-        {{ submitting ? '저장 중...' : '저장하기' }}
-      </button>
-    </form>
+      </section>
+    </div>
   </div>
 </template>

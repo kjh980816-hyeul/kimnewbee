@@ -4,8 +4,12 @@ import com.gochubat.domain.comment.dto.CommentResponse;
 import com.gochubat.domain.comment.dto.CommentWriteRequest;
 import com.gochubat.domain.comment.entity.Comment;
 import com.gochubat.domain.comment.repository.CommentRepository;
+import com.gochubat.domain.notification.entity.NotificationType;
+import com.gochubat.domain.notification.service.NotificationService;
 import com.gochubat.domain.point.PointReason;
 import com.gochubat.domain.point.PointService;
+import com.gochubat.domain.post.entity.BoardType;
+import com.gochubat.domain.post.entity.Post;
 import com.gochubat.domain.post.repository.PostRepository;
 import com.gochubat.domain.user.entity.User;
 import com.gochubat.domain.user.repository.UserRepository;
@@ -23,21 +27,26 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class CommentService {
 
+	private static final int NOTIFICATION_PREVIEW_LENGTH = 60;
+
 	private final CommentRepository commentRepository;
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final PointService pointService;
+	private final NotificationService notificationService;
 
 	public CommentService(
 			CommentRepository commentRepository,
 			PostRepository postRepository,
 			UserRepository userRepository,
-			PointService pointService
+			PointService pointService,
+			NotificationService notificationService
 	) {
 		this.commentRepository = commentRepository;
 		this.postRepository = postRepository;
 		this.userRepository = userRepository;
 		this.pointService = pointService;
+		this.notificationService = notificationService;
 	}
 
 	public List<CommentResponse> list(Long postId) {
@@ -49,9 +58,11 @@ public class CommentService {
 
 	@Transactional
 	public CommentResponse create(Long postId, Long userId, CommentWriteRequest request) {
-		requirePostExists(postId);
+		Post post = postRepository.findById(postId)
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+		Comment parent = null;
 		if (request.parentId() != null) {
-			Comment parent = commentRepository.findById(request.parentId())
+			parent = commentRepository.findById(request.parentId())
 					.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 			if (!parent.getPostId().equals(postId)) {
 				throw new CustomException(ErrorCode.INVALID_REQUEST);
@@ -61,6 +72,7 @@ public class CommentService {
 				.orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
 		Comment saved = commentRepository.save(Comment.create(postId, request.parentId(), author, request.content()));
 		pointService.award(userId, PointReason.COMMENT_CREATED);
+		dispatchCommentNotification(post, author, saved, parent);
 		return CommentResponse.from(saved);
 	}
 
@@ -93,5 +105,47 @@ public class CommentService {
 		if (!postRepository.existsById(postId)) {
 			throw new CustomException(ErrorCode.NOT_FOUND);
 		}
+	}
+
+	private void dispatchCommentNotification(Post post, User commenter, Comment saved, Comment parent) {
+		Long postAuthorId = post.getAuthor().getId();
+		String link = "/" + boardSlug(post.getType()) + "/" + post.getId();
+		String snippet = truncate(saved.getContent(), NOTIFICATION_PREVIEW_LENGTH);
+		boolean isReply = parent != null;
+		Long parentAuthorId = isReply ? parent.getAuthor().getId() : null;
+		if (isReply && !parentAuthorId.equals(commenter.getId())) {
+			notificationService.notify(
+					parentAuthorId,
+					NotificationType.REPLY,
+					commenter.getNickname() + "님이 대댓글을 남겼어요",
+					snippet,
+					link
+			);
+		}
+		if (!postAuthorId.equals(commenter.getId()) && (!isReply || !postAuthorId.equals(parentAuthorId))) {
+			notificationService.notify(
+					postAuthorId,
+					NotificationType.COMMENT,
+					commenter.getNickname() + "님이 내 글에 댓글을 남겼어요",
+					snippet,
+					link
+			);
+		}
+	}
+
+	private String boardSlug(BoardType type) {
+		return switch (type) {
+			case FREE -> "free";
+			case FANART -> "fanart";
+			case CLIP -> "clips";
+			case PET -> "pets";
+			case OFFLINE -> "offline";
+		};
+	}
+
+	private String truncate(String s, int max) {
+		if (s == null) return "";
+		if (s.length() <= max) return s;
+		return s.substring(0, max) + "...";
 	}
 }
