@@ -43,7 +43,7 @@ function relativeTime(iso: string): string {
 }
 
 function palette(id: number) {
-  return CARD_PALETTES[id % CARD_PALETTES.length];
+  return CARD_PALETTES[id % CARD_PALETTES.length]!;
 }
 </script>
 
