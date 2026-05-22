@@ -122,29 +122,45 @@ onMounted(async () => {
 
 const heroHeadline = computed(() => cafe.value?.heroHeadline || '오늘도 늉비랑 고추밭에 놀자!');
 const heroSubtext = computed(() => cafe.value?.heroSubtext || '초록고추 여러분 안녕~ 오늘은 어떤 이야기를 나눠볼까요?');
+const heroBannerUrl = computed(() => cafe.value?.heroBannerUrl || null);
+const footerText = computed(() => cafe.value?.footerText || null);
 </script>
 
 <template>
   <div class="p-8 space-y-6">
     <LiveBanner />
 
-    <section class="flex items-end justify-between gap-4 flex-wrap">
-      <div class="flex-1 min-w-0">
-        <h1 class="text-2xl font-extrabold text-ink leading-tight">{{ heroHeadline }}</h1>
-        <p class="mt-1 text-sm text-ink-muted">{{ heroSubtext }}</p>
-      </div>
-      <div class="flex items-center gap-6">
-        <div class="text-right">
-          <div class="text-xl font-extrabold text-ink tabular-nums">—</div>
-          <div class="text-[11px] text-ink-muted mt-0.5">전체 회원</div>
+    <section
+      class="relative rounded-2xl overflow-hidden border border-border"
+      :class="heroBannerUrl ? '' : 'bg-gradient-to-br from-violet-deep/30 via-violet/15 to-corn/15'"
+    >
+      <img
+        v-if="heroBannerUrl"
+        :src="heroBannerUrl"
+        alt=""
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+      <div
+        class="relative px-6 py-8 flex items-end justify-between gap-4 flex-wrap"
+        :class="heroBannerUrl ? 'bg-gradient-to-r from-paper/85 via-paper/50 to-paper/10' : ''"
+      >
+        <div class="flex-1 min-w-0">
+          <h1 class="text-2xl font-extrabold text-ink leading-tight drop-shadow-sm">{{ heroHeadline }}</h1>
+          <p class="mt-1 text-sm text-ink/80 drop-shadow-sm">{{ heroSubtext }}</p>
         </div>
-        <div class="text-right">
-          <div class="text-xl font-extrabold text-violet tabular-nums">—</div>
-          <div class="text-[11px] text-ink-muted mt-0.5">오늘 새 글</div>
-        </div>
-        <div class="text-right">
-          <div class="text-xl font-extrabold text-corn tabular-nums">—</div>
-          <div class="text-[11px] text-ink-muted mt-0.5">오늘 방문자</div>
+        <div class="flex items-center gap-6">
+          <div class="text-right">
+            <div class="text-xl font-extrabold text-ink tabular-nums">—</div>
+            <div class="text-[11px] text-ink-muted mt-0.5">전체 회원</div>
+          </div>
+          <div class="text-right">
+            <div class="text-xl font-extrabold text-violet tabular-nums">—</div>
+            <div class="text-[11px] text-ink-muted mt-0.5">오늘 새 글</div>
+          </div>
+          <div class="text-right">
+            <div class="text-xl font-extrabold text-corn tabular-nums">—</div>
+            <div class="text-[11px] text-ink-muted mt-0.5">오늘 방문자</div>
+          </div>
         </div>
       </div>
     </section>
@@ -259,5 +275,12 @@ const heroSubtext = computed(() => cafe.value?.heroSubtext || '초록고추 여�
         <p v-else class="text-sm text-ink-muted py-4 text-center">아직 팬레터가 없어요.</p>
       </div>
     </section>
+
+    <footer
+      v-if="footerText"
+      class="mt-6 pt-5 border-t border-border text-center text-xs text-ink-muted"
+    >
+      {{ footerText }}
+    </footer>
   </div>
 </template>

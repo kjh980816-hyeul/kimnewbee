@@ -38,11 +38,12 @@ const showCreateModal = ref(false);
 const newBoard = reactive({
   slug: '',
   name: '',
-  description: '',
   layout: 'LIST' as BoardLayoutInput,
   readTier: 'SEED' as TierInput,
   writeTier: 'PEPPER' as TierInput,
 });
+
+const previewLayout = computed<BoardLayout>(() => newBoard.layout.toLowerCase() as BoardLayout);
 const creating = ref(false);
 
 const canCreate = computed(
@@ -64,7 +65,7 @@ async function load(): Promise<void> {
 }
 
 function openCreate(): void {
-  Object.assign(newBoard, { slug: '', name: '', description: '', layout: 'LIST', readTier: 'SEED', writeTier: 'PEPPER' });
+  Object.assign(newBoard, { slug: '', name: '', layout: 'LIST', readTier: 'SEED', writeTier: 'PEPPER' });
   showCreateModal.value = true;
 }
 
@@ -289,15 +290,6 @@ async function onDelete(board: Board): Promise<void> {
                   class="w-full rounded-lg bg-elevated border border-border px-3 py-2 text-sm text-ink font-mono"
                 />
               </label>
-              <label class="block">
-                <span class="block text-xs text-ink-muted mb-1">설명 (부제, 선택)</span>
-                <input
-                  v-model="newBoard.description"
-                  type="text"
-                  placeholder="늉비가 올려주는 일상 사진들~"
-                  class="w-full rounded-lg bg-elevated border border-border px-3 py-2 text-sm text-ink"
-                />
-              </label>
             </div>
 
             <div>
@@ -350,10 +342,56 @@ async function onDelete(board: Board): Promise<void> {
 
             <div class="rounded-xl bg-elevated p-3">
               <h4 class="text-xs font-bold text-ink mb-2">📌 미리보기</h4>
-              <div class="text-xs text-ink mb-1 truncate">{{ newBoard.name || '게시판 이름' }}</div>
-              <div class="text-[10px] text-ink-muted mb-2">{{ newBoard.description || '설명 없음' }}</div>
-              <div class="grid grid-cols-3 gap-1">
+              <div class="flex items-center gap-1.5 mb-2">
+                <span class="text-sm">{{ LAYOUT_META[previewLayout].emoji }}</span>
+                <span class="text-xs font-semibold text-ink truncate">{{ newBoard.name || '게시판 이름' }}</span>
+              </div>
+
+              <div v-if="previewLayout === 'list'" class="space-y-1">
+                <div v-for="i in 5" :key="i" class="flex items-center justify-between bg-paper/40 border border-border rounded px-2 py-1">
+                  <div class="h-1.5 bg-border/60 rounded" :style="{ width: `${60 - i * 6}%` }"></div>
+                  <div class="h-1.5 w-6 bg-border/40 rounded"></div>
+                </div>
+              </div>
+
+              <div v-else-if="previewLayout === 'gallery'" class="grid grid-cols-3 gap-1">
                 <div v-for="i in 6" :key="i" class="aspect-square rounded bg-paper/50 border border-border"></div>
+              </div>
+
+              <div v-else-if="previewLayout === 'card'" class="space-y-1.5">
+                <div v-for="i in 3" :key="i" class="flex gap-1.5 bg-paper/40 border border-border rounded p-1.5">
+                  <div class="w-10 h-10 rounded bg-paper/70 border border-border shrink-0"></div>
+                  <div class="flex-1 space-y-1 pt-0.5">
+                    <div class="h-1.5 bg-border/60 rounded" style="width: 70%"></div>
+                    <div class="h-1 bg-border/40 rounded"></div>
+                    <div class="h-1 bg-border/40 rounded" style="width: 50%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else-if="previewLayout === 'video'" class="space-y-1.5">
+                <div v-for="i in 2" :key="i" class="bg-paper/50 border border-border rounded p-1.5">
+                  <div class="aspect-video rounded bg-paper/70 border border-border mb-1 flex items-center justify-center">
+                    <span class="text-paper text-lg">▶</span>
+                  </div>
+                  <div class="h-1.5 bg-border/60 rounded" style="width: 75%"></div>
+                </div>
+              </div>
+
+              <div v-else-if="previewLayout === 'letter'" class="space-y-1.5">
+                <div v-for="i in 3" :key="i" class="bg-violet/10 border border-violet/30 rounded-lg px-2 py-1.5 relative">
+                  <div class="absolute -top-1 left-2 w-3 h-1.5 bg-violet/40 rounded-sm"></div>
+                  <div class="h-1 bg-violet/40 rounded mt-1" :style="{ width: `${70 - i * 8}%` }"></div>
+                  <div class="h-1 bg-violet/30 rounded mt-1" style="width: 40%"></div>
+                </div>
+              </div>
+
+              <div v-else-if="previewLayout === 'rank'" class="space-y-1">
+                <div v-for="i in 3" :key="i" class="flex items-center gap-1.5 bg-paper/40 border border-border rounded px-2 py-1">
+                  <span class="text-[10px] font-bold tabular-nums" :class="i === 1 ? 'text-yellow-400' : i === 2 ? 'text-gray-300' : 'text-amber-600'">{{ i }}위</span>
+                  <div class="h-1.5 bg-pepper/40 rounded flex-1" :style="{ maxWidth: `${100 - i * 18}%` }"></div>
+                  <span class="text-[9px] text-ink-muted tabular-nums">{{ 99 - i * 12 }}</span>
+                </div>
               </div>
             </div>
           </div>

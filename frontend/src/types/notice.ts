@@ -15,3 +15,8 @@ export interface NoticeListResponse {
   data: NoticeListItem[];
   total: number;
 }
+
+export interface NoticeWriteInput {
+  title: string;
+  content: string;
+}

@@ -35,7 +35,6 @@ const menu: AdminMenu[] = [
   { to: { name: 'admin-dashboard' }, label: '대시보드', icon: '⌂', enabled: true },
   { to: { name: 'admin-boards' }, label: '게시판 관리', icon: '☰', enabled: true },
   { to: { name: 'admin-members' }, label: '회원 관리', icon: '👥', enabled: true },
-  { to: { name: 'admin-roles' }, label: '등급·권한', icon: '🏅', enabled: true },
   { to: { name: 'admin-notices' }, label: '공지사항', icon: '📢', enabled: true },
   { to: { name: 'admin-cafe' }, label: '카페 꾸미기', icon: '🎨', enabled: true },
   { to: { name: 'admin-stats' }, label: '통계', icon: '📈', enabled: true },

@@ -52,7 +52,6 @@ export const router = createRouter({
         { path: 'dashboard', name: 'admin-dashboard', component: () => import('@/views/admin/AdminDashboard.vue') },
         { path: 'members', name: 'admin-members', component: () => import('@/views/admin/AdminMembers.vue') },
         { path: 'boards', name: 'admin-boards', component: () => import('@/views/admin/AdminBoards.vue') },
-        { path: 'roles', name: 'admin-roles', component: () => import('@/views/admin/AdminRoles.vue') },
         { path: 'notices', name: 'admin-notices', component: () => import('@/views/admin/AdminNotices.vue') },
         { path: 'stats', name: 'admin-stats', component: () => import('@/views/admin/AdminStats.vue') },
         { path: 'cafe', name: 'admin-cafe', component: () => import('@/views/admin/AdminCafe.vue') },
