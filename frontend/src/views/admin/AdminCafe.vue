@@ -8,12 +8,14 @@ const form = reactive({
   heroHeadline: '',
   heroSubtext: '',
   footerText: '',
+  chzzkChannelId: '',
 });
 const original = reactive({
   heroBannerUrl: '',
   heroHeadline: '',
   heroSubtext: '',
   footerText: '',
+  chzzkChannelId: '',
 });
 const loading = ref(true);
 const submitting = ref(false);
@@ -27,8 +29,15 @@ const isDirty = computed(() =>
   form.heroBannerUrl !== original.heroBannerUrl ||
   form.heroHeadline !== original.heroHeadline ||
   form.heroSubtext !== original.heroSubtext ||
-  form.footerText !== original.footerText
+  form.footerText !== original.footerText ||
+  form.chzzkChannelId !== original.chzzkChannelId
 );
+
+const channelIdValid = computed(() => {
+  const v = form.chzzkChannelId.trim();
+  if (!v) return true;
+  return /^[a-f0-9]{32}$/.test(v);
+});
 
 const headlineCount = computed(() => form.heroHeadline.length);
 const subtextCount = computed(() => form.heroSubtext.length);
@@ -41,6 +50,7 @@ onMounted(async () => {
     form.heroHeadline = cfg.heroHeadline;
     form.heroSubtext = cfg.heroSubtext ?? '';
     form.footerText = cfg.footerText ?? '';
+    form.chzzkChannelId = cfg.chzzkChannelId ?? '';
     Object.assign(original, form);
   } catch (e) {
     error.value = e instanceof Error ? e.message : '카페 설정을 불러올 수 없어요';
@@ -54,14 +64,22 @@ async function onSubmit(): Promise<void> {
     error.value = '헤드라인은 필수예요';
     return;
   }
+  if (!channelIdValid.value) {
+    error.value = '치지직 채널 ID 형식이 올바르지 않아요 (32자 16진수)';
+    return;
+  }
   submitting.value = true;
   error.value = null;
   ok.value = false;
   try {
-    const updated = await updateCafeConfig({ ...form });
+    const updated = await updateCafeConfig({
+      ...form,
+      chzzkChannelId: form.chzzkChannelId.trim(),
+    });
     form.heroBannerUrl = updated.heroBannerUrl ?? '';
     form.heroSubtext = updated.heroSubtext ?? '';
     form.footerText = updated.footerText ?? '';
+    form.chzzkChannelId = updated.chzzkChannelId ?? '';
     Object.assign(original, form);
     ok.value = true;
   } catch (e) {
@@ -218,9 +236,37 @@ function resetChanges(): void {
               v-model="form.footerText"
               type="text"
               maxlength="200"
-              placeholder="© 김늉비 고추밭 · 비공식 팬카페"
+              placeholder="© 김늉비 고추밭 · 공식 팬카페"
               class="w-full rounded-xl bg-elevated border border-border px-4 py-2.5 text-sm text-ink placeholder:text-ink-muted/50 focus:outline-none focus:border-violet/50 focus:bg-paper transition-colors"
             />
+          </label>
+        </section>
+
+        <section class="rounded-3xl bg-gradient-to-br from-surface to-paper/50 border border-border p-6 shadow-xl shadow-black/20 space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-chzzk/20 flex items-center justify-center text-chzzk text-sm">▶</span>
+            <h3 class="text-sm font-bold text-ink">치지직 라이브 연동</h3>
+            <span class="text-[10px] text-ink-muted">늉비 방송만 홈에 표시</span>
+          </div>
+
+          <label class="block">
+            <div class="flex items-baseline justify-between mb-1.5">
+              <span class="text-xs font-semibold text-ink">치지직 채널 ID</span>
+              <span v-if="!channelIdValid" class="text-[10px] text-cheek">32자 16진수만</span>
+            </div>
+            <input
+              v-model="form.chzzkChannelId"
+              type="text"
+              maxlength="64"
+              placeholder="예: a1b2c3d4e5f6789012345678901234ab"
+              class="w-full rounded-xl bg-elevated border px-4 py-2.5 text-sm text-ink font-mono placeholder:text-ink-muted/50 focus:outline-none focus:bg-paper transition-colors"
+              :class="channelIdValid ? 'border-border focus:border-violet/50' : 'border-cheek/50 focus:border-cheek'"
+            />
+            <p class="mt-2 text-[11px] text-ink-muted leading-relaxed">
+              치지직 채널 페이지 URL의 마지막 부분이에요. 예) <code class="bg-elevated px-1 rounded text-[10px]">chzzk.naver.com/live/<span class="text-violet">a1b2c3...</span></code>
+              <br />방송이 켜져 있으면 홈 상단에 자동으로 라이브 배너가 떠요.
+              비워두면 라이브 배너가 안 뜨고, 다른 사람 방송은 등록 못 하니까 안심.
+            </p>
           </label>
         </section>
 

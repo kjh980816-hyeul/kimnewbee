@@ -9,6 +9,7 @@ const cafeStore: CafeConfig = {
   heroHeadline: '고추밭에 어서오세요 🌶️',
   heroSubtext: '김늉비 팬들이 모이는 초록고추 정원',
   footerText: '© 고추밭 — 김늉비 팬커뮤니티',
+  chzzkChannelId: null,
   updatedAt: new Date().toISOString(),
 };
 
@@ -36,6 +37,7 @@ export const cafeHandlers = [
     cafeStore.heroHeadline = body.heroHeadline;
     cafeStore.heroSubtext = body.heroSubtext || null;
     cafeStore.footerText = body.footerText || null;
+    cafeStore.chzzkChannelId = body.chzzkChannelId || null;
     cafeStore.updatedAt = new Date().toISOString();
     return HttpResponse.json(cafeStore);
   }),

@@ -12,6 +12,7 @@ let store: CafeConfig = {
   heroHeadline: '기본',
   heroSubtext: null,
   footerText: null,
+  chzzkChannelId: null,
   updatedAt: '2026-01-01T00:00:00.000Z',
 };
 
@@ -26,6 +27,7 @@ const server = setupServer(
       heroHeadline: body.heroHeadline,
       heroSubtext: body.heroSubtext || null,
       footerText: body.footerText || null,
+      chzzkChannelId: body.chzzkChannelId || null,
       updatedAt: new Date().toISOString(),
     };
     return HttpResponse.json(store);
@@ -41,6 +43,7 @@ beforeEach(() => {
     heroHeadline: '기본',
     heroSubtext: null,
     footerText: null,
+    chzzkChannelId: null,
     updatedAt: '2026-01-01T00:00:00.000Z',
   };
 });
@@ -57,6 +60,7 @@ describe('cafe config api', () => {
       heroBannerUrl: 'https://x/b.png',
       heroSubtext: '서브',
       footerText: '푸터',
+      chzzkChannelId: '',
     });
     const reloaded = await fetchCafeConfig();
     expect(reloaded.heroHeadline).toBe('수정');
@@ -66,13 +70,13 @@ describe('cafe config api', () => {
   it('admin update 403 when not admin', async () => {
     viewerIsAdmin = false;
     await expect(
-      updateCafeConfig({ heroHeadline: 'x', heroBannerUrl: '', heroSubtext: '', footerText: '' }),
+      updateCafeConfig({ heroHeadline: 'x', heroBannerUrl: '', heroSubtext: '', footerText: '', chzzkChannelId: '' }),
     ).rejects.toThrow();
   });
 
   it('admin update rejects empty headline', async () => {
     await expect(
-      updateCafeConfig({ heroHeadline: '', heroBannerUrl: '', heroSubtext: '', footerText: '' }),
+      updateCafeConfig({ heroHeadline: '', heroBannerUrl: '', heroSubtext: '', footerText: '', chzzkChannelId: '' }),
     ).rejects.toThrow();
   });
 });

@@ -2,11 +2,15 @@ package com.gochubat.domain.user.controller;
 
 import com.gochubat.domain.user.dto.AdminViewerInfoResponse;
 import com.gochubat.domain.user.dto.CurrentUserResponse;
+import com.gochubat.domain.user.dto.ProfileImageUpdateRequest;
 import com.gochubat.domain.user.dto.UserStatsResponse;
 import com.gochubat.domain.user.service.UserService;
 import com.gochubat.global.security.AuthenticatedController;
+import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +29,14 @@ public class UserController extends AuthenticatedController {
 	@GetMapping
 	public CurrentUserResponse me(Authentication authentication) {
 		return userService.getCurrentUser(requireUserId(authentication));
+	}
+
+	@PatchMapping("/profile-image")
+	public CurrentUserResponse updateProfileImage(
+			Authentication authentication,
+			@Valid @RequestBody ProfileImageUpdateRequest request
+	) {
+		return userService.updateProfileImage(requireUserId(authentication), request.profileImage());
 	}
 
 	@GetMapping("/stats")

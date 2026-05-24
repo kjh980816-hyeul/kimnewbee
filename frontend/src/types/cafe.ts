@@ -3,6 +3,7 @@ export interface CafeConfig {
   heroHeadline: string;
   heroSubtext: string | null;
   footerText: string | null;
+  chzzkChannelId: string | null;
   updatedAt: string;
 }
 
@@ -11,4 +12,5 @@ export interface CafeConfigUpdateInput {
   heroHeadline: string;
   heroSubtext: string;
   footerText: string;
+  chzzkChannelId: string;
 }

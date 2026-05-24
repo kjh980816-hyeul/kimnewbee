@@ -35,14 +35,18 @@ public class CafeConfig {
 	@Column(name = "footer_text", length = 200)
 	private String footerText;
 
+	@Column(name = "chzzk_channel_id", length = 64)
+	private String chzzkChannelId;
+
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
-	private CafeConfig(String heroBannerUrl, String heroHeadline, String heroSubtext, String footerText) {
+	private CafeConfig(String heroBannerUrl, String heroHeadline, String heroSubtext, String footerText, String chzzkChannelId) {
 		this.heroBannerUrl = heroBannerUrl;
 		this.heroHeadline = heroHeadline;
 		this.heroSubtext = heroSubtext;
 		this.footerText = footerText;
+		this.chzzkChannelId = chzzkChannelId;
 		this.updatedAt = LocalDateTime.now();
 	}
 
@@ -51,15 +55,17 @@ public class CafeConfig {
 				null,
 				"고추밭에 어서오세요 🌶️",
 				"김늉비 팬들이 모이는 초록고추 정원",
-				"© 고추밭 — 김늉비 팬커뮤니티"
+				"© 고추밭 — 김늉비 팬커뮤니티",
+				null
 		);
 	}
 
-	public void update(String heroBannerUrl, String heroHeadline, String heroSubtext, String footerText) {
+	public void update(String heroBannerUrl, String heroHeadline, String heroSubtext, String footerText, String chzzkChannelId) {
 		this.heroBannerUrl = heroBannerUrl;
 		this.heroHeadline = heroHeadline;
 		this.heroSubtext = heroSubtext;
 		this.footerText = footerText;
+		this.chzzkChannelId = chzzkChannelId;
 	}
 
 	@PreUpdate

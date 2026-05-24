@@ -77,6 +77,10 @@ public class User {
 		this.tier = next;
 	}
 
+	public void changeProfileImage(String url) {
+		this.profileImage = (url == null || url.isBlank()) ? null : url;
+	}
+
 	@PrePersist
 	void prePersist() {
 		if (createdAt == null) {

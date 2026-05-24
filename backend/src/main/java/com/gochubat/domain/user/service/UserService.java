@@ -39,6 +39,14 @@ public class UserService {
 		return CurrentUserResponse.from(user);
 	}
 
+	@Transactional
+	public CurrentUserResponse updateProfileImage(Long userId, String profileImage) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
+		user.changeProfileImage(profileImage);
+		return CurrentUserResponse.from(user);
+	}
+
 	public UserStatsResponse getStats(Long userId) {
 		userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
 		return new UserStatsResponse(

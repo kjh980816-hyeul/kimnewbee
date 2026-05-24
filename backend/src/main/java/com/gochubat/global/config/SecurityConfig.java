@@ -71,6 +71,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/api/boards").permitAll()
 						.requestMatchers("/api/boards/**").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/cafe/config").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/chzzk/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/search").permitAll()
 						.requestMatchers("/api/admin/**").authenticated()
 						.anyRequest().permitAll())

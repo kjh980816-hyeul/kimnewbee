@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
-import { fetchMe, fetchMyStats } from '@/api/me';
+import { fetchMe, fetchMyStats, updateMyProfileImage } from '@/api/me';
+import { uploadImage } from '@/api/upload';
 import { logout } from '@/api/auth';
 import { isHttpStatus } from '@/api/error';
 import type { CurrentUser, UserStats } from '@/types/user';
@@ -72,6 +73,48 @@ async function onLogout(): Promise<void> {
   await logout();
   await router.push({ name: 'home' });
 }
+
+const avatarBusy = ref(false);
+const avatarError = ref<string | null>(null);
+
+async function onAvatarPick(event: Event): Promise<void> {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file || !user.value) return;
+  avatarBusy.value = true;
+  avatarError.value = null;
+  try {
+    const uploaded = await uploadImage(file);
+    const updated = await updateMyProfileImage(uploaded.url);
+    user.value = updated;
+  } catch (e) {
+    if (isHttpStatus(e, 400)) {
+      avatarError.value = '이미지 형식/크기를 확인해주세요 (10MB, png/jpg/webp/gif)';
+    } else if (isHttpStatus(e, 401)) {
+      avatarError.value = '로그인이 필요해요';
+    } else {
+      avatarError.value = e instanceof Error ? e.message : '프로필 사진 변경 실패';
+    }
+  } finally {
+    avatarBusy.value = false;
+    input.value = '';
+  }
+}
+
+async function onAvatarRemove(): Promise<void> {
+  if (!user.value || !user.value.profileImage) return;
+  if (!confirm('프로필 사진을 기본으로 되돌릴까요?')) return;
+  avatarBusy.value = true;
+  avatarError.value = null;
+  try {
+    const updated = await updateMyProfileImage(null);
+    user.value = updated;
+  } catch (e) {
+    avatarError.value = e instanceof Error ? e.message : '되돌리기 실패';
+  } finally {
+    avatarBusy.value = false;
+  }
+}
 </script>
 
 <template>
@@ -99,10 +142,21 @@ async function onLogout(): Promise<void> {
     <template v-else-if="user">
       <section class="relative rounded-2xl bg-gradient-to-br from-violet-deep to-violet/30 p-6 overflow-hidden">
         <div class="flex items-center gap-5">
-          <div class="w-24 h-24 rounded-full bg-violet/40 border-4 border-violet/30 grid place-items-center text-4xl shrink-0 overflow-hidden">
+          <label
+            class="relative w-24 h-24 rounded-full bg-violet/40 border-4 border-violet/30 grid place-items-center text-4xl shrink-0 overflow-hidden cursor-pointer group"
+            :class="{ 'pointer-events-none opacity-60': avatarBusy }"
+            title="클릭해서 프로필 사진 변경"
+          >
+            <input type="file" accept="image/*" class="hidden" @change="onAvatarPick" />
             <img v-if="user.profileImage" :src="user.profileImage" :alt="user.nickname" class="w-full h-full object-cover" />
             <span v-else>{{ user.nickname[0] }}</span>
-          </div>
+            <div class="absolute inset-0 bg-paper/0 group-hover:bg-paper/70 transition-colors flex items-center justify-center text-[10px] text-ink font-semibold opacity-0 group-hover:opacity-100">
+              📷<br />변경
+            </div>
+            <div v-if="avatarBusy" class="absolute inset-0 bg-paper/80 flex items-center justify-center text-[10px] text-violet font-semibold">
+              올리는 중...
+            </div>
+          </label>
           <div class="min-w-0 flex-1">
             <div class="flex items-center gap-2 flex-wrap">
               <h2 class="text-2xl font-extrabold text-ink">{{ user.nickname }}</h2>
@@ -119,12 +173,16 @@ async function onLogout(): Promise<void> {
               <div><span class="font-bold text-ink">{{ stats.commentCount }}</span> <span class="text-ink-muted text-xs">댓글</span></div>
               <div><span class="font-bold text-ink">{{ stats.likeGivenCount }}</span> <span class="text-ink-muted text-xs">받은 ♥</span></div>
             </div>
+            <p v-if="avatarError" class="mt-2 text-xs text-cheek">⚠ {{ avatarError }}</p>
           </div>
           <button
+            v-if="user.profileImage"
             type="button"
-            class="rounded-full border border-ink/30 px-4 py-1.5 text-sm text-ink hover:bg-paper/20 transition-colors shrink-0"
+            :disabled="avatarBusy"
+            class="rounded-full border border-ink/30 px-4 py-1.5 text-sm text-ink hover:bg-paper/20 transition-colors shrink-0 disabled:opacity-50"
+            @click="onAvatarRemove"
           >
-            프로필 수정
+            프사 기본으로
           </button>
         </div>
       </section>

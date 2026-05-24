@@ -9,6 +9,7 @@ public record CafeConfigResponse(
 		String heroHeadline,
 		String heroSubtext,
 		String footerText,
+		String chzzkChannelId,
 		LocalDateTime updatedAt
 ) {
 
@@ -18,6 +19,7 @@ public record CafeConfigResponse(
 				config.getHeroHeadline(),
 				config.getHeroSubtext(),
 				config.getFooterText(),
+				config.getChzzkChannelId(),
 				config.getUpdatedAt()
 		);
 	}
