@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { createFanart } from '@/api/fanart';
-import { useImageUpload } from '@/composables/useImageUpload';
+import { useImageUpload, isPostableImageUrl } from '@/composables/useImageUpload';
 
 const router = useRouter();
 
@@ -13,15 +13,7 @@ const { uploading, uploadError, pickAndUpload } = useImageUpload(imageUrl);
 const submitting = ref(false);
 const error = ref<string | null>(null);
 
-const isImageUrlValid = computed(() => {
-  if (!imageUrl.value) return false;
-  try {
-    const u = new URL(imageUrl.value);
-    return u.protocol === 'https:' || u.protocol === 'http:';
-  } catch {
-    return false;
-  }
-});
+const isImageUrlValid = computed(() => isPostableImageUrl(imageUrl.value));
 
 async function onSubmit(): Promise<void> {
   if (!title.value.trim() || !imageUrl.value.trim()) {

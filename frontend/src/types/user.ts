@@ -6,6 +6,7 @@ export interface CurrentUser {
   tier: Tier;
   points: number;
   profileImage: string | null;
+  nicknameChangedAt: string | null;
   createdAt: string;
 }
 

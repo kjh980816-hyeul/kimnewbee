@@ -15,3 +15,8 @@ export async function updateMyProfileImage(profileImage: string | null): Promise
   const res = await apiClient.patch<CurrentUser>('/api/me/profile-image', { profileImage });
   return res.data;
 }
+
+export async function updateMyNickname(nickname: string): Promise<CurrentUser> {
+  const res = await apiClient.patch<CurrentUser>('/api/me/nickname', { nickname });
+  return res.data;
+}

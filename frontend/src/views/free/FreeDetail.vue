@@ -6,6 +6,7 @@ import { useIsOwner } from '@/composables/useIsOwner';
 import type { FreePost } from '@/types/free';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
+import MarkdownContent from '@/components/MarkdownContent.vue';
 
 const route = useRoute();
 
@@ -70,7 +71,11 @@ async function onLike(): Promise<void> {
         :like-count="post.likeCount"
         category="잡담"
         @like="onLike"
-      />
+      >
+        <template #body>
+          <MarkdownContent :content="post.content" />
+        </template>
+      </PostArticle>
       <CommentSection :post-id="post.id" class="mt-10" />
     </template>
   </div>

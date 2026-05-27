@@ -2,6 +2,7 @@ package com.gochubat.domain.user.controller;
 
 import com.gochubat.domain.user.dto.AdminViewerInfoResponse;
 import com.gochubat.domain.user.dto.CurrentUserResponse;
+import com.gochubat.domain.user.dto.NicknameUpdateRequest;
 import com.gochubat.domain.user.dto.ProfileImageUpdateRequest;
 import com.gochubat.domain.user.dto.UserStatsResponse;
 import com.gochubat.domain.user.service.UserService;
@@ -37,6 +38,14 @@ public class UserController extends AuthenticatedController {
 			@Valid @RequestBody ProfileImageUpdateRequest request
 	) {
 		return userService.updateProfileImage(requireUserId(authentication), request.profileImage());
+	}
+
+	@PatchMapping("/nickname")
+	public CurrentUserResponse updateNickname(
+			Authentication authentication,
+			@Valid @RequestBody NicknameUpdateRequest request
+	) {
+		return userService.updateNickname(requireUserId(authentication), request.nickname());
 	}
 
 	@GetMapping("/stats")

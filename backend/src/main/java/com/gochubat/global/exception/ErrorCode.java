@@ -9,6 +9,8 @@ public enum ErrorCode {
 	NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND", "요청한 리소스를 찾을 수 없습니다."),
 	OAUTH_FAILED(HttpStatus.BAD_GATEWAY, "OAUTH_FAILED", "네이버 로그인에 실패했어요."),
 	OAUTH_STATE_MISMATCH(HttpStatus.BAD_REQUEST, "OAUTH_STATE_MISMATCH", "로그인 세션이 만료되었어요. 다시 시도해주세요."),
+	NICKNAME_TOO_SOON(HttpStatus.BAD_REQUEST, "NICKNAME_TOO_SOON", "닉네임은 30일에 한 번만 변경할 수 있어요."),
+	NICKNAME_DUPLICATED(HttpStatus.CONFLICT, "NICKNAME_DUPLICATED", "이미 사용 중인 닉네임이에요."),
 	INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "서버에 오류가 발생했습니다.");
 
 	private final HttpStatus status;

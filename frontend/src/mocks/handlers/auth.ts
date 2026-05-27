@@ -34,6 +34,7 @@ function generateMockUser(): CurrentUser {
     tier: 'pepper',
     points: 0,
     profileImage: null,
+    nicknameChangedAt: null,
     createdAt: new Date().toISOString(),
   };
 }

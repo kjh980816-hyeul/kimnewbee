@@ -78,7 +78,9 @@ const formattedDate = computed(() => {
 
     <slot name="media" />
 
-    <div v-if="content" class="whitespace-pre-wrap text-ink leading-relaxed">{{ content }}</div>
+    <slot name="body">
+      <div v-if="content" class="whitespace-pre-wrap text-ink leading-relaxed">{{ content }}</div>
+    </slot>
 
     <div class="mt-8 flex justify-center">
       <button

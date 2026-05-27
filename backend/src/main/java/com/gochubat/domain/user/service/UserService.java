@@ -12,9 +12,14 @@ import com.gochubat.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 @Service
 @Transactional(readOnly = true)
 public class UserService {
+
+	private static final Duration NICKNAME_CHANGE_INTERVAL = Duration.ofDays(30);
 
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
@@ -44,6 +49,29 @@ public class UserService {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
 		user.changeProfileImage(profileImage);
+		return CurrentUserResponse.from(user);
+	}
+
+	@Transactional
+	public CurrentUserResponse updateNickname(Long userId, String rawNickname) {
+		String nickname = rawNickname == null ? "" : rawNickname.trim();
+		if (nickname.isEmpty()) {
+			throw new CustomException(ErrorCode.INVALID_REQUEST);
+		}
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
+		if (nickname.equals(user.getNickname())) {
+			return CurrentUserResponse.from(user);
+		}
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime last = user.getNicknameChangedAt();
+		if (last != null && Duration.between(last, now).compareTo(NICKNAME_CHANGE_INTERVAL) < 0) {
+			throw new CustomException(ErrorCode.NICKNAME_TOO_SOON);
+		}
+		if (userRepository.existsByNicknameAndIdNot(nickname, userId)) {
+			throw new CustomException(ErrorCode.NICKNAME_DUPLICATED);
+		}
+		user.changeNickname(nickname, now);
 		return CurrentUserResponse.from(user);
 	}
 

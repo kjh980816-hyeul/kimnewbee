@@ -46,6 +46,7 @@ describe('me api', () => {
       tier: 'corn',
       points: 1500,
       profileImage: null,
+      nicknameChangedAt: null,
       createdAt: new Date().toISOString(),
     };
     const me = await fetchMe();
@@ -65,6 +66,7 @@ describe('me api', () => {
       tier: 'pepper',
       points: 0,
       profileImage: null,
+      nicknameChangedAt: null,
       createdAt: '2026-01-01T00:00:00.000Z',
     };
     const stats = await fetchMyStats();

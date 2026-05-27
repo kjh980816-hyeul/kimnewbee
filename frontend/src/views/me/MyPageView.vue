@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
-import { fetchMe, fetchMyStats, updateMyProfileImage } from '@/api/me';
+import { fetchMe, fetchMyStats, updateMyProfileImage, updateMyNickname } from '@/api/me';
 import { uploadImage } from '@/api/upload';
 import { logout } from '@/api/auth';
 import { isHttpStatus } from '@/api/error';
@@ -115,6 +115,73 @@ async function onAvatarRemove(): Promise<void> {
     avatarBusy.value = false;
   }
 }
+
+const NICKNAME_INTERVAL_DAYS = 30;
+const nicknameEditing = ref(false);
+const nicknameDraft = ref('');
+const nicknameBusy = ref(false);
+const nicknameError = ref<string | null>(null);
+
+const nicknameCooldown = computed<{ remainingDays: number; canChange: boolean }>(() => {
+  if (!user.value || !user.value.nicknameChangedAt) {
+    return { remainingDays: 0, canChange: true };
+  }
+  const last = new Date(user.value.nicknameChangedAt).getTime();
+  const elapsedMs = Date.now() - last;
+  const totalMs = NICKNAME_INTERVAL_DAYS * 24 * 60 * 60 * 1000;
+  if (elapsedMs >= totalMs) return { remainingDays: 0, canChange: true };
+  const remainingDays = Math.ceil((totalMs - elapsedMs) / (24 * 60 * 60 * 1000));
+  return { remainingDays, canChange: false };
+});
+
+function startEditNickname(): void {
+  if (!user.value) return;
+  if (!nicknameCooldown.value.canChange) return;
+  nicknameDraft.value = user.value.nickname;
+  nicknameError.value = null;
+  nicknameEditing.value = true;
+}
+
+function cancelEditNickname(): void {
+  nicknameEditing.value = false;
+  nicknameError.value = null;
+}
+
+async function saveNickname(): Promise<void> {
+  if (!user.value) return;
+  const next = nicknameDraft.value.trim();
+  if (!next) {
+    nicknameError.value = '닉네임을 입력해주세요';
+    return;
+  }
+  if (next === user.value.nickname) {
+    nicknameEditing.value = false;
+    return;
+  }
+  nicknameBusy.value = true;
+  nicknameError.value = null;
+  try {
+    user.value = await updateMyNickname(next);
+    nicknameEditing.value = false;
+  } catch (e) {
+    if (isHttpStatus(e, 409)) {
+      nicknameError.value = '이미 사용 중인 닉네임이에요';
+    } else if (isHttpStatus(e, 400)) {
+      const code = (e as { response?: { data?: { code?: string } } }).response?.data?.code;
+      if (code === 'NICKNAME_TOO_SOON') {
+        nicknameError.value = `30일에 한 번만 변경할 수 있어요 (${nicknameCooldown.value.remainingDays}일 후 가능)`;
+      } else {
+        nicknameError.value = '닉네임 형식이 올바르지 않아요 (2~20자)';
+      }
+    } else if (isHttpStatus(e, 401)) {
+      nicknameError.value = '로그인이 필요해요';
+    } else {
+      nicknameError.value = e instanceof Error ? e.message : '닉네임 변경에 실패했어요';
+    }
+  } finally {
+    nicknameBusy.value = false;
+  }
+}
 </script>
 
 <template>
@@ -158,11 +225,55 @@ async function onAvatarRemove(): Promise<void> {
             </div>
           </label>
           <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-2 flex-wrap">
+            <div v-if="!nicknameEditing" class="flex items-center gap-2 flex-wrap">
               <h2 class="text-2xl font-extrabold text-ink">{{ user.nickname }}</h2>
+              <button
+                v-if="nicknameCooldown.canChange"
+                type="button"
+                class="text-xs rounded-md border border-ink/20 px-2 py-0.5 text-ink/80 hover:bg-paper/20 transition-colors"
+                @click="startEditNickname"
+              >
+                ✎ 닉네임 변경
+              </button>
+              <span
+                v-else
+                class="text-[10px] text-ink/70"
+                :title="`닉네임 변경은 30일에 한 번만 가능해요`"
+              >
+                🔒 {{ nicknameCooldown.remainingDays }}일 후 변경 가능
+              </span>
               <span class="px-2 py-0.5 rounded-full text-xs bg-paper/30 text-ink font-semibold">
                 {{ tierMeta[user.tier].emoji }} {{ tierMeta[user.tier].label }}
               </span>
+            </div>
+            <div v-else class="flex items-center gap-2 flex-wrap">
+              <input
+                v-model="nicknameDraft"
+                type="text"
+                maxlength="20"
+                class="rounded-md bg-paper/80 border border-ink/30 px-2 py-1 text-lg font-bold text-ink focus:outline-none focus:border-pepper"
+                :disabled="nicknameBusy"
+                @keydown.enter.prevent="saveNickname"
+                @keydown.escape.prevent="cancelEditNickname"
+              />
+              <button
+                type="button"
+                class="rounded-md bg-pepper px-3 py-1 text-xs font-semibold text-paper hover:bg-pepper-deep disabled:opacity-50"
+                :disabled="nicknameBusy"
+                @click="saveNickname"
+              >
+                {{ nicknameBusy ? '저장중' : '저장' }}
+              </button>
+              <button
+                type="button"
+                class="rounded-md border border-ink/30 px-3 py-1 text-xs text-ink hover:bg-paper/20"
+                :disabled="nicknameBusy"
+                @click="cancelEditNickname"
+              >
+                취소
+              </button>
+              <p v-if="nicknameError" class="w-full mt-1 text-xs text-cheek">⚠ {{ nicknameError }}</p>
+              <p class="w-full text-[10px] text-ink/70">한 번 변경하면 30일간 다시 바꿀 수 없어요</p>
             </div>
             <p class="mt-1 text-xs text-ink-muted">
               고추밭 가입일 · {{ joinedLabel }}

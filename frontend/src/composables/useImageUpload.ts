@@ -2,6 +2,17 @@ import { ref, type Ref } from 'vue';
 import { uploadImage } from '@/api/upload';
 import { isHttpStatus } from '@/api/error';
 
+export function isPostableImageUrl(url: string): boolean {
+  if (!url) return false;
+  if (url.startsWith('/')) return true;
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' || u.protocol === 'http:';
+  } catch {
+    return false;
+  }
+}
+
 export function useImageUpload(imageUrlRef: Ref<string>) {
   const uploading = ref(false);
   const uploadError = ref<string | null>(null);

@@ -41,6 +41,9 @@ public class User {
 	@Column(name = "profile_image_url", length = 500)
 	private String profileImage;
 
+	@Column(name = "nickname_changed_at")
+	private LocalDateTime nicknameChangedAt;
+
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
@@ -57,10 +60,15 @@ public class User {
 	}
 
 	public void syncFromNaver(String nickname, String profileImage) {
-		if (nickname != null && !nickname.isBlank()) {
+		if (nickname != null && !nickname.isBlank() && this.nicknameChangedAt == null) {
 			this.nickname = nickname;
 		}
 		this.profileImage = profileImage;
+	}
+
+	public void changeNickname(String nickname, LocalDateTime now) {
+		this.nickname = nickname;
+		this.nicknameChangedAt = now;
 	}
 
 	public void addPoints(long delta) {

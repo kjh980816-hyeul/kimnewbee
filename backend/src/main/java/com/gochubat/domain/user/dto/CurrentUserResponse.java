@@ -10,6 +10,7 @@ public record CurrentUserResponse(
 		String tier,
 		long points,
 		String profileImage,
+		LocalDateTime nicknameChangedAt,
 		LocalDateTime createdAt
 ) {
 
@@ -20,6 +21,7 @@ public record CurrentUserResponse(
 				user.getTier().toApiValue(),
 				user.getPoints(),
 				user.getProfileImage(),
+				user.getNicknameChangedAt(),
 				user.getCreatedAt()
 		);
 	}
