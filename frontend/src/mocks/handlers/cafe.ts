@@ -6,6 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const cafeStore: CafeConfig = {
   heroBannerUrl: null,
+  heroBannerPosition: 'center',
   heroHeadline: '고추밭에 어서오세요 🌶️',
   heroSubtext: '김늉비 팬들이 모이는 초록고추 정원',
   footerText: '© 고추밭 — 김늉비 팬커뮤니티',
@@ -34,6 +35,7 @@ export const cafeHandlers = [
       return HttpResponse.json({ code: 'INVALID_REQUEST', message: '헤드라인은 필수' }, { status: 400 });
     }
     cafeStore.heroBannerUrl = body.heroBannerUrl || null;
+    cafeStore.heroBannerPosition = body.heroBannerPosition || 'center';
     cafeStore.heroHeadline = body.heroHeadline;
     cafeStore.heroSubtext = body.heroSubtext || null;
     cafeStore.footerText = body.footerText || null;

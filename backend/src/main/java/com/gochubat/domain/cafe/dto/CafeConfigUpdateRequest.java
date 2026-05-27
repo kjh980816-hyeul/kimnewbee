@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 
 public record CafeConfigUpdateRequest(
 		@Size(max = 500) String heroBannerUrl,
+		@Pattern(regexp = "^$|^(top|center|bottom|left|right)$",
+				message = "배너 위치는 top/center/bottom/left/right만 가능합니다") String heroBannerPosition,
 		@NotBlank @Size(max = 80) String heroHeadline,
 		@Size(max = 200) String heroSubtext,
 		@Size(max = 200) String footerText,

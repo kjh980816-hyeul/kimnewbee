@@ -26,8 +26,10 @@ public class CafeConfigService {
 	public CafeConfigResponse update(CafeConfigUpdateRequest request) {
 		CafeConfig config = loadOrSeed();
 		String channelId = request.chzzkChannelId();
+		String position = request.heroBannerPosition();
 		config.update(
 				request.heroBannerUrl(),
+				(position == null || position.isBlank()) ? "center" : position,
 				request.heroHeadline(),
 				request.heroSubtext(),
 				request.footerText(),

@@ -26,6 +26,9 @@ public class CafeConfig {
 	@Column(name = "hero_banner_url", length = 500)
 	private String heroBannerUrl;
 
+	@Column(name = "hero_banner_position", length = 20)
+	private String heroBannerPosition;
+
 	@Column(name = "hero_headline", nullable = false, length = 80)
 	private String heroHeadline;
 
@@ -41,8 +44,9 @@ public class CafeConfig {
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
-	private CafeConfig(String heroBannerUrl, String heroHeadline, String heroSubtext, String footerText, String chzzkChannelId) {
+	private CafeConfig(String heroBannerUrl, String heroBannerPosition, String heroHeadline, String heroSubtext, String footerText, String chzzkChannelId) {
 		this.heroBannerUrl = heroBannerUrl;
+		this.heroBannerPosition = heroBannerPosition;
 		this.heroHeadline = heroHeadline;
 		this.heroSubtext = heroSubtext;
 		this.footerText = footerText;
@@ -53,6 +57,7 @@ public class CafeConfig {
 	public static CafeConfig defaults() {
 		return new CafeConfig(
 				null,
+				"center",
 				"고추밭에 어서오세요 🌶️",
 				"김늉비 팬들이 모이는 초록고추 정원",
 				"© 고추밭 — 김늉비 팬커뮤니티",
@@ -60,8 +65,9 @@ public class CafeConfig {
 		);
 	}
 
-	public void update(String heroBannerUrl, String heroHeadline, String heroSubtext, String footerText, String chzzkChannelId) {
+	public void update(String heroBannerUrl, String heroBannerPosition, String heroHeadline, String heroSubtext, String footerText, String chzzkChannelId) {
 		this.heroBannerUrl = heroBannerUrl;
+		this.heroBannerPosition = heroBannerPosition;
 		this.heroHeadline = heroHeadline;
 		this.heroSubtext = heroSubtext;
 		this.footerText = footerText;

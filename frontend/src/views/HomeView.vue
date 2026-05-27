@@ -123,6 +123,7 @@ onMounted(async () => {
 const heroHeadline = computed(() => cafe.value?.heroHeadline || '오늘도 늉비랑 고추밭에 놀자!');
 const heroSubtext = computed(() => cafe.value?.heroSubtext || '초록고추 여러분 안녕~ 오늘은 어떤 이야기를 나눠볼까요?');
 const heroBannerUrl = computed(() => cafe.value?.heroBannerUrl || null);
+const heroBannerPosition = computed(() => cafe.value?.heroBannerPosition || 'center');
 const footerText = computed(() => cafe.value?.footerText || null);
 </script>
 
@@ -139,6 +140,7 @@ const footerText = computed(() => cafe.value?.footerText || null);
         :src="heroBannerUrl"
         alt=""
         class="absolute inset-0 w-full h-full object-cover"
+        :style="{ objectPosition: heroBannerPosition }"
       />
       <div
         class="relative px-6 py-8 flex items-end justify-between gap-4 flex-wrap"

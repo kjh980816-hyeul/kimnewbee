@@ -2,9 +2,19 @@
 import { computed, onMounted, reactive, ref, toRef } from 'vue';
 import { fetchCafeConfig, updateCafeConfig } from '@/api/cafe';
 import { useImageUpload } from '@/composables/useImageUpload';
+import type { HeroBannerPosition } from '@/types/cafe';
+
+const BANNER_POSITIONS: { value: HeroBannerPosition; label: string; emoji: string }[] = [
+  { value: 'top', label: '위', emoji: '⬆' },
+  { value: 'center', label: '가운데', emoji: '⏺' },
+  { value: 'bottom', label: '아래', emoji: '⬇' },
+  { value: 'left', label: '왼쪽', emoji: '⬅' },
+  { value: 'right', label: '오른쪽', emoji: '➡' },
+];
 
 const form = reactive({
   heroBannerUrl: '',
+  heroBannerPosition: 'center' as HeroBannerPosition,
   heroHeadline: '',
   heroSubtext: '',
   footerText: '',
@@ -12,6 +22,7 @@ const form = reactive({
 });
 const original = reactive({
   heroBannerUrl: '',
+  heroBannerPosition: 'center' as HeroBannerPosition,
   heroHeadline: '',
   heroSubtext: '',
   footerText: '',
@@ -27,6 +38,7 @@ const { uploading, uploadError, pickAndUpload } = useImageUpload(heroBannerUrlRe
 
 const isDirty = computed(() =>
   form.heroBannerUrl !== original.heroBannerUrl ||
+  form.heroBannerPosition !== original.heroBannerPosition ||
   form.heroHeadline !== original.heroHeadline ||
   form.heroSubtext !== original.heroSubtext ||
   form.footerText !== original.footerText ||
@@ -47,6 +59,7 @@ onMounted(async () => {
   try {
     const cfg = await fetchCafeConfig();
     form.heroBannerUrl = cfg.heroBannerUrl ?? '';
+    form.heroBannerPosition = cfg.heroBannerPosition ?? 'center';
     form.heroHeadline = cfg.heroHeadline;
     form.heroSubtext = cfg.heroSubtext ?? '';
     form.footerText = cfg.footerText ?? '';
@@ -77,6 +90,7 @@ async function onSubmit(): Promise<void> {
       chzzkChannelId: form.chzzkChannelId.trim(),
     });
     form.heroBannerUrl = updated.heroBannerUrl ?? '';
+    form.heroBannerPosition = updated.heroBannerPosition ?? 'center';
     form.heroSubtext = updated.heroSubtext ?? '';
     form.footerText = updated.footerText ?? '';
     form.chzzkChannelId = updated.chzzkChannelId ?? '';
@@ -151,6 +165,7 @@ function resetChanges(): void {
               :src="form.heroBannerUrl"
               alt="배너 미리보기"
               class="absolute inset-0 w-full h-full object-cover"
+              :style="{ objectPosition: form.heroBannerPosition }"
             />
             <div
               v-if="!form.heroBannerUrl"
@@ -191,6 +206,27 @@ function resetChanges(): void {
           </div>
 
           <p v-if="uploadError" class="mt-2 text-xs text-cheek">{{ uploadError }}</p>
+
+          <div v-if="form.heroBannerUrl" class="mt-4">
+            <div class="text-xs font-semibold text-ink mb-2">배너에서 보일 위치</div>
+            <div class="flex flex-wrap gap-1.5">
+              <button
+                v-for="opt in BANNER_POSITIONS"
+                :key="opt.value"
+                type="button"
+                class="rounded-full px-3 py-1.5 text-xs font-semibold border transition-colors"
+                :class="form.heroBannerPosition === opt.value
+                  ? 'bg-violet-deep border-violet text-ink'
+                  : 'bg-elevated border-border text-ink-muted hover:text-ink hover:border-ink/40'"
+                @click="form.heroBannerPosition = opt.value"
+              >
+                {{ opt.emoji }} {{ opt.label }}
+              </button>
+            </div>
+            <p class="mt-2 text-[11px] text-ink-muted">
+              세로가 긴 이미지면 '위' / 가로로 긴 풍경은 '가운데' / 인물 사진은 보통 '위'가 잘 보여요.
+            </p>
+          </div>
         </section>
 
         <section class="rounded-3xl bg-gradient-to-br from-surface to-paper/50 border border-border p-6 shadow-xl shadow-black/20 space-y-4">
@@ -298,6 +334,7 @@ function resetChanges(): void {
               :src="form.heroBannerUrl"
               alt=""
               class="absolute inset-0 w-full h-full object-cover"
+              :style="{ objectPosition: form.heroBannerPosition }"
             />
             <div
               class="relative p-6 min-h-[140px] flex flex-col justify-center"

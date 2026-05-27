@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public record CafeConfigResponse(
 		String heroBannerUrl,
+		String heroBannerPosition,
 		String heroHeadline,
 		String heroSubtext,
 		String footerText,
@@ -16,6 +17,7 @@ public record CafeConfigResponse(
 	public static CafeConfigResponse from(CafeConfig config) {
 		return new CafeConfigResponse(
 				config.getHeroBannerUrl(),
+				config.getHeroBannerPosition(),
 				config.getHeroHeadline(),
 				config.getHeroSubtext(),
 				config.getFooterText(),

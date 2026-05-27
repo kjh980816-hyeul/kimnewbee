@@ -246,34 +246,37 @@ async function saveNickname(): Promise<void> {
                 {{ tierMeta[user.tier].emoji }} {{ tierMeta[user.tier].label }}
               </span>
             </div>
-            <div v-else class="flex items-center gap-2 flex-wrap">
-              <input
-                v-model="nicknameDraft"
-                type="text"
-                maxlength="20"
-                class="rounded-md bg-paper/80 border border-ink/30 px-2 py-1 text-lg font-bold text-ink focus:outline-none focus:border-pepper"
-                :disabled="nicknameBusy"
-                @keydown.enter.prevent="saveNickname"
-                @keydown.escape.prevent="cancelEditNickname"
-              />
-              <button
-                type="button"
-                class="rounded-md bg-pepper px-3 py-1 text-xs font-semibold text-paper hover:bg-pepper-deep disabled:opacity-50"
-                :disabled="nicknameBusy"
-                @click="saveNickname"
-              >
-                {{ nicknameBusy ? '저장중' : '저장' }}
-              </button>
-              <button
-                type="button"
-                class="rounded-md border border-ink/30 px-3 py-1 text-xs text-ink hover:bg-paper/20"
-                :disabled="nicknameBusy"
-                @click="cancelEditNickname"
-              >
-                취소
-              </button>
-              <p v-if="nicknameError" class="w-full mt-1 text-xs text-cheek">⚠ {{ nicknameError }}</p>
-              <p class="w-full text-[10px] text-ink/70">한 번 변경하면 30일간 다시 바꿀 수 없어요</p>
+            <div v-else>
+              <div class="flex items-center gap-2 flex-wrap">
+                <input
+                  v-model="nicknameDraft"
+                  type="text"
+                  maxlength="20"
+                  placeholder="새 닉네임 (2~20자)"
+                  class="w-56 rounded-md bg-elevated border border-violet px-3 py-2 text-lg font-bold text-ink placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-pepper focus:border-pepper"
+                  :disabled="nicknameBusy"
+                  @keydown.enter.prevent="saveNickname"
+                  @keydown.escape.prevent="cancelEditNickname"
+                />
+                <button
+                  type="button"
+                  class="rounded-md bg-pepper px-4 py-2 text-sm font-semibold text-paper hover:bg-pepper-deep disabled:opacity-50"
+                  :disabled="nicknameBusy"
+                  @click="saveNickname"
+                >
+                  {{ nicknameBusy ? '저장중' : '저장' }}
+                </button>
+                <button
+                  type="button"
+                  class="rounded-md bg-surface border border-border px-4 py-2 text-sm text-ink hover:bg-elevated disabled:opacity-50"
+                  :disabled="nicknameBusy"
+                  @click="cancelEditNickname"
+                >
+                  취소
+                </button>
+              </div>
+              <p v-if="nicknameError" class="mt-2 text-xs text-cheek">⚠ {{ nicknameError }}</p>
+              <p class="mt-1 text-[11px] text-ink-muted">한 번 변경하면 30일간 다시 바꿀 수 없어요</p>
             </div>
             <p class="mt-1 text-xs text-ink-muted">
               고추밭 가입일 · {{ joinedLabel }}
