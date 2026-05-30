@@ -77,8 +77,21 @@ async function onDelete(id: number): Promise<void> {
         class="border border-border rounded-md p-3"
       >
         <div class="flex items-center justify-between gap-2">
-          <span class="text-sm text-ink">{{ c.author }}</span>
-          <span class="text-xs text-ink-muted">
+          <div class="flex items-center gap-2 min-w-0">
+            <div
+              class="w-7 h-7 rounded-full bg-gradient-to-br from-violet to-cheek flex items-center justify-center text-xs overflow-hidden shrink-0"
+            >
+              <img
+                v-if="c.authorProfileImage && !c.deleted"
+                :src="c.authorProfileImage"
+                :alt="c.author"
+                class="w-full h-full object-cover"
+              />
+              <span v-else>{{ c.deleted ? '🗑' : (c.author[0] ?? '?') }}</span>
+            </div>
+            <span class="text-sm text-ink truncate">{{ c.author }}</span>
+          </div>
+          <span class="text-xs text-ink-muted shrink-0">
             {{ new Date(c.createdAt).toLocaleDateString('ko-KR') }}
           </span>
         </div>
@@ -113,8 +126,22 @@ async function onDelete(id: number): Promise<void> {
         >
           <li v-for="r in repliesOf(c.id)" :key="r.id">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-sm text-ink-muted">↳ {{ r.author }}</span>
-              <span class="text-xs text-ink-muted">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="text-ink-muted shrink-0">↳</span>
+                <div
+                  class="w-5 h-5 rounded-full bg-gradient-to-br from-violet to-cheek flex items-center justify-center text-[10px] overflow-hidden shrink-0"
+                >
+                  <img
+                    v-if="r.authorProfileImage && !r.deleted"
+                    :src="r.authorProfileImage"
+                    :alt="r.author"
+                    class="w-full h-full object-cover"
+                  />
+                  <span v-else>{{ r.deleted ? '🗑' : (r.author[0] ?? '?') }}</span>
+                </div>
+                <span class="text-sm text-ink-muted truncate">{{ r.author }}</span>
+              </div>
+              <span class="text-xs text-ink-muted shrink-0">
                 {{ new Date(r.createdAt).toLocaleDateString('ko-KR') }}
               </span>
             </div>

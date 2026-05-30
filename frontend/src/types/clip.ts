@@ -4,6 +4,7 @@ export interface ClipListItem {
   id: number;
   title: string;
   author: string;
+  authorProfileImage?: string | null;
   videoUrl: string;
   source: ClipSource;
   createdAt: string;

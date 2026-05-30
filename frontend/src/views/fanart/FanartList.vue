@@ -13,6 +13,11 @@ const activeCategory = ref('전체');
 
 const NEW_DAYS = 3;
 
+const failedImageIds = ref<Set<number>>(new Set());
+function markFailed(id: number): void {
+  failedImageIds.value.add(id);
+}
+
 onMounted(async () => {
   try {
     const res = await fetchFanartList();
@@ -79,11 +84,20 @@ function isNew(iso: string): boolean {
         >
           <div class="relative aspect-square overflow-hidden bg-gradient-to-br from-violet/40 to-corn/30">
             <img
+              v-if="!failedImageIds.has(item.id)"
               :src="item.thumbnailUrl"
               :alt="item.title"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
+              @error="markFailed(item.id)"
             />
+            <div
+              v-else
+              class="w-full h-full flex flex-col items-center justify-center text-ink-muted gap-1"
+            >
+              <span class="text-4xl">🖼️</span>
+              <span class="text-[10px]">이미지를 불러올 수 없어요</span>
+            </div>
             <span
               v-if="isNew(item.createdAt)"
               class="absolute left-3 top-3 px-2 py-0.5 rounded bg-cheek text-paper text-[10px] font-bold tracking-wider"

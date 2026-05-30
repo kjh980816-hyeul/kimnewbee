@@ -21,6 +21,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 	long countByAuthorId(Long authorId);
 
+	long countByCreatedAtGreaterThanEqual(java.time.LocalDateTime since);
+
 	@Query("select p from Post p join fetch p.author where p.type in :types " +
 			"and (lower(p.title) like lower(concat('%', :q, '%')) or p.content like concat('%', :q, '%')) " +
 			"order by p.createdAt desc, p.id desc")

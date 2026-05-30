@@ -2,6 +2,7 @@ export interface FanartListItem {
   id: number;
   title: string;
   author: string;
+  authorProfileImage?: string | null;
   thumbnailUrl: string;
   createdAt: string;
   likeCount: number;

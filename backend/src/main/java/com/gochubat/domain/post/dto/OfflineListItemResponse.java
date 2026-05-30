@@ -14,6 +14,7 @@ public record OfflineListItemResponse(
 		String thumbnailUrl,
 		String preview,
 		String author,
+		String authorProfileImage,
 		LocalDateTime createdAt,
 		long likeCount,
 		long commentCount
@@ -28,6 +29,7 @@ public record OfflineListItemResponse(
 				post.getMediaUrl(),
 				post.preview(),
 				post.getAuthor().getNickname(),
+				post.getAuthor().getProfileImage(),
 				post.getCreatedAt(),
 				counts.likeCount(),
 				counts.commentCount()

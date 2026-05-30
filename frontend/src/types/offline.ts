@@ -8,6 +8,7 @@ export interface OfflineReviewListItem {
   thumbnailUrl: string;
   preview: string;
   author: string;
+  authorProfileImage?: string | null;
   createdAt: string;
   likeCount: number;
   commentCount: number;

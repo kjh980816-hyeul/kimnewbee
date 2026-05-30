@@ -44,6 +44,9 @@ public class User {
 	@Column(name = "nickname_changed_at")
 	private LocalDateTime nicknameChangedAt;
 
+	@Column(name = "profile_image_changed_at")
+	private LocalDateTime profileImageChangedAt;
+
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
@@ -63,7 +66,9 @@ public class User {
 		if (nickname != null && !nickname.isBlank() && this.nicknameChangedAt == null) {
 			this.nickname = nickname;
 		}
-		this.profileImage = profileImage;
+		if (this.profileImageChangedAt == null) {
+			this.profileImage = profileImage;
+		}
 	}
 
 	public void changeNickname(String nickname, LocalDateTime now) {
@@ -85,8 +90,9 @@ public class User {
 		this.tier = next;
 	}
 
-	public void changeProfileImage(String url) {
+	public void changeProfileImage(String url, LocalDateTime now) {
 		this.profileImage = (url == null || url.isBlank()) ? null : url;
+		this.profileImageChangedAt = now;
 	}
 
 	@PrePersist

@@ -8,6 +8,7 @@ import { fetchClips } from '@/api/clip';
 import { fetchPets } from '@/api/pet';
 import { fetchLetters } from '@/api/letter';
 import { fetchCafeConfig } from '@/api/cafe';
+import { fetchStatsSummary, type StatsSummary } from '@/api/stats';
 import type { NoticeListItem } from '@/types/notice';
 import type { FreePostListItem } from '@/types/free';
 import type { FanartListItem } from '@/types/fanart';
@@ -24,6 +25,7 @@ const clips = ref<ClipListItem[]>([]);
 const pets = ref<PetListItem[]>([]);
 const letters = ref<LetterListItem[]>([]);
 const cafe = ref<CafeConfig | null>(null);
+const stats = ref<StatsSummary | null>(null);
 const loading = ref(true);
 
 interface BestItem {
@@ -106,8 +108,9 @@ onMounted(async () => {
       fetchPets(),
       fetchLetters(),
       fetchCafeConfig(),
+      fetchStatsSummary(),
     ]);
-    const [noticeR, freeR, fanartR, clipR, petR, letterR, cafeR] = settled;
+    const [noticeR, freeR, fanartR, clipR, petR, letterR, cafeR, statsR] = settled;
     if (noticeR.status === 'fulfilled') notices.value = noticeR.value.data;
     if (freeR.status === 'fulfilled') freePosts.value = freeR.value.data;
     if (fanartR.status === 'fulfilled') fanarts.value = fanartR.value.data;
@@ -115,6 +118,7 @@ onMounted(async () => {
     if (petR.status === 'fulfilled') pets.value = petR.value.data;
     if (letterR.status === 'fulfilled') letters.value = letterR.value.data;
     if (cafeR.status === 'fulfilled') cafe.value = cafeR.value;
+    if (statsR.status === 'fulfilled') stats.value = statsR.value;
   } finally {
     loading.value = false;
   }
@@ -129,39 +133,41 @@ const footerText = computed(() => cafe.value?.footerText || null);
 
 <template>
   <div class="p-8 space-y-6">
-    <LiveBanner />
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:min-h-[220px]">
+      <LiveBanner />
 
-    <section
-      class="relative rounded-2xl overflow-hidden border border-border"
-      :class="heroBannerUrl ? '' : 'bg-gradient-to-br from-violet-deep/30 via-violet/15 to-corn/15'"
-    >
-      <img
-        v-if="heroBannerUrl"
-        :src="heroBannerUrl"
-        alt=""
-        class="absolute inset-0 w-full h-full object-cover"
-        :style="{ objectPosition: heroBannerPosition }"
-      />
       <div
-        class="relative px-6 py-8 flex items-end justify-between gap-4 flex-wrap"
-        :class="heroBannerUrl ? 'bg-gradient-to-r from-paper/85 via-paper/50 to-paper/10' : ''"
+        class="relative rounded-2xl overflow-hidden border border-border h-full"
+        :class="heroBannerUrl ? '' : 'bg-gradient-to-br from-violet-deep/30 via-violet/15 to-corn/15'"
       >
-        <div class="flex-1 min-w-0">
-          <h1 class="text-2xl font-extrabold text-ink leading-tight drop-shadow-sm">{{ heroHeadline }}</h1>
-          <p class="mt-1 text-sm text-ink/80 drop-shadow-sm">{{ heroSubtext }}</p>
-        </div>
-        <div class="flex items-center gap-6">
-          <div class="text-right">
-            <div class="text-xl font-extrabold text-ink tabular-nums">—</div>
-            <div class="text-[11px] text-ink-muted mt-0.5">전체 회원</div>
+        <img
+          v-if="heroBannerUrl"
+          :src="heroBannerUrl"
+          alt=""
+          class="absolute inset-0 w-full h-full object-cover"
+          :style="{ objectPosition: heroBannerPosition }"
+        />
+        <div
+          class="relative h-full px-6 py-8 flex items-end justify-between gap-4 flex-wrap"
+          :class="heroBannerUrl ? 'bg-gradient-to-r from-paper/85 via-paper/50 to-paper/10' : ''"
+        >
+          <div class="flex-1 min-w-0">
+            <h1 class="text-2xl font-extrabold text-ink leading-tight drop-shadow-sm">{{ heroHeadline }}</h1>
+            <p class="mt-1 text-sm text-ink/80 drop-shadow-sm">{{ heroSubtext }}</p>
           </div>
-          <div class="text-right">
-            <div class="text-xl font-extrabold text-violet tabular-nums">—</div>
-            <div class="text-[11px] text-ink-muted mt-0.5">오늘 새 글</div>
-          </div>
-          <div class="text-right">
-            <div class="text-xl font-extrabold text-corn tabular-nums">—</div>
-            <div class="text-[11px] text-ink-muted mt-0.5">오늘 방문자</div>
+          <div class="flex items-center gap-6">
+            <div class="text-right">
+              <div class="text-xl font-extrabold text-ink tabular-nums">
+                {{ stats ? stats.totalMembers.toLocaleString('ko-KR') : '—' }}
+              </div>
+              <div class="text-[11px] text-ink-muted mt-0.5">전체 회원</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xl font-extrabold text-violet tabular-nums">
+                {{ stats ? stats.todayNewPosts.toLocaleString('ko-KR') : '—' }}
+              </div>
+              <div class="text-[11px] text-ink-muted mt-0.5">오늘 새 글</div>
+            </div>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ export interface Comment {
   postId: number;
   parentId: number | null;
   author: string;
+  authorProfileImage?: string | null;
   content: string;
   createdAt: string;
   likeCount: number;

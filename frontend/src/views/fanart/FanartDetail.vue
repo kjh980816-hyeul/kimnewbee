@@ -63,6 +63,7 @@ async function onLike(): Promise<void> {
       <PostArticle
         :title="fanart.title"
         :author="fanart.author"
+        :author-avatar="fanart.authorProfileImage"
         :created-at="fanart.createdAt"
         :view-count="fanart.viewCount"
         :content="fanart.content"

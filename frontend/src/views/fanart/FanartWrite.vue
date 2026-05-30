@@ -87,6 +87,9 @@ async function onSubmit(): Promise<void> {
           </label>
         </div>
         <p v-if="uploadError" class="mt-1 text-xs text-cheek">{{ uploadError }}</p>
+        <p class="mt-1 text-[11px] text-ink-muted">
+          ⚠ Discord/카톡 등 외부 CDN 링크는 만료되거나 차단돼 나중에 안 보일 수 있어요. <strong>파일 업로드</strong> 추천!
+        </p>
         <div v-if="isImageUrlValid" class="mt-2 aspect-square w-48 overflow-hidden rounded-md bg-elevated">
           <img :src="imageUrl" alt="미리보기" class="w-full h-full object-cover" />
         </div>

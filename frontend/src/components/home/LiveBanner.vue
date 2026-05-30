@@ -32,9 +32,9 @@ const viewerStr = computed(() =>
     :href="status.channelUrl"
     target="_blank"
     rel="noopener noreferrer"
-    class="block rounded-2xl bg-elevated border border-border overflow-hidden hover:border-violet transition-colors"
+    class="block h-full rounded-2xl bg-elevated border border-border overflow-hidden hover:border-violet transition-colors"
   >
-    <div class="flex items-stretch">
+    <div class="flex items-stretch h-full">
       <div class="relative w-44 shrink-0 bg-gradient-to-br from-cheek to-violet flex items-center justify-center">
         <span class="text-6xl select-none">🌶️</span>
         <span class="absolute left-2 top-2 px-2 py-0.5 rounded bg-red-500 text-white text-[10px] font-bold tracking-wider animate-pulse">
@@ -57,7 +57,7 @@ const viewerStr = computed(() =>
 
   <div
     v-else
-    class="rounded-2xl bg-elevated border border-border p-4 flex items-center gap-3"
+    class="h-full rounded-2xl bg-elevated border border-border p-4 flex items-center gap-3"
   >
     <div class="w-10 h-10 rounded-lg bg-violet-deep/30 flex items-center justify-center text-lg">
       📺

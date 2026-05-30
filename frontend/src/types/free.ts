@@ -2,6 +2,7 @@ export interface FreePostListItem {
   id: number;
   title: string;
   author: string;
+  authorProfileImage?: string | null;
   createdAt: string;
   viewCount: number;
   likeCount: number;

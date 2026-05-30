@@ -48,7 +48,7 @@ public class UserService {
 	public CurrentUserResponse updateProfileImage(Long userId, String profileImage) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
-		user.changeProfileImage(profileImage);
+		user.changeProfileImage(profileImage, LocalDateTime.now());
 		return CurrentUserResponse.from(user);
 	}
 
