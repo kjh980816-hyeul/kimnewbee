@@ -10,7 +10,8 @@ public record ChzzkLiveDetail(int code, Content content) {
 			String liveTitle,
 			String status,
 			int concurrentUserCount,
-			String openDate
+			String openDate,
+			String liveImageUrl
 	) {
 	}
 }

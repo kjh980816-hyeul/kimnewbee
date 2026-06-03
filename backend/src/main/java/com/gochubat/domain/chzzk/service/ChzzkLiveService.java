@@ -18,9 +18,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ChzzkLiveService {
 
 	private static final Logger log = LoggerFactory.getLogger(ChzzkLiveService.class);
-	// 치지직이 service/v1 live-detail 공개 접근을 차단(code 9004)해서 polling live-status로 전환. 응답 구조는 동일.
-	private static final String LIVE_STATUS_URL = "https://api.chzzk.naver.com/polling/v3/channels/{channelId}/live-status";
+	// 치지직이 service/v1 live-detail 공개 접근을 차단(code 9004). service/v2 live-detail은 정상 + liveImageUrl(썸네일) 제공.
+	private static final String LIVE_DETAIL_URL = "https://api.chzzk.naver.com/service/v2/channels/{channelId}/live-detail";
 	private static final String CHANNEL_URL = "https://chzzk.naver.com/live/";
+	private static final String THUMBNAIL_TYPE = "720";
 	private static final Duration CACHE_TTL = Duration.ofSeconds(30);
 	private static final DateTimeFormatter OPEN_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	private static final ZoneId KST = ZoneId.of("Asia/Seoul");
@@ -51,7 +52,7 @@ public class ChzzkLiveService {
 	private LiveStatusResponse fetchFromChzzk(String channelId) {
 		try {
 			ChzzkLiveDetail detail = restClient.get()
-					.uri(LIVE_STATUS_URL, channelId)
+					.uri(LIVE_DETAIL_URL, channelId)
 					.retrieve()
 					.body(ChzzkLiveDetail.class);
 
@@ -61,19 +62,28 @@ public class ChzzkLiveService {
 			ChzzkLiveDetail.Content c = detail.content();
 			boolean isLive = "OPEN".equalsIgnoreCase(c.status());
 			if (!isLive) {
-				return new LiveStatusResponse(false, "", 0, null, CHANNEL_URL + channelId);
+				return new LiveStatusResponse(false, "", 0, null, CHANNEL_URL + channelId, null);
 			}
 			return new LiveStatusResponse(
 					true,
 					c.liveTitle() == null ? "" : c.liveTitle(),
 					c.concurrentUserCount(),
 					parseOpenDate(c.openDate()),
-					CHANNEL_URL + channelId
+					CHANNEL_URL + channelId,
+					resolveThumbnail(c.liveImageUrl())
 			);
 		} catch (Exception e) {
-			log.warn("Failed to fetch chzzk live-status for channel {}: {}", channelId, e.getMessage());
+			log.warn("Failed to fetch chzzk live-detail for channel {}: {}", channelId, e.getMessage());
 			return LiveStatusResponse.offline();
 		}
+	}
+
+	// liveImageUrl은 ".../image_{type}.jpg" 형태로 해상도 placeholder를 포함한다.
+	private String resolveThumbnail(String liveImageUrl) {
+		if (liveImageUrl == null || liveImageUrl.isBlank()) {
+			return null;
+		}
+		return liveImageUrl.replace("{type}", THUMBNAIL_TYPE);
 	}
 
 	private String parseOpenDate(String openDate) {

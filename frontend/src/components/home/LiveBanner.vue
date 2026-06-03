@@ -4,6 +4,7 @@ import { fetchLiveStatus } from '@/api/chzzk';
 import type { LiveStatus } from '@/types/chzzk';
 
 const status = ref<LiveStatus | null>(null);
+const thumbFailed = ref(false);
 
 onMounted(async () => {
   try {
@@ -35,8 +36,15 @@ const viewerStr = computed(() =>
     class="block h-full rounded-2xl bg-elevated border border-border overflow-hidden hover:border-violet transition-colors"
   >
     <div class="flex items-stretch h-full">
-      <div class="relative w-44 shrink-0 bg-gradient-to-br from-cheek to-violet flex items-center justify-center">
-        <span class="text-6xl select-none">🌶️</span>
+      <div class="relative w-44 shrink-0 bg-gradient-to-br from-cheek to-violet flex items-center justify-center overflow-hidden">
+        <img
+          v-if="status.thumbnailUrl && !thumbFailed"
+          :src="status.thumbnailUrl"
+          :alt="status.title"
+          class="absolute inset-0 w-full h-full object-cover"
+          @error="thumbFailed = true"
+        />
+        <span v-else class="text-6xl select-none">🌶️</span>
         <span class="absolute left-2 top-2 px-2 py-0.5 rounded bg-red-500 text-white text-[10px] font-bold tracking-wider animate-pulse">
           LIVE
         </span>

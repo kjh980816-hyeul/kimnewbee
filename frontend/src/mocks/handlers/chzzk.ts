@@ -24,6 +24,7 @@ export const chzzkHandlers = [
           viewerCount: 1842,
           startedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
           channelUrl: 'https://chzzk.naver.com/example-channel',
+          thumbnailUrl: 'https://picsum.photos/seed/chzzk/440/248',
         }
       : {
           isLive: false,
@@ -31,6 +32,7 @@ export const chzzkHandlers = [
           viewerCount: 0,
           startedAt: null,
           channelUrl: 'https://chzzk.naver.com/example-channel',
+          thumbnailUrl: null,
         };
     return HttpResponse.json(payload);
   }),

@@ -17,6 +17,7 @@ const server = setupServer(
           viewerCount: 100,
           startedAt: '2026-04-30T20:00:00.000Z',
           channelUrl: 'https://chzzk.naver.com/test',
+          thumbnailUrl: 'https://chzzk.naver.com/thumb.jpg',
         }
       : {
           isLive: false,
@@ -24,6 +25,7 @@ const server = setupServer(
           viewerCount: 0,
           startedAt: null,
           channelUrl: 'https://chzzk.naver.com/test',
+          thumbnailUrl: null,
         };
     return HttpResponse.json(payload);
   }),

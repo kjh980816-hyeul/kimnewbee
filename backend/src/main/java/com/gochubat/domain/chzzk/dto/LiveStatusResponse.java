@@ -5,10 +5,11 @@ public record LiveStatusResponse(
 		String title,
 		int viewerCount,
 		String startedAt,
-		String channelUrl
+		String channelUrl,
+		String thumbnailUrl
 ) {
 
 	public static LiveStatusResponse offline() {
-		return new LiveStatusResponse(false, "", 0, null, "");
+		return new LiveStatusResponse(false, "", 0, null, "", null);
 	}
 }

@@ -4,4 +4,5 @@ export interface LiveStatus {
   viewerCount: number;
   startedAt: string | null;
   channelUrl: string;
+  thumbnailUrl: string | null;
 }
