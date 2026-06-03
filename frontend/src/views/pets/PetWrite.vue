@@ -74,7 +74,7 @@ async function onSubmit(): Promise<void> {
           <input
             id="pet-image"
             v-model="imageUrl"
-            type="url"
+            type="text"
             placeholder="https://... 또는 우측 업로드"
             class="flex-1 rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
           />
