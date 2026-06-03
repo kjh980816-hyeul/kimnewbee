@@ -62,7 +62,8 @@ public class PetController extends AuthenticatedController {
 			@Valid @RequestBody PetWriteRequest request
 	) {
 		User author = postService.loadAuthor(requireUserId(authentication));
-		Post saved = postService.save(Post.createPet(request.title(), request.content(), author, request.imageUrl()));
+		String content = request.content() == null ? "" : request.content();
+		Post saved = postService.save(Post.createPet(request.title(), content, author, request.imageUrl()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(PetDetailResponse.from(saved, DetailCounts.zero()));
 	}
 }

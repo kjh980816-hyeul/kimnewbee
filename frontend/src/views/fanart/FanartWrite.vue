@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { createFanart } from '@/api/fanart';
 import { useImageUpload, isPostableImageUrl } from '@/composables/useImageUpload';
+import { errorMessage } from '@/api/error';
 
 const router = useRouter();
 
@@ -36,7 +37,7 @@ async function onSubmit(): Promise<void> {
     });
     await router.push({ name: 'fanart-detail', params: { id: fanart.id } });
   } catch (e) {
-    error.value = e instanceof Error ? e.message : '팬아트 등록에 실패했어요';
+    error.value = errorMessage(e, '팬아트 등록에 실패했어요');
   } finally {
     submitting.value = false;
   }

@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { createOfflineReview } from '@/api/offline';
-import { isHttpStatus } from '@/api/error';
+import { isHttpStatus, errorMessage } from '@/api/error';
 import { useImageUpload, isPostableImageUrl } from '@/composables/useImageUpload';
 
 const router = useRouter();
@@ -50,7 +50,7 @@ async function onSubmit(): Promise<void> {
     if (isHttpStatus(e, 403)) {
       error.value = '옥수수 등급 이상만 작성할 수 있어요';
     } else {
-      error.value = e instanceof Error ? e.message : '후기 작성에 실패했어요';
+      error.value = errorMessage(e, '후기 작성에 실패했어요');
     }
   } finally {
     submitting.value = false;

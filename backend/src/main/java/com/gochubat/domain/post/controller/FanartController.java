@@ -62,7 +62,8 @@ public class FanartController extends AuthenticatedController {
 			@Valid @RequestBody FanartWriteRequest request
 	) {
 		User author = postService.loadAuthor(requireUserId(authentication));
-		Post saved = postService.save(Post.createFanart(request.title(), request.content(), author, request.imageUrl()));
+		String content = request.content() == null ? "" : request.content();
+		Post saved = postService.save(Post.createFanart(request.title(), content, author, request.imageUrl()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(FanartDetailResponse.from(saved, DetailCounts.zero()));
 	}
 }

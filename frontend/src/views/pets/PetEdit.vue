@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchPet, updatePet } from '@/api/pet';
-import { isHttpStatus } from '@/api/error';
+import { isHttpStatus, errorMessage } from '@/api/error';
 import { useImageUpload, isPostableImageUrl } from '@/composables/useImageUpload';
 
 const route = useRoute();
@@ -32,7 +32,7 @@ onMounted(async () => {
     imageUrl.value = pet.imageUrl;
     content.value = pet.content;
   } catch (e) {
-    error.value = e instanceof Error ? e.message : '사진을 불러올 수 없어요';
+    error.value = errorMessage(e, '사진을 불러올 수 없어요');
   } finally {
     loading.value = false;
   }
@@ -64,7 +64,7 @@ async function onSubmit(): Promise<void> {
     } else if (isHttpStatus(e, 401)) {
       error.value = '로그인이 필요해요';
     } else {
-      error.value = e instanceof Error ? e.message : '수정에 실패했어요';
+      error.value = errorMessage(e, '수정에 실패했어요');
     }
   } finally {
     submitting.value = false;
