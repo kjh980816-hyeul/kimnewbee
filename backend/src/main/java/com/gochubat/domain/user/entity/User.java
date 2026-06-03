@@ -66,7 +66,7 @@ public class User {
 		if (nickname != null && !nickname.isBlank() && this.nicknameChangedAt == null) {
 			this.nickname = nickname;
 		}
-		if (this.profileImageChangedAt == null) {
+		if (this.profileImageChangedAt == null && profileImage != null && !profileImage.isBlank()) {
 			this.profileImage = profileImage;
 		}
 	}

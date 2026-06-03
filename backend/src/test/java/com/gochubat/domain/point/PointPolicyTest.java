@@ -12,7 +12,7 @@ class PointPolicyTest {
 
 	@BeforeEach
 	void setUp() {
-		policy = new PointPolicy(10, 2, 1, 100, 500);
+		policy = new PointPolicy(10, 2, 1, 5, 100, 500);
 	}
 
 	@Test

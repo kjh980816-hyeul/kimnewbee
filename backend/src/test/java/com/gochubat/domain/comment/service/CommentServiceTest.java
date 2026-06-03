@@ -4,7 +4,9 @@ import com.gochubat.domain.comment.dto.CommentResponse;
 import com.gochubat.domain.comment.dto.CommentWriteRequest;
 import com.gochubat.domain.comment.entity.Comment;
 import com.gochubat.domain.comment.repository.CommentRepository;
+import com.gochubat.domain.notification.service.NotificationService;
 import com.gochubat.domain.point.PointService;
+import com.gochubat.domain.post.entity.Post;
 import com.gochubat.domain.post.repository.PostRepository;
 import com.gochubat.domain.user.entity.Tier;
 import com.gochubat.domain.user.entity.User;
@@ -28,6 +30,7 @@ class CommentServiceTest {
 	private PostRepository postRepository;
 	private UserRepository userRepository;
 	private PointService pointService;
+	private NotificationService notificationService;
 	private CommentService commentService;
 	private User author;
 
@@ -37,7 +40,8 @@ class CommentServiceTest {
 		postRepository = Mockito.mock(PostRepository.class);
 		userRepository = Mockito.mock(UserRepository.class);
 		pointService = Mockito.mock(PointService.class);
-		commentService = new CommentService(commentRepository, postRepository, userRepository, pointService);
+		notificationService = Mockito.mock(NotificationService.class);
+		commentService = new CommentService(commentRepository, postRepository, userRepository, pointService, notificationService);
 		author = TestUserFactory.create("nv-c", "작성자", Tier.PEPPER);
 		TestUserFactory.setId(author, 1L);
 	}
@@ -54,7 +58,7 @@ class CommentServiceTest {
 
 	@Test
 	void create_persists_root_comment() {
-		Mockito.when(postRepository.existsById(5L)).thenReturn(true);
+		Mockito.when(postRepository.findById(5L)).thenReturn(Optional.of(Post.createFree("글", "본문", author)));
 		Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(author));
 		Mockito.when(commentRepository.save(any(Comment.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -68,7 +72,7 @@ class CommentServiceTest {
 
 	@Test
 	void create_reply_validates_parent_post_match() {
-		Mockito.when(postRepository.existsById(5L)).thenReturn(true);
+		Mockito.when(postRepository.findById(5L)).thenReturn(Optional.of(Post.createFree("글", "본문", author)));
 		Comment parent = Comment.create(99L, null, author, "다른 글의 댓글");
 		Mockito.when(commentRepository.findById(7L)).thenReturn(Optional.of(parent));
 
@@ -80,7 +84,7 @@ class CommentServiceTest {
 
 	@Test
 	void create_reply_succeeds_when_parent_belongs_to_same_post() {
-		Mockito.when(postRepository.existsById(5L)).thenReturn(true);
+		Mockito.when(postRepository.findById(5L)).thenReturn(Optional.of(Post.createFree("글", "본문", author)));
 		Comment parent = Comment.create(5L, null, author, "원댓글");
 		Mockito.when(commentRepository.findById(7L)).thenReturn(Optional.of(parent));
 		Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(author));

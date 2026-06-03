@@ -20,7 +20,7 @@ class PointServiceTest {
 	@BeforeEach
 	void setUp() {
 		userRepository = Mockito.mock(UserRepository.class);
-		pointService = new PointService(userRepository, new PointPolicy(10, 2, 1, 100, 500));
+		pointService = new PointService(userRepository, new PointPolicy(10, 2, 1, 5, 100, 500));
 	}
 
 	@Test

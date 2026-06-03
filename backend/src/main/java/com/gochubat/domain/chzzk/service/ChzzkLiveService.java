@@ -18,7 +18,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ChzzkLiveService {
 
 	private static final Logger log = LoggerFactory.getLogger(ChzzkLiveService.class);
-	private static final String LIVE_DETAIL_URL = "https://api.chzzk.naver.com/service/v1/channels/{channelId}/live-detail";
+	// 치지직이 service/v1 live-detail 공개 접근을 차단(code 9004)해서 polling live-status로 전환. 응답 구조는 동일.
+	private static final String LIVE_STATUS_URL = "https://api.chzzk.naver.com/polling/v3/channels/{channelId}/live-status";
 	private static final String CHANNEL_URL = "https://chzzk.naver.com/live/";
 	private static final Duration CACHE_TTL = Duration.ofSeconds(30);
 	private static final DateTimeFormatter OPEN_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -50,7 +51,7 @@ public class ChzzkLiveService {
 	private LiveStatusResponse fetchFromChzzk(String channelId) {
 		try {
 			ChzzkLiveDetail detail = restClient.get()
-					.uri(LIVE_DETAIL_URL, channelId)
+					.uri(LIVE_STATUS_URL, channelId)
 					.retrieve()
 					.body(ChzzkLiveDetail.class);
 
@@ -70,7 +71,7 @@ public class ChzzkLiveService {
 					CHANNEL_URL + channelId
 			);
 		} catch (Exception e) {
-			log.warn("Failed to fetch chzzk live-detail for channel {}: {}", channelId, e.getMessage());
+			log.warn("Failed to fetch chzzk live-status for channel {}: {}", channelId, e.getMessage());
 			return LiveStatusResponse.offline();
 		}
 	}
