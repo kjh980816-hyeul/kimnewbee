@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { fetchClips } from '@/api/clip';
+import { deletePost } from '@/api/post';
+import { useCurrentUser } from '@/composables/useCurrentUser';
 import type { ClipListItem } from '@/types/clip';
 
 const items = ref<ClipListItem[]>([]);
@@ -17,6 +19,20 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+const { currentUser, isOwner: isAdmin } = useCurrentUser();
+function canDeletePost(author: string): boolean {
+  return isAdmin.value || currentUser.value?.nickname === author;
+}
+async function removePost(id: number): Promise<void> {
+  if (!confirm('이 게시글을 삭제할까요? 되돌릴 수 없어요.')) return;
+  try {
+    await deletePost(id);
+    items.value = items.value.filter((x) => x.id !== id);
+  } catch {
+    alert('삭제에 실패했어요');
+  }
+}
 </script>
 
 <template>
@@ -40,8 +56,16 @@ onMounted(async () => {
       <li
         v-for="item in items"
         :key="item.id"
-        class="rounded-md bg-surface overflow-hidden hover:bg-elevated transition-colors"
+        class="relative rounded-md bg-surface overflow-hidden hover:bg-elevated transition-colors"
       >
+        <button
+          v-if="canDeletePost(item.author)"
+          type="button"
+          class="absolute right-2 top-2 z-10 rounded-md bg-paper/80 px-2 py-1 text-xs font-semibold text-cheek border border-cheek/40 hover:bg-cheek hover:text-paper transition-colors"
+          @click.prevent.stop="removePost(item.id)"
+        >
+          🗑
+        </button>
         <RouterLink
           :to="{ name: 'clip-detail', params: { id: item.id } }"
           class="block p-4"

@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { fetchFreePost, toggleFreePostLike } from '@/api/free';
-import { deletePostAsAdmin } from '@/api/admin';
+import { deletePost } from '@/api/post';
 import { useIsOwner } from '@/composables/useIsOwner';
 import { useCurrentUser } from '@/composables/useCurrentUser';
 import { errorMessage } from '@/api/error';
@@ -20,13 +20,16 @@ const error = ref<string | null>(null);
 
 const postId = computed(() => Number(route.params['id']));
 const isOwner = useIsOwner(computed(() => post.value?.author ?? null));
-const { isOwner: isAdmin } = useCurrentUser();
+const { currentUser, isOwner: isAdmin } = useCurrentUser();
+const canDelete = computed(
+  () => isAdmin.value || (!!currentUser.value && currentUser.value.nickname === post.value?.author),
+);
 
 async function handleDelete(): Promise<void> {
   if (!post.value) return;
   if (!confirm('이 게시글을 삭제할까요? 되돌릴 수 없어요.')) return;
   try {
-    await deletePostAsAdmin(post.value.id);
+    await deletePost(post.value.id);
     await router.push({ name: 'free' });
   } catch (e) {
     error.value = errorMessage(e, '삭제에 실패했어요');
@@ -86,7 +89,7 @@ async function onLike(): Promise<void> {
         :content="post.content"
         :liked-by-me="post.likedByMe"
         :like-count="post.likeCount"
-        :can-delete="isAdmin"
+        :can-delete="canDelete"
         category="잡담"
         @like="onLike"
         @delete="handleDelete"

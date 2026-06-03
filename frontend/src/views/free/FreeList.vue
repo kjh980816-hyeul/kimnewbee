@@ -2,6 +2,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { fetchFreePosts } from '@/api/free';
+import { deletePost } from '@/api/post';
+import { useCurrentUser } from '@/composables/useCurrentUser';
 import type { FreePostListItem } from '@/types/free';
 
 const posts = ref<FreePostListItem[]>([]);
@@ -56,6 +58,20 @@ function relativeTime(iso: string): string {
 
 function authorInitial(name: string): string {
   return name ? name.charAt(0) : '?';
+}
+
+const { currentUser, isOwner: isAdmin } = useCurrentUser();
+function canDeletePost(author: string): boolean {
+  return isAdmin.value || currentUser.value?.nickname === author;
+}
+async function removePost(id: number): Promise<void> {
+  if (!confirm('이 게시글을 삭제할까요? 되돌릴 수 없어요.')) return;
+  try {
+    await deletePost(id);
+    posts.value = posts.value.filter((x) => x.id !== id);
+  } catch {
+    alert('삭제에 실패했어요');
+  }
 }
 </script>
 
@@ -125,7 +141,15 @@ function authorInitial(name: string): string {
           <span class="text-right">조회 / ♥</span>
         </div>
         <ul v-if="sortedPosts.length > 0" class="divide-y divide-border">
-          <li v-for="p in sortedPosts" :key="p.id" class="hover:bg-elevated transition-colors">
+          <li v-for="p in sortedPosts" :key="p.id" class="relative group hover:bg-elevated transition-colors">
+            <button
+              v-if="canDeletePost(p.author)"
+              type="button"
+              class="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-md bg-paper/90 px-2 py-1 text-xs font-semibold text-cheek border border-cheek/40 opacity-0 group-hover:opacity-100 hover:bg-cheek hover:text-paper transition-all"
+              @click.prevent.stop="removePost(p.id)"
+            >
+              🗑 삭제
+            </button>
             <RouterLink
               :to="{ name: 'free-detail', params: { id: p.id } }"
               class="grid grid-cols-[70px_1fr_140px_90px_90px] gap-3 px-5 py-3 items-center text-sm"

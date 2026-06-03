@@ -19,4 +19,11 @@ public abstract class AuthenticatedController {
 		}
 		return userId;
 	}
+
+	protected final boolean hasOwnerRole(Authentication authentication) {
+		return authentication != null
+				&& authentication.getAuthorities() != null
+				&& authentication.getAuthorities().stream()
+				.anyMatch(a -> "ROLE_OWNER".equals(a.getAuthority()));
+	}
 }

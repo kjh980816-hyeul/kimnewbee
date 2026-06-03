@@ -65,6 +65,7 @@ public class SecurityConfig {
 						.requestMatchers("/api/offline/**").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/posts/*/comments").permitAll()
 						.requestMatchers("/api/posts/*/comments", "/api/comments/**").authenticated()
+						.requestMatchers(HttpMethod.DELETE, "/api/posts/*").authenticated()
 						.requestMatchers(HttpMethod.POST, "/api/free/*/like", "/api/fanart/*/like", "/api/clips/*/like", "/api/pets/*/like", "/api/offline/*/like").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/songs").permitAll()
 						.requestMatchers("/api/songs/**").authenticated()

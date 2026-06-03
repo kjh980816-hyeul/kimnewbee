@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { fetchPet, togglePetLike } from '@/api/pet';
-import { deletePostAsAdmin } from '@/api/admin';
+import { deletePost } from '@/api/post';
 import { useIsOwner } from '@/composables/useIsOwner';
 import { useCurrentUser } from '@/composables/useCurrentUser';
 import { errorMessage } from '@/api/error';
@@ -19,13 +19,16 @@ const error = ref<string | null>(null);
 
 const petId = computed(() => Number(route.params['id']));
 const isOwner = useIsOwner(computed(() => pet.value?.author ?? null));
-const { isOwner: isAdmin } = useCurrentUser();
+const { currentUser, isOwner: isAdmin } = useCurrentUser();
+const canDelete = computed(
+  () => isAdmin.value || (!!currentUser.value && currentUser.value.nickname === pet.value?.author),
+);
 
 async function handleDelete(): Promise<void> {
   if (!pet.value) return;
   if (!confirm('이 게시글을 삭제할까요? 되돌릴 수 없어요.')) return;
   try {
-    await deletePostAsAdmin(pet.value.id);
+    await deletePost(pet.value.id);
     await router.push({ name: 'pets' });
   } catch (e) {
     error.value = errorMessage(e, '삭제에 실패했어요');
@@ -85,7 +88,7 @@ async function onLike(): Promise<void> {
         :content="pet.content"
         :liked-by-me="pet.likedByMe"
         :like-count="pet.likeCount"
-        :can-delete="isAdmin"
+        :can-delete="canDelete"
         category="반려동물"
         @like="onLike"
         @delete="handleDelete"

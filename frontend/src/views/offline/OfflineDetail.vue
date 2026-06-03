@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { fetchOfflineReview, toggleOfflineReviewLike } from '@/api/offline';
-import { deletePostAsAdmin } from '@/api/admin';
+import { deletePost } from '@/api/post';
 import { isHttpStatus, errorMessage } from '@/api/error';
 import { useIsOwner } from '@/composables/useIsOwner';
 import { useCurrentUser } from '@/composables/useCurrentUser';
@@ -20,13 +20,16 @@ const error = ref<string | null>(null);
 
 const reviewId = computed(() => Number(route.params['id']));
 const isOwner = useIsOwner(computed(() => review.value?.author ?? null));
-const { isOwner: isAdmin } = useCurrentUser();
+const { currentUser, isOwner: isAdmin } = useCurrentUser();
+const canDelete = computed(
+  () => isAdmin.value || (!!currentUser.value && currentUser.value.nickname === review.value?.author),
+);
 
 async function handleDelete(): Promise<void> {
   if (!review.value) return;
   if (!confirm('이 게시글을 삭제할까요? 되돌릴 수 없어요.')) return;
   try {
-    await deletePostAsAdmin(review.value.id);
+    await deletePost(review.value.id);
     await router.push({ name: 'offline' });
   } catch (e) {
     error.value = errorMessage(e, '삭제에 실패했어요');
@@ -106,7 +109,7 @@ async function onLike(): Promise<void> {
         :content="review.content"
         :liked-by-me="review.likedByMe"
         :like-count="review.likeCount"
-        :can-delete="isAdmin"
+        :can-delete="canDelete"
         category="후기"
         @like="onLike"
         @delete="handleDelete"

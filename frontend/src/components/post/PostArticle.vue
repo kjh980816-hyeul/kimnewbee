@@ -57,7 +57,7 @@ const formattedDate = computed(() => {
         class="rounded-md border border-cheek/40 px-3 py-1.5 text-xs font-semibold text-cheek hover:bg-cheek hover:text-paper transition-colors"
         @click="$emit('delete')"
       >
-        🗑 관리자 삭제
+        🗑 삭제
       </button>
     </div>
 

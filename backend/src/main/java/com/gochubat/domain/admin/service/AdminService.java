@@ -64,16 +64,6 @@ public class AdminService {
 	}
 
 	@Transactional
-	public void deletePost(Long postId) {
-		if (!postRepository.existsById(postId)) {
-			throw new CustomException(ErrorCode.NOT_FOUND);
-		}
-		commentRepository.deleteByPostId(postId);
-		postLikeRepository.deleteByPostId(postId);
-		postRepository.deleteById(postId);
-	}
-
-	@Transactional
 	public AdminUserResponse adjustPoints(Long userId, long delta) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
