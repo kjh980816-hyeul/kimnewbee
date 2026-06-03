@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { fetchFreePost, toggleFreePostLike } from '@/api/free';
+import { deletePostAsAdmin } from '@/api/admin';
 import { useIsOwner } from '@/composables/useIsOwner';
+import { useCurrentUser } from '@/composables/useCurrentUser';
+import { errorMessage } from '@/api/error';
 import type { FreePost } from '@/types/free';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 import MarkdownContent from '@/components/MarkdownContent.vue';
 
 const route = useRoute();
+const router = useRouter();
 
 const post = ref<FreePost | null>(null);
 const loading = ref(true);
@@ -16,6 +20,18 @@ const error = ref<string | null>(null);
 
 const postId = computed(() => Number(route.params['id']));
 const isOwner = useIsOwner(computed(() => post.value?.author ?? null));
+const { isOwner: isAdmin } = useCurrentUser();
+
+async function handleDelete(): Promise<void> {
+  if (!post.value) return;
+  if (!confirm('이 게시글을 삭제할까요? 되돌릴 수 없어요.')) return;
+  try {
+    await deletePostAsAdmin(post.value.id);
+    await router.push({ name: 'free' });
+  } catch (e) {
+    error.value = errorMessage(e, '삭제에 실패했어요');
+  }
+}
 
 onMounted(async () => {
   if (Number.isNaN(postId.value)) {
@@ -70,8 +86,10 @@ async function onLike(): Promise<void> {
         :content="post.content"
         :liked-by-me="post.likedByMe"
         :like-count="post.likeCount"
+        :can-delete="isAdmin"
         category="잡담"
         @like="onLike"
+        @delete="handleDelete"
       >
         <template #body>
           <MarkdownContent :content="post.content" />

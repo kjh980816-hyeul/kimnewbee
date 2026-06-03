@@ -26,6 +26,7 @@ import jakarta.servlet.http.Cookie;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -196,5 +197,38 @@ class AdminControllerTest {
 						.content(objectMapper.writeValueAsString(Map.of("delta", -100))))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.points").value(0));
+	}
+
+	@Test
+	void delete_post_removes_post_with_comments_and_likes_for_owner() throws Exception {
+		Post post = postRepository.save(Post.createFree("자유", "본문", pepper));
+		commentRepository.save(Comment.create(post.getId(), null, pepper, "댓글"));
+		postLikeRepository.save(PostLike.create(post.getId(), owner.getId()));
+
+		mockMvc.perform(delete("/api/admin/posts/" + post.getId())
+						.cookie(new Cookie("access_token", ownerToken)))
+				.andExpect(status().isNoContent());
+
+		assertThat(postRepository.existsById(post.getId())).isFalse();
+		assertThat(commentRepository.countActiveByPostId(post.getId())).isZero();
+		assertThat(postLikeRepository.countByPostId(post.getId())).isZero();
+	}
+
+	@Test
+	void delete_post_returns_403_for_pepper() throws Exception {
+		Post post = postRepository.save(Post.createFree("자유", "본문", pepper));
+
+		mockMvc.perform(delete("/api/admin/posts/" + post.getId())
+						.cookie(new Cookie("access_token", pepperToken)))
+				.andExpect(status().isForbidden());
+
+		assertThat(postRepository.existsById(post.getId())).isTrue();
+	}
+
+	@Test
+	void delete_post_returns_404_for_unknown_post() throws Exception {
+		mockMvc.perform(delete("/api/admin/posts/99999")
+						.cookie(new Cookie("access_token", ownerToken)))
+				.andExpect(status().isNotFound());
 	}
 }

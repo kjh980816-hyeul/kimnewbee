@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { fetchFanart, toggleFanartLike } from '@/api/fanart';
+import { deletePostAsAdmin } from '@/api/admin';
 import { useIsOwner } from '@/composables/useIsOwner';
+import { useCurrentUser } from '@/composables/useCurrentUser';
+import { errorMessage } from '@/api/error';
 import type { Fanart } from '@/types/fanart';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
+const router = useRouter();
 
 const fanart = ref<Fanart | null>(null);
 const loading = ref(true);
@@ -15,6 +19,18 @@ const error = ref<string | null>(null);
 
 const fanartId = computed(() => Number(route.params['id']));
 const isOwner = useIsOwner(computed(() => fanart.value?.author ?? null));
+const { isOwner: isAdmin } = useCurrentUser();
+
+async function handleDelete(): Promise<void> {
+  if (!fanart.value) return;
+  if (!confirm('이 게시글을 삭제할까요? 되돌릴 수 없어요.')) return;
+  try {
+    await deletePostAsAdmin(fanart.value.id);
+    await router.push({ name: 'fanart' });
+  } catch (e) {
+    error.value = errorMessage(e, '삭제에 실패했어요');
+  }
+}
 
 onMounted(async () => {
   if (Number.isNaN(fanartId.value)) {
@@ -69,8 +85,10 @@ async function onLike(): Promise<void> {
         :content="fanart.content"
         :liked-by-me="fanart.likedByMe"
         :like-count="fanart.likeCount"
+        :can-delete="isAdmin"
         category="일러스트"
         @like="onLike"
+        @delete="handleDelete"
       >
         <template #media>
           <img

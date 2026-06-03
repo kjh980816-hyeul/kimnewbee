@@ -26,3 +26,8 @@ export async function adjustUserPoints(id: number, input: AdjustPointsInput): Pr
   const res = await apiClient.patch<AdminUser>(`/api/admin/users/${id}/points`, input);
   return res.data;
 }
+
+// 관리자(OWNER) 전용: 게시판 종류 무관하게 게시글 삭제(연관 댓글/좋아요도 함께 제거).
+export async function deletePostAsAdmin(id: number): Promise<void> {
+  await apiClient.delete(`/api/admin/posts/${id}`);
+}

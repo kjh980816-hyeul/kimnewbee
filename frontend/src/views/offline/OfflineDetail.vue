@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { fetchOfflineReview, toggleOfflineReviewLike } from '@/api/offline';
-import { isHttpStatus } from '@/api/error';
+import { deletePostAsAdmin } from '@/api/admin';
+import { isHttpStatus, errorMessage } from '@/api/error';
 import { useIsOwner } from '@/composables/useIsOwner';
+import { useCurrentUser } from '@/composables/useCurrentUser';
 import type { OfflineReview } from '@/types/offline';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
+const router = useRouter();
 
 const review = ref<OfflineReview | null>(null);
 const loading = ref(true);
@@ -17,6 +20,18 @@ const error = ref<string | null>(null);
 
 const reviewId = computed(() => Number(route.params['id']));
 const isOwner = useIsOwner(computed(() => review.value?.author ?? null));
+const { isOwner: isAdmin } = useCurrentUser();
+
+async function handleDelete(): Promise<void> {
+  if (!review.value) return;
+  if (!confirm('이 게시글을 삭제할까요? 되돌릴 수 없어요.')) return;
+  try {
+    await deletePostAsAdmin(review.value.id);
+    await router.push({ name: 'offline' });
+  } catch (e) {
+    error.value = errorMessage(e, '삭제에 실패했어요');
+  }
+}
 
 onMounted(async () => {
   if (Number.isNaN(reviewId.value)) {
@@ -91,8 +106,10 @@ async function onLike(): Promise<void> {
         :content="review.content"
         :liked-by-me="review.likedByMe"
         :like-count="review.likeCount"
+        :can-delete="isAdmin"
         category="후기"
         @like="onLike"
+        @delete="handleDelete"
       >
         <template #media>
           <img

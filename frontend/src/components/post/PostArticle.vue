@@ -13,10 +13,12 @@ const props = defineProps<{
   content: string;
   likedByMe: boolean;
   likeCount: number;
+  canDelete?: boolean;
 }>();
 
 defineEmits<{
   like: [];
+  delete: [];
 }>();
 
 interface TierMeta {
@@ -49,6 +51,16 @@ const formattedDate = computed(() => {
 
 <template>
   <article>
+    <div v-if="canDelete" class="mb-3 flex justify-end">
+      <button
+        type="button"
+        class="rounded-md border border-cheek/40 px-3 py-1.5 text-xs font-semibold text-cheek hover:bg-cheek hover:text-paper transition-colors"
+        @click="$emit('delete')"
+      >
+        🗑 관리자 삭제
+      </button>
+    </div>
+
     <div v-if="category" class="mb-4 inline-block">
       <span class="px-4 py-1.5 rounded-full bg-violet text-ink text-sm font-semibold">
         {{ category }}

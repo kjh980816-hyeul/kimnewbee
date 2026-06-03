@@ -2,6 +2,7 @@ package com.gochubat.domain.like.repository;
 
 import com.gochubat.domain.like.entity.PostLike;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,6 +21,10 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
 	@Query("select pl.postId as postId, count(pl) as cnt from PostLike pl "
 			+ "where pl.postId in :postIds group by pl.postId")
 	List<PostLikeCount> countByPostIds(@Param("postIds") Collection<Long> postIds);
+
+	@Modifying
+	@Query("delete from PostLike pl where pl.postId = :postId")
+	void deleteByPostId(@Param("postId") Long postId);
 
 	interface PostLikeCount {
 		Long getPostId();

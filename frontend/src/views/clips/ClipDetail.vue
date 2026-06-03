@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { fetchClip, toggleClipLike } from '@/api/clip';
+import { deletePostAsAdmin } from '@/api/admin';
 import { useIsOwner } from '@/composables/useIsOwner';
+import { useCurrentUser } from '@/composables/useCurrentUser';
+import { errorMessage } from '@/api/error';
 import type { Clip } from '@/types/clip';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
+const router = useRouter();
 
 const clip = ref<Clip | null>(null);
 const loading = ref(true);
@@ -15,6 +19,18 @@ const error = ref<string | null>(null);
 
 const clipId = computed(() => Number(route.params['id']));
 const isOwner = useIsOwner(computed(() => clip.value?.author ?? null));
+const { isOwner: isAdmin } = useCurrentUser();
+
+async function handleDelete(): Promise<void> {
+  if (!clip.value) return;
+  if (!confirm('이 게시글을 삭제할까요? 되돌릴 수 없어요.')) return;
+  try {
+    await deletePostAsAdmin(clip.value.id);
+    await router.push({ name: 'clips' });
+  } catch (e) {
+    error.value = errorMessage(e, '삭제에 실패했어요');
+  }
+}
 
 const embedUrl = computed<string | null>(() => {
   if (!clip.value) return null;
@@ -79,8 +95,10 @@ async function onLike(): Promise<void> {
         :content="clip.description"
         :liked-by-me="clip.likedByMe"
         :like-count="clip.likeCount"
+        :can-delete="isAdmin"
         category="클립"
         @like="onLike"
+        @delete="handleDelete"
       >
         <template #media>
           <iframe

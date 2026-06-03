@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { fetchPet, togglePetLike } from '@/api/pet';
+import { deletePostAsAdmin } from '@/api/admin';
 import { useIsOwner } from '@/composables/useIsOwner';
+import { useCurrentUser } from '@/composables/useCurrentUser';
+import { errorMessage } from '@/api/error';
 import type { Pet } from '@/types/pet';
 import PostArticle from '@/components/post/PostArticle.vue';
 import CommentSection from '@/components/post/CommentSection.vue';
 
 const route = useRoute();
+const router = useRouter();
 
 const pet = ref<Pet | null>(null);
 const loading = ref(true);
@@ -15,6 +19,18 @@ const error = ref<string | null>(null);
 
 const petId = computed(() => Number(route.params['id']));
 const isOwner = useIsOwner(computed(() => pet.value?.author ?? null));
+const { isOwner: isAdmin } = useCurrentUser();
+
+async function handleDelete(): Promise<void> {
+  if (!pet.value) return;
+  if (!confirm('이 게시글을 삭제할까요? 되돌릴 수 없어요.')) return;
+  try {
+    await deletePostAsAdmin(pet.value.id);
+    await router.push({ name: 'pets' });
+  } catch (e) {
+    error.value = errorMessage(e, '삭제에 실패했어요');
+  }
+}
 
 onMounted(async () => {
   if (Number.isNaN(petId.value)) {
@@ -69,8 +85,10 @@ async function onLike(): Promise<void> {
         :content="pet.content"
         :liked-by-me="pet.likedByMe"
         :like-count="pet.likeCount"
+        :can-delete="isAdmin"
         category="반려동물"
         @like="onLike"
+        @delete="handleDelete"
       >
         <template #media>
           <img
