@@ -64,8 +64,10 @@ async function onDelete(id: number): Promise<void> {
 </script>
 
 <template>
-  <section class="rounded-md bg-surface p-6">
-    <h2 class="text-sm font-medium text-ink-muted mb-4">댓글 {{ aliveCount }}</h2>
+  <section class="glass card-pad">
+    <h2 class="mb-4 text-base font-bold text-ink" style="font-family: var(--font-serif)">
+      댓글 <span style="color: var(--green-bright)">{{ aliveCount }}</span>
+    </h2>
 
     <p v-if="loading" class="text-ink-muted text-sm mb-4">댓글 불러오는 중...</p>
     <p v-else-if="error" class="text-cheek text-sm mb-4">{{ error }}</p>
@@ -79,7 +81,7 @@ async function onDelete(id: number): Promise<void> {
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-2 min-w-0">
             <div
-              class="w-7 h-7 rounded-full bg-gradient-to-br from-violet to-cheek flex items-center justify-center text-xs overflow-hidden shrink-0"
+              class="w-7 h-7 rounded-full bg-gradient-to-br from-green-bright to-pepper-deep text-paper flex items-center justify-center text-xs overflow-hidden shrink-0"
             >
               <img
                 v-if="c.authorProfileImage && !c.deleted"
@@ -129,7 +131,7 @@ async function onDelete(id: number): Promise<void> {
               <div class="flex items-center gap-1.5 min-w-0">
                 <span class="text-ink-muted shrink-0">↳</span>
                 <div
-                  class="w-5 h-5 rounded-full bg-gradient-to-br from-violet to-cheek flex items-center justify-center text-[10px] overflow-hidden shrink-0"
+                  class="w-5 h-5 rounded-full bg-gradient-to-br from-green-bright to-pepper-deep text-paper flex items-center justify-center text-[10px] overflow-hidden shrink-0"
                 >
                   <img
                     v-if="r.authorProfileImage && !r.deleted"

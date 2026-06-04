@@ -50,14 +50,12 @@ function formatDate(iso: string): string {
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
-    <article v-else-if="notice">
-      <div class="mb-4 inline-block">
-        <span class="px-4 py-1.5 rounded-full bg-corn/20 text-corn text-sm font-semibold">
-          🌶 공지
-        </span>
+    <article v-else-if="notice" class="glass card-pad">
+      <div class="mb-4">
+        <span class="tag corn" style="font-size: 12px; padding: 5px 12px">🌶 공지</span>
       </div>
-      <h1 class="text-3xl font-extrabold text-ink leading-tight mb-5">{{ notice.title }}</h1>
-      <div class="flex items-center gap-3 pb-5 mb-6 border-b border-border">
+      <h1 class="text-3xl font-extrabold text-ink leading-tight mb-5" style="font-family: var(--font-serif)">{{ notice.title }}</h1>
+      <div class="flex items-center gap-3 pb-5 mb-6" style="border-bottom: 1px solid var(--line)">
         <div class="w-11 h-11 rounded-full bg-gradient-to-br from-corn to-cheek flex items-center justify-center text-lg shrink-0">
           👑
         </div>

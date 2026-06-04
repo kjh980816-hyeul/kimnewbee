@@ -94,15 +94,10 @@ async function removePost(id: number): Promise<void> {
 
     <header class="mb-6 flex items-end justify-between gap-4 flex-wrap">
       <div>
-        <h1 class="text-4xl font-extrabold text-ink leading-tight">자유게시판</h1>
+        <h1 class="text-4xl font-extrabold text-ink leading-tight" style="font-family: var(--font-serif)">자유게시판</h1>
         <p class="mt-2 text-sm text-ink-muted">초록고추들끼리 편하게 떠드는 공간이에요 💬</p>
       </div>
-      <RouterLink
-        :to="{ name: 'free-write' }"
-        class="rounded-full bg-violet-deep px-5 py-2 text-sm font-semibold text-ink hover:bg-violet-deep/80 transition-colors whitespace-nowrap"
-      >
-        ✏ 글쓰기
-      </RouterLink>
+      <RouterLink :to="{ name: 'free-write' }" class="btn-primary whitespace-nowrap">✏ 글쓰기</RouterLink>
     </header>
 
     <div class="flex items-center justify-between gap-4 mb-5 flex-wrap">
@@ -141,7 +136,7 @@ async function removePost(id: number): Promise<void> {
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else>
-      <div class="rounded-2xl bg-surface border border-border overflow-hidden">
+      <div class="glass overflow-hidden">
         <div class="grid grid-cols-[70px_1fr_140px_90px_90px] gap-3 px-5 py-3 text-[11px] text-ink-muted border-b border-border tracking-wide">
           <span>분류</span>
           <span>제목</span>
@@ -163,9 +158,7 @@ async function removePost(id: number): Promise<void> {
               :to="{ name: 'free-detail', params: { id: p.id } }"
               class="grid grid-cols-[70px_1fr_140px_90px_90px] gap-3 px-5 py-3 items-center text-sm"
             >
-              <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-violet/20 text-violet text-center">
-                {{ categoryOf(p) }}
-              </span>
+              <span class="tag green justify-center">{{ categoryOf(p) }}</span>
               <div class="min-w-0 flex items-center gap-2">
                 <span class="text-ink truncate">{{ p.title }}</span>
                 <span v-if="p.commentCount > 0" class="text-[11px] text-corn shrink-0">[{{ p.commentCount }}]</span>

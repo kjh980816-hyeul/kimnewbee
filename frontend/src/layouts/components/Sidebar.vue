@@ -60,91 +60,156 @@ onMounted(async () => {
 </script>
 
 <template>
-  <aside class="w-60 shrink-0 bg-surface border-r border-border flex flex-col">
-    <div class="px-6 pt-6 pb-4">
-      <RouterLink to="/" class="flex items-center gap-2">
-        <span class="text-2xl">🌶</span>
-        <h1 class="text-xl font-extrabold tracking-tight text-ink leading-none">
-          김늉비<span class="text-pepper">고추밭</span>
-        </h1>
-      </RouterLink>
+  <aside class="sidebar">
+    <div class="side-card">
+      <svg class="harmonica" width="70" height="35" viewBox="0 0 40 20" fill="none">
+        <rect x="2" y="4" width="36" height="12" rx="2" fill="#5FC76B" opacity=".5" stroke="#3C8C3B"></rect>
+        <rect x="5" y="7" width="30" height="6" rx="1" fill="#0F0F10"></rect>
+      </svg>
+      <div style="font-size: 12px; color: var(--corn); font-weight: 700">우리아기 불고노는</div>
+      <div style="font-size: 17px; font-weight: 700; font-family: var(--font-serif)">하모니카는 🌽</div>
+      <a
+        href="https://youtube.com/shorts/5X9lrMI6FFw?si=fzhHuJDtZQM79--d"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="display: block; font-size: 11px; color: var(--text-mute); margin-top: 8px"
+      >
+        오늘의 애교송 ▸ 재생
+      </a>
     </div>
 
-    <div class="mx-4 mb-5 p-3 rounded-2xl bg-corn/10 border border-corn/30">
-      <div class="flex items-start gap-2">
-        <div class="text-base leading-tight shrink-0">🟡</div>
-        <div class="min-w-0 flex-1">
-          <div class="text-xs text-corn font-semibold leading-snug">우리아기 불고노는</div>
-          <div class="text-xs text-ink-muted leading-snug"> 하모니카는 🍃</div>
-        </div>
-      </div>
-      <div class="mt-2 text-[11px] text-ink-muted truncate flex items-center gap-1">
-        <span class="text-violet">▶</span>
-        <a href="https://youtube.com/shorts/5X9lrMI6FFw?si=fzhHuJDtZQM79--d" target="_blank" rel="noopener noreferrer"> 오늘의 애교송 재생</a>
-      </div>
-    </div>
+    <div class="side-label">게시판</div>
+    <RouterLink to="/" class="side-link" :class="{ on: isActive('/') }">
+      <span class="ic">🏡</span><span class="lbl">홈</span>
+    </RouterLink>
+    <RouterLink
+      v-for="item in boardMenu"
+      :key="item.to"
+      :to="item.to"
+      class="side-link"
+      :class="{ on: isActive(item.to) }"
+    >
+      <span class="ic">{{ item.icon }}</span>
+      <span class="lbl">{{ item.label }}</span>
+      <span v-if="item.count" class="ct">{{ item.count.toLocaleString() }}</span>
+    </RouterLink>
 
-    <div class="px-6 pb-2 text-[10px] tracking-[0.15em] text-ink-muted/70 font-semibold">MENU</div>
-    <nav class="px-3">
-      <ul class="space-y-0.5">
-        <li>
-          <RouterLink
-            to="/"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
-            :class="
-              isActive('/')
-                ? 'bg-violet-deep/40 text-ink font-semibold'
-                : 'text-ink-muted hover:text-ink hover:bg-elevated'
-            "
-          >
-            <span class="w-5 text-center shrink-0">⌂</span>
-            <span class="flex-1 truncate">홈</span>
-          </RouterLink>
-        </li>
-        <li v-for="item in boardMenu" :key="item.to">
-          <RouterLink
-            :to="item.to"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
-            :class="
-              isActive(item.to)
-                ? 'bg-violet-deep/40 text-ink font-semibold'
-                : 'text-ink-muted hover:text-ink hover:bg-elevated'
-            "
-          >
-            <span class="w-5 text-center shrink-0">{{ item.icon }}</span>
-            <span class="flex-1 truncate">{{ item.label }}</span>
-            <span v-if="item.count" class="text-[11px] text-ink-muted/60 tabular-nums">
-              {{ item.count.toLocaleString() }}
-            </span>
-          </RouterLink>
-        </li>
-      </ul>
-    </nav>
-
-    <div class="px-6 pt-5 pb-2 text-[10px] tracking-[0.15em] text-ink-muted/70 font-semibold">MY</div>
-    <nav class="px-3 pb-6">
-      <ul class="space-y-0.5">
-        <li v-for="item in myMenu" :key="item.to">
-          <RouterLink
-            :to="item.to"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
-            :class="
-              isActive(item.to)
-                ? 'bg-violet-deep/40 text-ink font-semibold'
-                : 'text-ink-muted hover:text-ink hover:bg-elevated'
-            "
-          >
-            <span class="w-5 text-center shrink-0">{{ item.icon }}</span>
-            <span class="flex-1 truncate">{{ item.label }}</span>
-            <span
-              v-if="item.badgeKey === 'streak' && streak !== null && streak > 0"
-              class="px-1.5 py-0.5 rounded text-[10px] bg-violet/25 text-violet font-bold tabular-nums"
-            >
-              {{ streak }}일
-            </span>
-          </RouterLink>
-        </li>
-      </ul>
-    </nav>
+    <div class="side-label">MY</div>
+    <RouterLink
+      v-for="item in myMenu"
+      :key="item.to"
+      :to="item.to"
+      class="side-link"
+      :class="{ on: isActive(item.to) }"
+    >
+      <span class="ic">{{ item.icon }}</span>
+      <span class="lbl">{{ item.label }}</span>
+      <span
+        v-if="item.badgeKey === 'streak' && streak !== null && streak > 0"
+        class="ct streak"
+      >
+        {{ streak }}일
+      </span>
+    </RouterLink>
   </aside>
 </template>
+
+<style scoped>
+.sidebar {
+  width: 248px;
+  flex-shrink: 0;
+  padding: 26px 16px 40px;
+  align-self: flex-start;
+  position: sticky;
+  top: 70px;
+  max-height: calc(100vh - 70px);
+  overflow-y: auto;
+}
+.side-card {
+  background: linear-gradient(150deg, rgba(95, 199, 107, 0.12), rgba(28, 28, 31, 0.6));
+  border: 1px solid rgba(95, 199, 107, 0.18);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.side-card .harmonica {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  opacity: 0.5;
+}
+.side-label {
+  font-size: 11px;
+  color: var(--text-mute);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 6px 10px;
+  margin: 14px 0 4px;
+}
+.side-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  color: var(--text-soft);
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.18s var(--ease);
+  margin: 1px 0;
+  position: relative;
+}
+.side-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+}
+.side-link.on {
+  background: linear-gradient(90deg, rgba(95, 199, 107, 0.16), transparent);
+  color: var(--green-bright);
+  font-weight: 700;
+}
+.side-link.on::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--green);
+}
+.side-link .ic {
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.side-link .lbl {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.side-link .ct {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.side-link .ct.streak {
+  background: rgba(95, 199, 107, 0.16);
+  color: var(--green-bright);
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-weight: 700;
+}
+
+@media (max-width: 980px) {
+  .sidebar {
+    display: none;
+  }
+}
+</style>

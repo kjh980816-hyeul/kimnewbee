@@ -50,7 +50,7 @@ const formattedDate = computed(() => {
 </script>
 
 <template>
-  <article>
+  <article class="glass card-pad">
     <div v-if="canDelete" class="mb-3 flex justify-end">
       <button
         type="button"
@@ -61,16 +61,14 @@ const formattedDate = computed(() => {
       </button>
     </div>
 
-    <div v-if="category" class="mb-4 inline-block">
-      <span class="px-4 py-1.5 rounded-full bg-violet text-ink text-sm font-semibold">
-        {{ category }}
-      </span>
+    <div v-if="category" class="mb-4">
+      <span class="tag green" style="font-size: 12px; padding: 5px 12px">{{ category }}</span>
     </div>
 
-    <h1 class="text-3xl font-extrabold text-ink leading-tight mb-5">{{ title }}</h1>
+    <h1 class="text-3xl font-extrabold text-ink leading-tight mb-5" style="font-family: var(--font-serif)">{{ title }}</h1>
 
-    <div class="flex items-center gap-3 pb-5 mb-6 border-b border-border">
-      <div class="w-11 h-11 rounded-full bg-gradient-to-br from-violet to-cheek flex items-center justify-center text-lg overflow-hidden shrink-0">
+    <div class="flex items-center gap-3 pb-5 mb-6" style="border-bottom: 1px solid var(--line)">
+      <div class="w-11 h-11 rounded-full bg-gradient-to-br from-green-bright to-pepper-deep flex items-center justify-center text-lg overflow-hidden shrink-0 text-paper">
         <img v-if="authorAvatar" :src="authorAvatar" :alt="author" class="w-full h-full object-cover" />
         <span v-else>🌶️</span>
       </div>

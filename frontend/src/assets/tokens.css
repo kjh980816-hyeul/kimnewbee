@@ -1,16 +1,78 @@
+/* ============================================================
+   고추밭 v2 디자인 토큰 — 다크 plum(블랙) + 초록고추 그린
+   시안(고추밭_시안_clean.html)에서 실측. 모든 화면은 이 변수만 참조.
+   ============================================================ */
 :root {
-  --color-pepper: #7ED05A;
-  --color-pepper-deep: #5FAB3F;
-  --color-corn: #F7D14A;
-  --color-cheek: #F4A8E4;
-  --color-paper: #0F0A1C;
-  --color-surface: #171828;
-  --color-elevated: #1F1738;
-  --color-border: #2C2142;
-  --color-ink: #F8F8FE;
-  --color-ink-muted: #A89DC7;
-  --color-chzzk: #00FFA3;
-  --color-naver: #03C75A;
-  --color-violet: #C0AFE5;
-  --color-violet-deep: #6D28D9;
+  /* --- Tailwind가 참조하는 의미 토큰(기존 클래스 자동 리테마) --- */
+  --color-pepper: #5fc76b; /* 메인 그린(포인트) */
+  --color-pepper-deep: #4fb05e; /* green-mid */
+  --color-corn: #f2d45a;
+  --color-cheek: #e89bbe;
+  --color-paper: #0f0f10; /* 테마 베이스(블랙) */
+  --color-surface: #1a1a1c; /* surface */
+  --color-elevated: #202023; /* card */
+  --color-border: #2d2d31; /* line */
+  --color-ink: #f5f5f6;
+  --color-ink-muted: #c9c9cd; /* 읽기 쉬운 보조 텍스트(text-soft) */
+  --color-chzzk: #00ffa3;
+  --color-naver: #03c75a;
+  --color-violet: #c9b0f2; /* 절제된 plum 액센트(뱃지 등) */
+  --color-violet-deep: #4fb05e; /* primary CTA는 그린으로 통일 */
+
+  /* --- 시안 원본 토큰(셸/글래스/로더 충실 재현용) --- */
+  /* Neutral black scale */
+  --plum-900: #060606;
+  --plum-850: #0b0b0c;
+  --plum-800: #0f0f10;
+  --plum-750: #151517;
+  --plum-700: #1a1a1c;
+  --plum-650: #202023;
+  --plum-600: #2a2a2e;
+  --line: #2d2d31;
+  --line-soft: #1c1c1f;
+
+  /* 초록고추 그린 */
+  --green: #5fc76b;
+  --green-bright: #a3ec8e;
+  --green-mid: #4fb05e;
+  --green-deep: #3c8c3b;
+  --green-glow: rgba(95, 199, 107, 0.35);
+
+  /* warm accent */
+  --corn: #f2d45a;
+  --cheek: #e89bbe;
+
+  /* Text */
+  --text: #f5f5f6;
+  --text-soft: #c9c9cd;
+  --text-mute: #87878d;
+  --text-faint: #5c5c62;
+
+  /* System */
+  --live: #ff4d6d;
+  --chzzk: #00ffa3;
+  --naver: #03c75a;
+
+  /* Radius */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* Shadow / glow */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-pop: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(95, 199, 107, 0.06);
+  --glow-green: 0 0 0 1px rgba(95, 199, 107, 0.25), 0 8px 32px rgba(95, 199, 107, 0.14);
+  --neutral-card-a: rgba(38, 38, 42, 0.55);
+  --neutral-card-b: rgba(22, 22, 24, 0.72);
+
+  /* Easing */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Fonts */
+  --font-serif: 'Gowun Batang', 'Nanum Myeongjo', serif;
+  --font-hand: 'Gaegu', system-ui, sans-serif;
+  --font-body: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', system-ui, sans-serif;
 }

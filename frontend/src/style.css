@@ -1,13 +1,34 @@
 @import './assets/tokens.css';
+@import './assets/components.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  html,
   body {
     background-color: var(--color-paper);
     color: var(--color-ink);
-    font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 시안 스크롤바/선택 영역 */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--plum-850);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--plum-600);
+    border-radius: 5px;
+    border: 2px solid var(--plum-850);
+  }
+  ::selection {
+    background: var(--green-glow);
+    color: #fff;
   }
 }

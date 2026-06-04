@@ -44,14 +44,14 @@ function relativeTime(iso: string): string {
     </nav>
 
     <header class="mb-6">
-      <h1 class="text-4xl font-extrabold text-ink leading-tight">공지사항</h1>
+      <h1 class="text-4xl font-extrabold text-ink leading-tight" style="font-family: var(--font-serif)">공지사항</h1>
       <p class="mt-2 text-sm text-ink-muted">밭주인의 공식 공지를 확인하세요 📢</p>
     </header>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else>
-      <div class="rounded-2xl bg-surface border border-border overflow-hidden">
+      <div class="glass overflow-hidden">
         <div class="grid grid-cols-[70px_1fr_120px] gap-3 px-5 py-3 text-[11px] text-ink-muted border-b border-border tracking-wide">
           <span>분류</span>
           <span>제목</span>
@@ -63,9 +63,7 @@ function relativeTime(iso: string): string {
               :to="{ name: 'notice-detail', params: { id: n.id } }"
               class="grid grid-cols-[70px_1fr_120px] gap-3 px-5 py-3 items-center text-sm"
             >
-              <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-corn/20 text-corn text-center">
-                공지
-              </span>
+              <span class="tag corn justify-center">📌 공지</span>
               <span class="text-ink truncate">{{ n.title }}</span>
               <span class="text-xs text-ink-muted text-right whitespace-nowrap">{{ relativeTime(n.createdAt) }}</span>
             </RouterLink>

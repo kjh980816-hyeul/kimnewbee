@@ -59,45 +59,6 @@ const bestPosts = computed<BestItem[]>(() => {
 const freeLatest = computed(() => freePosts.value.slice(0, 5));
 const letterLatest = computed(() => letters.value.slice(0, 2));
 
-interface BoardWidget {
-  slug: string;
-  label: string;
-  emoji: string;
-  gradient: string;
-  latestTitle: string | null;
-}
-
-const friendBoards = computed<BoardWidget[]>(() => [
-  {
-    slug: 'free',
-    label: '자유게시판',
-    emoji: '💬',
-    gradient: 'from-violet/25 to-violet/5',
-    latestTitle: freePosts.value[0]?.title ?? null,
-  },
-  {
-    slug: 'fanart',
-    label: '팬아트',
-    emoji: '🎨',
-    gradient: 'from-cheek/25 to-cheek/5',
-    latestTitle: fanarts.value[0]?.title ?? null,
-  },
-  {
-    slug: 'pets',
-    label: '반려동물',
-    emoji: '🐾',
-    gradient: 'from-pepper/25 to-pepper/5',
-    latestTitle: pets.value[0]?.title ?? null,
-  },
-  {
-    slug: 'clips',
-    label: '클립 공유',
-    emoji: '🎬',
-    gradient: 'from-corn/25 to-corn/5',
-    latestTitle: clips.value[0]?.title ?? null,
-  },
-]);
-
 onMounted(async () => {
   try {
     const settled = await Promise.allSettled([
@@ -124,170 +85,182 @@ onMounted(async () => {
   }
 });
 
-const heroHeadline = computed(() => cafe.value?.heroHeadline || '오늘도 늉비랑 고추밭에 놀자!');
-const heroSubtext = computed(() => cafe.value?.heroSubtext || '초록고추 여러분 안녕~ 오늘은 어떤 이야기를 나눠볼까요?');
+const heroHeadline = computed(() => cafe.value?.heroHeadline || '오늘도 늉비랑 고추밭에서 놀자!');
+const heroSubtext = computed(() => cafe.value?.heroSubtext || '🌶️ 초록고추 여러분 안녕~');
 const heroBannerUrl = computed(() => cafe.value?.heroBannerUrl || null);
 const heroBannerPosition = computed(() => cafe.value?.heroBannerPosition || 'center');
 const footerText = computed(() => cafe.value?.footerText || null);
+
+// 표현용 헬퍼(데이터 가공 아님)
+const CAT_TAG: Record<string, string> = { 잡담: 'green', 질문: 'cheek', 후기: 'green', 정보: 'corn', 공지: 'corn' };
+function catTag(cat?: string | null): { label: string; cls: string } {
+  const c = cat && cat.trim() ? cat : '잡담';
+  return { label: c, cls: CAT_TAG[c] ?? 'mute' };
+}
+function relTime(iso: string): string {
+  const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (m < 1) return '방금';
+  if (m < 60) return `${m}분 전`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}시간 전`;
+  return `${Math.floor(h / 24)}일 전`;
+}
 </script>
 
 <template>
-  <div class="p-8 space-y-6">
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:min-h-[220px]">
-      <LiveBanner />
-
-      <div
-        class="relative rounded-2xl overflow-hidden border border-border h-full"
-        :class="heroBannerUrl ? '' : 'bg-gradient-to-br from-violet-deep/30 via-violet/15 to-corn/15'"
-      >
-        <img
-          v-if="heroBannerUrl"
-          :src="heroBannerUrl"
-          alt=""
-          class="absolute inset-0 w-full h-full object-cover"
-          :style="{ objectPosition: heroBannerPosition }"
-        />
-        <div
-          class="relative h-full px-6 py-8 flex items-end justify-between gap-4 flex-wrap"
-          :class="heroBannerUrl ? 'bg-gradient-to-r from-paper/85 via-paper/50 to-paper/10' : ''"
-        >
-          <div class="flex-1 min-w-0">
-            <h1 class="text-2xl font-extrabold text-ink leading-tight drop-shadow-sm">{{ heroHeadline }}</h1>
-            <p class="mt-1 text-sm text-ink/80 drop-shadow-sm">{{ heroSubtext }}</p>
-          </div>
-          <div class="flex items-center gap-6">
-            <div class="text-right">
-              <div class="text-xl font-extrabold text-ink tabular-nums">
-                {{ stats ? stats.totalMembers.toLocaleString('ko-KR') : '—' }}
-              </div>
-              <div class="text-[11px] text-ink-muted mt-0.5">전체 회원</div>
-            </div>
-            <div class="text-right">
-              <div class="text-xl font-extrabold text-violet tabular-nums">
-                {{ stats ? stats.todayNewPosts.toLocaleString('ko-KR') : '—' }}
-              </div>
-              <div class="text-[11px] text-ink-muted mt-0.5">오늘 새 글</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <div class="p-8 flex flex-col gap-[22px]">
+    <LiveBanner />
 
     <RouterLink
       v-if="topNotice"
       :to="`/notices/${topNotice.id}`"
-      class="block rounded-xl bg-corn/10 border border-corn/30 px-4 py-3 hover:bg-corn/20 transition-colors"
+      class="flex items-center gap-3 rounded-xl px-4 py-3 transition-colors"
+      style="background: rgba(242, 212, 90, 0.08); border: 1px solid rgba(242, 212, 90, 0.22)"
     >
-      <div class="flex items-center gap-3">
-        <span class="px-2 py-0.5 rounded bg-corn text-paper text-xs font-bold shrink-0">공지</span>
-        <span class="text-sm text-ink truncate">{{ topNotice.title }}</span>
-      </div>
+      <span class="tag corn shrink-0">📌 공지</span>
+      <span class="text-sm text-ink truncate">{{ topNotice.title }}</span>
     </RouterLink>
 
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div class="rounded-2xl border border-border bg-surface p-5">
-        <div class="flex items-center gap-2 mb-3">
-          <span class="text-lg">🔥</span>
-          <h2 class="text-base font-bold text-ink">이번 주 베스트</h2>
-          <span class="text-xs text-ink-muted">좋아요 많은 순</span>
-        </div>
-        <p v-if="loading" class="text-sm text-ink-muted py-2">불러오는 중...</p>
-        <ol v-else-if="bestPosts.length > 0" class="space-y-0.5">
-          <li v-for="(p, i) in bestPosts" :key="`${p.boardSlug}-${p.id}`">
-            <RouterLink
-              :to="`/${p.boardSlug}/${p.id}`"
-              class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-elevated transition-colors"
-            >
-              <span class="text-sm font-bold text-violet w-5 text-center shrink-0">{{ i + 1 }}</span>
-              <span class="text-sm text-ink truncate flex-1">{{ p.title }}</span>
-              <span class="hidden sm:inline text-xs text-ink-muted whitespace-nowrap">{{ p.boardLabel }}</span>
-              <span class="text-xs text-cheek whitespace-nowrap shrink-0">♥ {{ p.likeCount }}</span>
-            </RouterLink>
-          </li>
-        </ol>
-        <p v-else class="text-sm text-ink-muted py-4 text-center">아직 글이 없어요.</p>
-      </div>
-
-      <div class="rounded-2xl border border-border bg-surface p-5">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <span class="text-lg">💬</span>
-            <h2 class="text-base font-bold text-ink">자유게시판 최신</h2>
-          </div>
-          <RouterLink to="/free" class="text-xs text-ink-muted hover:text-ink">더보기 →</RouterLink>
-        </div>
-        <p v-if="loading" class="text-sm text-ink-muted py-2">불러오는 중...</p>
-        <ul v-else-if="freeLatest.length > 0" class="space-y-0.5">
-          <li v-for="p in freeLatest" :key="p.id">
-            <RouterLink
-              :to="`/free/${p.id}`"
-              class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-elevated transition-colors"
-            >
-              <span class="text-sm text-ink truncate flex-1">{{ p.title }}</span>
-              <span class="text-xs text-ink-muted whitespace-nowrap shrink-0">{{ p.author }}</span>
-              <span class="text-xs text-cheek whitespace-nowrap shrink-0">♥ {{ p.likeCount }}</span>
-            </RouterLink>
-          </li>
-        </ul>
-        <p v-else class="text-sm text-ink-muted py-4 text-center">아직 글이 없어요.</p>
-      </div>
-    </section>
-
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div class="rounded-2xl border border-border bg-surface p-5">
-        <div class="flex items-center gap-2 mb-3">
-          <span class="text-lg">🌱</span>
-          <h2 class="text-base font-bold text-ink">친구가 알려요</h2>
-          <span class="text-xs text-ink-muted">4개 게시판 최신</span>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <RouterLink
-            v-for="b in friendBoards"
-            :key="b.slug"
-            :to="`/${b.slug}`"
-            class="block rounded-xl p-3 bg-gradient-to-br border border-border hover:border-violet/40 transition-colors min-h-[80px]"
-            :class="b.gradient"
-          >
-            <div class="flex items-center gap-1.5 text-xs font-bold text-ink mb-1">
-              <span>{{ b.emoji }}</span>
-              <span>{{ b.label }}</span>
-            </div>
-            <div class="text-[11px] text-ink-muted line-clamp-2 leading-snug">
-              {{ b.latestTitle ?? '아직 새 글이 없어요' }}
-            </div>
-          </RouterLink>
-        </div>
-      </div>
-
-      <div class="rounded-2xl border border-border bg-surface p-5">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <span class="text-lg">💌</span>
-            <h2 class="text-base font-bold text-ink">오늘의 팬레터</h2>
-          </div>
-          <RouterLink to="/letters" class="text-xs text-ink-muted hover:text-ink">더보기 →</RouterLink>
-        </div>
-        <p v-if="loading" class="text-sm text-ink-muted py-2">불러오는 중...</p>
-        <div v-else-if="letterLatest.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <RouterLink
-            v-for="l in letterLatest"
-            :key="l.id"
-            :to="`/letters/${l.id}`"
-            class="block rounded-xl p-3 bg-corn/10 border border-corn/20 hover:bg-corn/15 transition-colors"
-          >
-            <div class="text-[10px] text-ink-muted mb-1">To. 늉비에게</div>
-            <div class="text-xs text-ink line-clamp-3 leading-snug">{{ l.preview }}</div>
-            <div class="mt-2 text-[10px] text-ink-muted">From. {{ l.author }}</div>
-          </RouterLink>
-        </div>
-        <p v-else class="text-sm text-ink-muted py-4 text-center">아직 팬레터가 없어요.</p>
-      </div>
-    </section>
-
-    <footer
-      v-if="footerText"
-      class="mt-6 pt-5 border-t border-border text-center text-xs text-ink-muted"
+    <!-- 환영 + 통계 -->
+    <section
+      class="glass card-pad welcome relative overflow-hidden"
+      :style="heroBannerUrl ? { backgroundImage: `linear-gradient(90deg, rgba(15,15,16,.92), rgba(15,15,16,.45)), url(${heroBannerUrl})`, backgroundSize: 'cover', backgroundPosition: heroBannerPosition } : {}"
     >
+      <div class="greet flex-1 min-w-0">
+        <div class="k">{{ heroSubtext }}</div>
+        <h2>{{ heroHeadline }}</h2>
+      </div>
+      <div class="stat">
+        <div class="n" style="color: var(--green-bright)">
+          {{ stats ? stats.totalMembers.toLocaleString('ko-KR') : '—' }}
+        </div>
+        <div class="l">초록고추</div>
+      </div>
+      <div class="stat">
+        <div class="n" style="color: var(--corn)">
+          {{ stats ? stats.todayNewPosts.toLocaleString('ko-KR') : '—' }}
+        </div>
+        <div class="l">오늘 새 글</div>
+      </div>
+    </section>
+
+    <!-- 베스트 + 자유게시판 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-[22px]">
+      <section class="glass card-pad">
+        <div class="card-head">
+          <h3>🔥 이번 주 베스트</h3>
+          <span class="sub">좋아요순</span>
+        </div>
+        <p v-if="loading" class="text-sm py-2" style="color: var(--text-mute)">불러오는 중...</p>
+        <template v-else-if="bestPosts.length > 0">
+          <RouterLink
+            v-for="(p, i) in bestPosts"
+            :key="`${p.boardSlug}-${p.id}`"
+            :to="`/${p.boardSlug}/${p.id}`"
+            class="row"
+          >
+            <span class="rank" :class="i < 3 ? 'top' : 'norm'">{{ i + 1 }}</span>
+            <div style="flex: 1; min-width: 0">
+              <div class="ttl">{{ p.title }}</div>
+              <div class="meta">{{ p.boardLabel }} · {{ p.author }} · ♥{{ p.likeCount }}</div>
+            </div>
+          </RouterLink>
+        </template>
+        <p v-else class="text-sm py-4 text-center" style="color: var(--text-mute)">아직 글이 없어요.</p>
+      </section>
+
+      <section class="glass card-pad">
+        <div class="card-head">
+          <h3>💬 자유게시판</h3>
+          <span class="sub">실시간</span>
+          <RouterLink to="/free" class="more">전체 ▸</RouterLink>
+        </div>
+        <p v-if="loading" class="text-sm py-2" style="color: var(--text-mute)">불러오는 중...</p>
+        <template v-else-if="freeLatest.length > 0">
+          <RouterLink v-for="p in freeLatest" :key="p.id" :to="`/free/${p.id}`" class="row">
+            <span class="tag" :class="catTag(p.category).cls">{{ catTag(p.category).label }}</span>
+            <div style="flex: 1; min-width: 0">
+              <div class="ttl">
+                {{ p.title }}
+                <span v-if="p.commentCount > 0" style="color: var(--cheek); font-size: 11px; font-weight: 700">[{{ p.commentCount }}]</span>
+              </div>
+              <div class="meta">{{ p.author }} · {{ relTime(p.createdAt) }}</div>
+            </div>
+          </RouterLink>
+        </template>
+        <p v-else class="text-sm py-4 text-center" style="color: var(--text-mute)">아직 글이 없어요.</p>
+      </section>
+    </div>
+
+    <!-- 갤러리: 팬아트 + 반려동물 -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-[22px]">
+      <section class="glass card-pad">
+        <div class="card-head">
+          <h3>🎨 팬아트 갤러리</h3>
+          <RouterLink to="/fanart" class="more">더 보기 ▸</RouterLink>
+        </div>
+        <div v-if="fanarts.length > 0" class="grid grid-cols-2 sm:grid-cols-4 gap-[9px]">
+          <RouterLink
+            v-for="a in fanarts.slice(0, 4)"
+            :key="a.id"
+            :to="`/fanart/${a.id}`"
+            class="thumb"
+            style="aspect-ratio: 1"
+          >
+            <img v-if="a.thumbnailUrl" :src="a.thumbnailUrl" :alt="a.title" />
+            <div v-else class="lbl">{{ a.title }}</div>
+            <div class="ov">
+              <span style="font-weight: 700">@{{ a.author }}</span>
+              <span>♥ {{ a.likeCount }}</span>
+            </div>
+          </RouterLink>
+        </div>
+        <p v-else class="text-sm py-4 text-center" style="color: var(--text-mute)">아직 팬아트가 없어요.</p>
+      </section>
+
+      <section class="glass card-pad">
+        <div class="card-head">
+          <h3>🐾 오늘의 반려동물</h3>
+          <RouterLink to="/pets" class="more">더 보기 ▸</RouterLink>
+        </div>
+        <div v-if="pets.length > 0" class="grid grid-cols-2 gap-[9px]">
+          <RouterLink v-for="pet in pets.slice(0, 2)" :key="pet.id" :to="`/pets/${pet.id}`" class="block">
+            <div class="thumb" style="aspect-ratio: 4/3">
+              <img v-if="pet.thumbnailUrl" :src="pet.thumbnailUrl" :alt="pet.title" />
+              <div v-else class="lbl">{{ pet.title }}</div>
+            </div>
+            <div class="text-xs font-semibold text-ink mt-1.5 truncate">{{ pet.title }}</div>
+            <div class="text-[11px] truncate" style="color: var(--text-mute)">@{{ pet.author }}</div>
+          </RouterLink>
+        </div>
+        <p v-else class="text-sm py-4 text-center" style="color: var(--text-mute)">아직 사진이 없어요.</p>
+      </section>
+    </div>
+
+    <!-- 팬레터 -->
+    <section class="glass card-pad">
+      <div class="card-head">
+        <h3>💌 오늘의 팬레터</h3>
+        <RouterLink to="/letters" class="more">전체 ▸</RouterLink>
+      </div>
+      <p v-if="loading" class="text-sm py-2" style="color: var(--text-mute)">불러오는 중...</p>
+      <div v-else-if="letterLatest.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <RouterLink
+          v-for="l in letterLatest"
+          :key="l.id"
+          :to="`/letters/${l.id}`"
+          class="block rounded-xl p-4"
+          style="background: rgba(232, 155, 190, 0.08); border: 1px solid rgba(232, 155, 190, 0.2)"
+        >
+          <div class="text-[10px] mb-1" style="color: var(--text-mute)">To. 늉비에게</div>
+          <div class="text-sm text-ink leading-snug line-clamp-3" style="font-family: var(--font-serif)">{{ l.preview }}</div>
+          <div class="mt-2 text-[10px]" style="color: var(--text-mute)">From. {{ l.author }}</div>
+        </RouterLink>
+      </div>
+      <p v-else class="text-sm py-4 text-center" style="color: var(--text-mute)">아직 팬레터가 없어요.</p>
+    </section>
+
+    <footer v-if="footerText" class="mt-2 pt-5 text-center text-xs" style="border-top: 1px solid var(--line); color: var(--text-mute)">
       {{ footerText }}
     </footer>
   </div>

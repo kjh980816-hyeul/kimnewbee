@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { fetchCafeConfig } from '@/api/cafe';
 import AppLayout from '@/layouts/AppLayout.vue';
+import LoadingOverlay from '@/layouts/components/LoadingOverlay.vue';
 
 const route = useRoute();
 const footerText = ref<string | null>(null);
@@ -25,6 +26,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <LoadingOverlay />
   <AppLayout v-if="useAppLayout">
     <RouterView />
     <footer

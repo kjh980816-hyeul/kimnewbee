@@ -155,46 +155,50 @@ function onSearch(e: Event) {
 </script>
 
 <template>
-  <header class="h-16 px-6 flex items-center border-b border-border bg-surface">
-    <nav class="flex items-center gap-1 shrink-0">
+  <header class="header">
+    <RouterLink to="/" class="brand">
+      <svg class="logo-pep" viewBox="0 0 40 40" fill="none">
+        <path d="M14 8 Q22 6 24 10 Q22 11 22 13" stroke="#A3EC8E" stroke-width="2" stroke-linecap="round"></path>
+        <path d="M14 12 Q10 20 16 30 Q24 34 28 24 Q30 14 22 12 Q18 11 14 12 Z" fill="#5FC76B" stroke="#3C8C3B" stroke-width="1.3"></path>
+        <path d="M17 16 Q15 22 19 28" stroke="#CFF3BE" stroke-width="1.5" stroke-linecap="round"></path>
+      </svg>
+      <b>고추<span class="accent">밭</span></b>
+    </RouterLink>
+
+    <nav class="nav">
       <RouterLink
         v-for="item in nav"
         :key="item.to"
         :to="item.to"
-        class="px-3 py-1.5 rounded-full text-sm transition-colors"
-        :class="
-          isActive(item)
-            ? 'bg-violet-deep/40 text-ink font-semibold'
-            : 'text-ink-muted hover:text-ink hover:bg-elevated'
-        "
+        :class="{ on: isActive(item) }"
       >
         {{ item.label }}
       </RouterLink>
     </nav>
 
-    <form
-      class="flex-1 ml-2.5"
-      @submit="onSearch"
-    >
-      <div class="relative">
-        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted text-sm">🔍</span>
-        <input
-          v-model="searchKeyword"
-          type="text"
-          placeholder="고추밭에서 검색..."
-          class="w-full pl-9 pr-3 py-2 rounded-full bg-paper border border-border text-sm text-ink placeholder:text-ink-muted/60 focus:outline-none focus:border-violet/40"
-        />
-      </div>
+    <div class="spacer"></div>
+
+    <form class="search" @submit="onSearch">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm6 13 4 4"></path>
+      </svg>
+      <input
+        v-model="searchKeyword"
+        type="text"
+        placeholder="고추밭에서 검색…"
+      />
     </form>
 
-    <div class="relative shrink-0 ml-3">
+    <div class="relative shrink-0">
       <button
         type="button"
-        class="w-9 h-9 flex items-center justify-center rounded-full text-ink-muted hover:text-ink hover:bg-elevated transition-colors relative"
+        class="icon-btn relative"
         aria-label="알림"
         @click="toggleNotif"
       >
-        🔔
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M6 8a6 6 0 1 1 12 0v5l2 3H4l2-3zM10 19a2 2 0 0 0 4 0"></path>
+        </svg>
         <span
           v-if="me && hasUnread"
           class="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-cheek text-paper text-[9px] font-bold flex items-center justify-center"
@@ -258,36 +262,28 @@ function onSearch(e: Event) {
       </div>
     </div>
 
-    <div class="relative shrink-0 ml-3">
-      <RouterLink
-        v-if="!me"
-        to="/login"
-        class="px-4 py-1.5 rounded-lg bg-naver text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-      >
-        네이버 로그인
+    <div class="relative shrink-0">
+      <RouterLink v-if="!me" to="/login" class="btn-naver">
+        <span class="n">N</span>
+        <span>네이버 로그인</span>
       </RouterLink>
 
       <template v-else>
         <button
-          class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full hover:bg-elevated transition-colors"
+          type="button"
+          class="me"
           @click="menuOpen = !menuOpen; notifOpen = false"
         >
-          <span
-            v-if="me.profileImage"
-            class="w-8 h-8 rounded-full overflow-hidden bg-violet/30 shrink-0"
-          >
+          <span v-if="me.profileImage" class="avatar overflow-hidden" style="width: 34px; height: 34px">
             <img :src="me.profileImage" :alt="me.nickname" class="w-full h-full object-cover" />
           </span>
-          <span
-            v-else
-            class="w-8 h-8 rounded-full bg-violet/30 flex items-center justify-center text-sm font-bold text-ink shrink-0"
-          >
+          <span v-else class="avatar" style="width: 34px; height: 34px; font-size: 15px">
             {{ meInitial }}
           </span>
           <span class="flex flex-col items-start leading-tight">
-            <span class="text-sm font-semibold text-ink">{{ me.nickname }}</span>
-            <span v-if="meTier" class="text-[10px] text-ink-muted">
-              {{ meTier.emoji }}{{ meTier.label }} · Lv{{ meTier.level }}
+            <span class="text-[13px] font-bold text-ink">{{ me.nickname }}</span>
+            <span v-if="meTier" class="text-[10px] font-semibold" style="color: var(--green-bright)">
+              {{ meTier.emoji }}{{ meTier.label }} · Lv.{{ meTier.level }}
             </span>
           </span>
         </button>
@@ -314,3 +310,177 @@ function onSearch(e: Event) {
     </div>
   </header>
 </template>
+
+<style scoped>
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 34px;
+  background: rgba(15, 15, 16, 0.74);
+  backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid var(--line-soft);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.brand .logo-pep {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 2px 6px var(--green-glow));
+}
+.brand b {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.brand b .accent {
+  color: var(--green);
+}
+.nav {
+  display: flex;
+  gap: 2px;
+  margin-left: 4px;
+}
+.nav a {
+  padding: 9px 15px;
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-soft);
+  transition: 0.2s var(--ease);
+}
+.nav a:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+.nav a.on {
+  color: var(--green-bright);
+  background: rgba(95, 199, 107, 0.1);
+  font-weight: 700;
+}
+.spacer {
+  flex: 1;
+}
+.search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 250px;
+  padding: 9px 15px;
+  border-radius: var(--r-pill);
+  background: var(--plum-750);
+  border: 1px solid var(--line-soft);
+  color: var(--text-mute);
+  font-size: 13px;
+  transition: 0.2s;
+}
+.search:hover,
+.search:focus-within {
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px rgba(95, 199, 107, 0.07);
+}
+.search input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 13px;
+}
+.search input::placeholder {
+  color: var(--text-mute);
+}
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+.me {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px 5px 5px;
+  border-radius: var(--r-pill);
+  border: none;
+  background: transparent;
+  transition: 0.2s;
+}
+.me:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.avatar {
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-hand);
+  font-weight: 700;
+  color: #16240f;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--green-bright), var(--green-mid));
+}
+.btn-naver {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--naver);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  transition: 0.2s;
+}
+.btn-naver:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+.btn-naver .n {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: #fff;
+  color: var(--naver);
+  font-family: var(--font-hand);
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 980px) {
+  .nav {
+    display: none;
+  }
+  .search {
+    width: 180px;
+  }
+  .header {
+    gap: 14px;
+    padding: 0 16px;
+  }
+}
+</style>
