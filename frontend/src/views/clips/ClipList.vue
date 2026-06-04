@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { fetchClips } from '@/api/clip';
 import { deletePost } from '@/api/post';
 import { useCurrentUser } from '@/composables/useCurrentUser';
+import Skeleton from '@/components/ui/Skeleton.vue';
 import type { ClipListItem } from '@/types/clip';
 
 const items = ref<ClipListItem[]>([]);
@@ -45,7 +46,7 @@ async function removePost(id: number): Promise<void> {
       <RouterLink :to="{ name: 'clip-write' }" class="btn-primary whitespace-nowrap">영상 등록</RouterLink>
     </header>
 
-    <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
+    <Skeleton v-if="loading" variant="cards" :count="4" />
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <ul v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <li

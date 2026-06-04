@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router';
 import { fetchPets } from '@/api/pet';
 import { deletePost } from '@/api/post';
 import { useCurrentUser } from '@/composables/useCurrentUser';
+import Skeleton from '@/components/ui/Skeleton.vue';
 import type { PetListItem } from '@/types/pet';
 
 const items = ref<PetListItem[]>([]);
@@ -77,7 +78,7 @@ async function removePost(id: number): Promise<void> {
       </button>
     </div>
 
-    <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
+    <Skeleton v-if="loading" variant="gallery" :count="8" />
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <ul
       v-else-if="items.length > 0"

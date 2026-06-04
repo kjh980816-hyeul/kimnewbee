@@ -4,6 +4,7 @@ import { fetchOfflineReviews } from '@/api/offline';
 import { deletePost } from '@/api/post';
 import { isHttpStatus } from '@/api/error';
 import { useCurrentUser } from '@/composables/useCurrentUser';
+import Skeleton from '@/components/ui/Skeleton.vue';
 import type { OfflineReviewListItem } from '@/types/offline';
 
 const reviews = ref<OfflineReviewListItem[]>([]);
@@ -59,7 +60,7 @@ async function removePost(id: number): Promise<void> {
       </RouterLink>
     </header>
 
-    <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
+    <Skeleton v-if="loading" variant="cards" :count="6" />
     <div
       v-else-if="accessDenied"
       class="rounded-md bg-surface p-8 text-center"
