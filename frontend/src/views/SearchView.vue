@@ -99,7 +99,7 @@ function highlight(text: string, q: string): string {
     </nav>
 
     <header class="mb-6">
-      <h1 class="text-4xl font-extrabold text-ink leading-tight">검색 🔍</h1>
+      <h1 class="text-4xl font-extrabold text-ink leading-tight font-serif">검색 🔍</h1>
       <p class="mt-2 text-sm text-ink-muted">고추밭 전체에서 글과 공지를 찾아봐요</p>
     </header>
 
@@ -110,7 +110,7 @@ function highlight(text: string, q: string): string {
           v-model="localKeyword"
           type="text"
           placeholder="찾고 싶은 단어를 입력하세요..."
-          class="w-full pl-11 pr-3 py-3 rounded-full bg-surface border border-border text-sm text-ink placeholder:text-ink-muted/60 focus:outline-none focus:border-violet/50"
+          class="w-full pl-11 pr-3 py-3 rounded-full bg-elevated border border-border text-sm text-ink placeholder:text-ink-muted/60 focus:outline-none focus:border-green-mid"
           autofocus
         />
       </div>
@@ -119,7 +119,7 @@ function highlight(text: string, q: string): string {
     <template v-if="result">
       <div class="mb-5 flex items-center gap-3 flex-wrap">
         <span class="text-sm text-ink-muted">
-          <span class="text-ink font-semibold">'{{ result.query }}'</span> 검색 결과 <span class="text-violet font-bold tabular-nums">{{ result.total }}</span>건
+          <span class="text-ink font-semibold">'{{ result.query }}'</span> 검색 결과 <span class="font-bold tabular-nums" style="color: var(--green-bright)">{{ result.total }}</span>건
         </span>
         <div class="flex items-center gap-1 ml-auto">
           <button
@@ -170,8 +170,8 @@ function highlight(text: string, q: string): string {
         v-for="(hits, label) in groupedHits"
         :key="label"
       >
-        <h2 class="text-xs font-bold text-violet uppercase tracking-wider mb-2 px-1">{{ label }}</h2>
-        <ul class="rounded-2xl bg-surface border border-border overflow-hidden divide-y divide-border">
+        <h2 class="text-xs font-bold uppercase tracking-wider mb-2 px-1" style="color: var(--green-bright)">{{ label }}</h2>
+        <ul class="glass overflow-hidden divide-y divide-border">
           <li v-for="hit in hits" :key="`${hit.type}-${hit.id}`">
             <RouterLink
               :to="detailPath(hit)"
@@ -179,7 +179,7 @@ function highlight(text: string, q: string): string {
             >
               <div class="flex items-baseline gap-2 mb-1">
                 <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold shrink-0"
-                  :class="hit.type === 'notice' ? 'bg-corn/20 text-corn' : 'bg-violet/20 text-violet'"
+                  :class="hit.type === 'notice' ? 'bg-corn/20 text-corn' : 'bg-pepper/20 text-pepper'"
                 >
                   {{ hit.boardLabel }}
                 </span>

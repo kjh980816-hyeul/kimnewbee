@@ -195,19 +195,17 @@ async function saveNickname(): Promise<void> {
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <div
       v-else-if="notLoggedIn"
-      class="rounded-2xl bg-surface border border-border p-12 text-center"
+      class="glass p-12 text-center"
     >
       <p class="text-ink mb-4">로그인이 필요해요</p>
-      <RouterLink
-        :to="{ name: 'login' }"
-        class="inline-block rounded-full bg-violet-deep px-6 py-2 text-sm font-semibold text-ink hover:bg-violet-deep/80 transition-colors"
-      >
-        로그인하러 가기
-      </RouterLink>
+      <RouterLink :to="{ name: 'login' }" class="btn-primary inline-block">로그인하러 가기</RouterLink>
     </div>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else-if="user">
-      <section class="relative rounded-2xl bg-gradient-to-br from-violet-deep to-violet/30 p-6 overflow-hidden">
+      <section
+        class="relative rounded-2xl p-6 overflow-hidden"
+        style="background: linear-gradient(150deg, rgba(95, 199, 107, 0.18), rgba(28, 28, 31, 0.7)); border: 1px solid rgba(95, 199, 107, 0.2)"
+      >
         <div class="flex items-center gap-5">
           <label
             class="relative w-24 h-24 rounded-full bg-violet/40 border-4 border-violet/30 grid place-items-center text-4xl shrink-0 overflow-hidden cursor-pointer group"
@@ -226,7 +224,7 @@ async function saveNickname(): Promise<void> {
           </label>
           <div class="min-w-0 flex-1">
             <div v-if="!nicknameEditing" class="flex items-center gap-2 flex-wrap">
-              <h2 class="text-2xl font-extrabold text-ink">{{ user.nickname }}</h2>
+              <h2 class="text-2xl font-extrabold text-ink" style="font-family: var(--font-serif)">{{ user.nickname }}</h2>
               <button
                 v-if="nicknameCooldown.canChange"
                 type="button"
@@ -253,14 +251,14 @@ async function saveNickname(): Promise<void> {
                   type="text"
                   maxlength="20"
                   placeholder="새 닉네임 (2~20자)"
-                  class="w-56 rounded-md bg-elevated border border-violet px-3 py-2 text-lg font-bold text-ink placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-pepper focus:border-pepper"
+                  class="field-input w-56 text-lg font-bold"
                   :disabled="nicknameBusy"
                   @keydown.enter.prevent="saveNickname"
                   @keydown.escape.prevent="cancelEditNickname"
                 />
                 <button
                   type="button"
-                  class="rounded-md bg-pepper px-4 py-2 text-sm font-semibold text-paper hover:bg-pepper-deep disabled:opacity-50"
+                  class="btn-primary disabled:opacity-50"
                   :disabled="nicknameBusy"
                   @click="saveNickname"
                 >
@@ -301,7 +299,7 @@ async function saveNickname(): Promise<void> {
         </div>
       </section>
 
-      <section class="mt-4 rounded-2xl bg-surface border border-border p-5">
+      <section class="mt-4 glass card-pad">
         <div class="flex items-center justify-between mb-2 text-xs">
           <div class="flex items-center gap-2">
             <span class="font-semibold text-ink">
@@ -320,7 +318,7 @@ async function saveNickname(): Promise<void> {
         </div>
         <div class="relative h-2.5 rounded-full bg-elevated overflow-hidden">
           <div
-            class="h-full bg-gradient-to-r from-pepper via-violet to-corn transition-all"
+            class="h-full bg-gradient-to-r from-green via-green-bright to-corn transition-all"
             :style="{ width: progress.pct + '%' }"
           ></div>
         </div>
@@ -337,7 +335,7 @@ async function saveNickname(): Promise<void> {
           <button
             type="button"
             class="px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors"
-            :class="activeTab === 'posts' ? 'border-violet text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
+            :class="activeTab === 'posts' ? 'border-pepper text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
             @click="activeTab = 'posts'"
           >
             내가 쓴 글 <span class="text-ink-muted ml-0.5 text-xs">{{ stats?.postCount ?? 0 }}</span>
@@ -345,7 +343,7 @@ async function saveNickname(): Promise<void> {
           <button
             type="button"
             class="px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors"
-            :class="activeTab === 'comments' ? 'border-violet text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
+            :class="activeTab === 'comments' ? 'border-pepper text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
             @click="activeTab = 'comments'"
           >
             댓글 단 글 <span class="text-ink-muted ml-0.5 text-xs">{{ stats?.commentCount ?? 0 }}</span>
@@ -353,7 +351,7 @@ async function saveNickname(): Promise<void> {
           <button
             type="button"
             class="px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors"
-            :class="activeTab === 'liked' ? 'border-violet text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
+            :class="activeTab === 'liked' ? 'border-pepper text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
             @click="activeTab = 'liked'"
           >
             좋아요한 글 <span class="text-ink-muted ml-0.5 text-xs">{{ stats?.likeGivenCount ?? 0 }}</span>
@@ -361,7 +359,7 @@ async function saveNickname(): Promise<void> {
           <button
             type="button"
             class="px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors"
-            :class="activeTab === 'scraps' ? 'border-violet text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
+            :class="activeTab === 'scraps' ? 'border-pepper text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
             @click="activeTab = 'scraps'"
           >
             스크랩 <span class="text-ink-muted ml-0.5 text-xs">0</span>

@@ -81,7 +81,7 @@ async function onCheckIn(): Promise<void> {
     </nav>
 
     <header class="mb-6">
-      <h1 class="text-4xl font-extrabold text-ink leading-tight">출석체크 ✅</h1>
+      <h1 class="text-4xl font-extrabold text-ink leading-tight font-serif">출석체크 ✅</h1>
       <p class="mt-2 text-sm text-ink-muted">매일 한 번씩 도장 찍고 포인트 받아가요</p>
     </header>
 
@@ -89,21 +89,16 @@ async function onCheckIn(): Promise<void> {
 
     <div
       v-else-if="notLoggedIn"
-      class="rounded-2xl bg-surface border border-border p-12 text-center"
+      class="glass p-12 text-center"
     >
       <p class="text-ink mb-4">로그인이 필요해요</p>
-      <RouterLink
-        :to="{ name: 'login' }"
-        class="inline-block rounded-full bg-violet-deep px-6 py-2 text-sm font-semibold text-ink hover:bg-violet-deep/80 transition-colors"
-      >
-        네이버 로그인
-      </RouterLink>
+      <RouterLink :to="{ name: 'login' }" class="btn-primary inline-block">네이버 로그인</RouterLink>
     </div>
 
     <template v-else-if="status">
       <section class="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-5 max-w-5xl">
-        <div class="rounded-3xl bg-gradient-to-br from-violet-deep/40 via-violet/15 to-corn/20 border border-violet/30 p-7 shadow-xl shadow-violet/10">
-          <div class="text-xs font-semibold text-violet mb-2">연속 출석</div>
+        <div class="rounded-3xl p-7 shadow-xl shadow-black/20" style="background: linear-gradient(150deg, rgba(95, 199, 107, 0.22), rgba(242, 212, 90, 0.1), rgba(28, 28, 31, 0.7)); border: 1px solid rgba(95, 199, 107, 0.25)">
+          <div class="text-xs font-semibold mb-2" style="color: var(--green-bright)">연속 출석</div>
           <div class="flex items-baseline gap-2">
             <span class="text-6xl font-extrabold text-ink tabular-nums">{{ status.currentStreak }}</span>
             <span class="text-2xl font-bold text-ink-muted">일</span>
@@ -117,7 +112,7 @@ async function onCheckIn(): Promise<void> {
             :class="
               status.checkedInToday
                 ? 'bg-pepper/20 text-pepper'
-                : 'bg-gradient-to-r from-violet-deep to-violet/60 text-ink hover:shadow-lg hover:shadow-violet/30 disabled:opacity-50'
+                : 'bg-gradient-to-r from-green to-green-mid text-paper hover:shadow-lg hover:shadow-pepper/30 disabled:opacity-50'
             "
             @click="onCheckIn"
           >
@@ -130,7 +125,7 @@ async function onCheckIn(): Promise<void> {
           <p v-if="error" class="mt-3 text-xs text-cheek text-center">⚠ {{ error }}</p>
         </div>
 
-        <div class="rounded-3xl bg-surface border border-border p-6 shadow-xl shadow-black/20">
+        <div class="glass rounded-3xl p-6 shadow-xl shadow-black/20">
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-base font-bold text-ink">{{ monthLabel }}</h2>
             <span class="text-xs text-ink-muted">{{ monthAttendedCount }} / {{ daysInMonth }}일</span>
@@ -154,9 +149,9 @@ async function onCheckIn(): Promise<void> {
               class="aspect-square rounded-lg flex items-center justify-center text-xs font-semibold transition-colors"
               :class="
                 attendedSet.has(d)
-                  ? 'bg-gradient-to-br from-violet to-cheek text-paper'
+                  ? 'bg-gradient-to-br from-green to-green-mid text-paper'
                   : d === todayDate
-                    ? 'border-2 border-violet text-violet bg-elevated'
+                    ? 'border-2 border-pepper text-pepper bg-elevated'
                     : d < todayDate
                       ? 'bg-elevated text-ink-muted/60'
                       : 'bg-paper text-ink-muted/40 border border-border'
@@ -169,11 +164,11 @@ async function onCheckIn(): Promise<void> {
 
           <div class="mt-4 pt-4 border-t border-border flex items-center gap-4 text-[11px] text-ink-muted">
             <span class="flex items-center gap-1.5">
-              <span class="w-3 h-3 rounded bg-gradient-to-br from-violet to-cheek"></span>
+              <span class="w-3 h-3 rounded bg-gradient-to-br from-green to-green-mid"></span>
               출석함
             </span>
             <span class="flex items-center gap-1.5">
-              <span class="w-3 h-3 rounded border-2 border-violet"></span>
+              <span class="w-3 h-3 rounded border-2 border-pepper"></span>
               오늘
             </span>
             <span class="flex items-center gap-1.5">
