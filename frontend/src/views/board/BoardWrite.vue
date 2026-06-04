@@ -70,9 +70,9 @@ async function onSubmit(): Promise<void> {
       ← 취소
     </button>
 
-    <h1 class="text-2xl font-bold text-pepper mb-6">{{ board?.name ?? '게시판' }} 글쓰기</h1>
+    <h1 class="text-2xl font-bold text-ink mb-6" style="font-family: var(--font-serif)">{{ board?.name ?? '게시판' }} 글쓰기</h1>
 
-    <form class="space-y-4" @submit.prevent="onSubmit">
+    <form class="glass card-pad space-y-4 max-w-3xl" @submit.prevent="onSubmit">
       <div>
         <label class="block text-sm text-ink-muted mb-1" for="bp-title">제목</label>
         <input
@@ -81,7 +81,7 @@ async function onSubmit(): Promise<void> {
           type="text"
           maxlength="200"
           placeholder="제목을 입력하세요"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          class="field-input"
         />
       </div>
 
@@ -103,7 +103,7 @@ async function onSubmit(): Promise<void> {
           v-model="mediaUrl"
           type="text"
           placeholder="이미지를 업로드하거나 영상 링크를 붙여넣으세요"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          class="field-input"
         />
         <p v-if="imageError" class="mt-1 text-xs text-cheek">{{ imageError }}</p>
         <img
@@ -122,7 +122,7 @@ async function onSubmit(): Promise<void> {
           v-model="content"
           rows="12"
           placeholder="내용을 입력하세요"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper resize-y text-sm"
+          class="field-input resize-y text-sm"
         />
       </div>
 
@@ -132,7 +132,7 @@ async function onSubmit(): Promise<void> {
         <button
           type="submit"
           :disabled="submitting"
-          class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep disabled:opacity-50"
+          class="btn-primary disabled:opacity-50"
         >
           {{ submitting ? '등록 중...' : '등록하기' }}
         </button>

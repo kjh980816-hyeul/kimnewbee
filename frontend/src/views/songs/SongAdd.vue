@@ -59,9 +59,9 @@ async function onSubmit(): Promise<void> {
       ← 취소
     </button>
 
-    <h1 class="text-2xl font-bold text-pepper mb-6">곡 추천하기</h1>
+    <h1 class="text-2xl font-bold text-ink mb-6" style="font-family: var(--font-serif)">곡 추천하기</h1>
 
-    <form class="space-y-4 max-w-2xl" @submit.prevent="onSubmit">
+    <form class="glass card-pad space-y-4 max-w-2xl" @submit.prevent="onSubmit">
       <div>
         <label class="block text-sm text-ink-muted mb-1" for="song-title">곡 제목</label>
         <input
@@ -70,7 +70,7 @@ async function onSubmit(): Promise<void> {
           type="text"
           maxlength="120"
           placeholder="비 오는 날"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          class="field-input"
         />
       </div>
 
@@ -82,7 +82,7 @@ async function onSubmit(): Promise<void> {
           type="text"
           maxlength="80"
           placeholder="적재"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          class="field-input"
         />
       </div>
 
@@ -93,7 +93,7 @@ async function onSubmit(): Promise<void> {
           v-model="link"
           type="url"
           placeholder="https://www.youtube.com/watch?v=..."
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          class="field-input"
         />
         <p class="mt-1 text-xs text-ink-muted">유튜브, 스포티파이, 멜론 등 공유 가능한 링크</p>
       </div>
@@ -104,7 +104,7 @@ async function onSubmit(): Promise<void> {
         <button
           type="submit"
           :disabled="submitting"
-          class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep disabled:opacity-50"
+          class="btn-primary disabled:opacity-50"
         >
           {{ submitting ? '추천 중...' : '추천하기' }}
         </button>

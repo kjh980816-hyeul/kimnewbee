@@ -362,6 +362,36 @@
   opacity: 1;
 }
 
+/* form kit */
+.field-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-soft);
+  margin-bottom: 6px;
+}
+.field-input {
+  width: 100%;
+  border-radius: var(--r-md);
+  background: var(--plum-750);
+  border: 1px solid var(--line);
+  padding: 11px 14px;
+  font-size: 14px;
+  color: var(--text);
+  transition: 0.2s;
+}
+.field-input::placeholder {
+  color: var(--text-mute);
+}
+.field-input:focus {
+  outline: none;
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px rgba(95, 199, 107, 0.08);
+}
+textarea.field-input {
+  resize: vertical;
+  line-height: 1.6;
+}
+
 /* song mini */
 .song {
   display: flex;

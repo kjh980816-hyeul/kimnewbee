@@ -40,7 +40,7 @@ async function onSubmit(): Promise<void> {
       ← 취소
     </button>
 
-    <h1 class="text-2xl font-bold text-pepper mb-2">늉비에게 편지쓰기</h1>
+    <h1 class="text-2xl font-bold text-ink mb-2" style="font-family: var(--font-serif)">늉비에게 편지쓰기</h1>
     <p class="mb-6 text-sm text-ink-muted">
       편지 본문은 밭주인만 읽을 수 있어요. 따뜻한 마음 전해주세요.
     </p>
@@ -61,7 +61,7 @@ async function onSubmit(): Promise<void> {
         </RouterLink>
       </div>
     </div>
-    <form v-else class="space-y-4 max-w-2xl" @submit.prevent="onSubmit">
+    <form v-else class="glass card-pad space-y-4 max-w-2xl" @submit.prevent="onSubmit">
       <div>
         <label class="block text-sm text-ink-muted mb-1" for="letter-content">편지 내용</label>
         <textarea
@@ -70,7 +70,7 @@ async function onSubmit(): Promise<void> {
           rows="14"
           maxlength="2000"
           placeholder="늉비에게 전하고 싶은 말..."
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper resize-y"
+          class="field-input"
         />
         <p class="mt-1 text-xs text-ink-muted">{{ content.length }} / 2000자</p>
       </div>
@@ -81,7 +81,7 @@ async function onSubmit(): Promise<void> {
         <button
           type="submit"
           :disabled="submitting"
-          class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep disabled:opacity-50"
+          class="btn-primary disabled:opacity-50"
         >
           {{ submitting ? '보내는 중...' : '편지 보내기' }}
         </button>
