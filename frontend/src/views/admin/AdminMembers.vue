@@ -104,7 +104,7 @@ function authorInitial(name: string): string {
 <template>
   <div class="p-8">
     <header class="mb-6">
-      <h1 class="text-4xl font-extrabold text-ink leading-tight">회원 관리 👥</h1>
+      <h1 class="text-4xl font-extrabold text-ink leading-tight font-serif">회원 관리 👥</h1>
       <p class="mt-2 text-sm text-ink-muted">회원 등급 변경 · 포인트 조정 · 활동 이력 확인</p>
     </header>
 
@@ -137,7 +137,7 @@ function authorInitial(name: string): string {
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek mb-3">{{ error }}</p>
 
-    <div v-else class="rounded-2xl bg-surface border border-border overflow-hidden">
+    <div v-else class="glass overflow-hidden">
       <div class="grid grid-cols-[1fr_120px_120px_100px_200px] gap-3 px-5 py-3 text-[11px] text-ink-muted border-b border-border tracking-wide">
         <span>회원</span>
         <span>등급</span>

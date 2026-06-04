@@ -90,7 +90,7 @@ const tierCounts = computed(() => {
 <template>
   <div class="p-8">
     <header class="mb-6">
-      <h1 class="text-4xl font-extrabold text-ink leading-tight">통계 📈</h1>
+      <h1 class="text-4xl font-extrabold text-ink leading-tight font-serif">통계 📈</h1>
       <p class="mt-2 text-sm text-ink-muted">최근 {{ DAYS }}일 추이와 누적 데이터를 확인할 수 있어요</p>
     </header>
 
@@ -98,7 +98,7 @@ const tierCounts = computed(() => {
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
 
     <template v-else>
-      <section class="rounded-2xl bg-surface border border-border p-5 mb-6">
+      <section class="glass p-5 mb-6">
         <div class="flex items-center justify-between mb-3">
           <div>
             <h2 class="text-sm font-bold text-ink">📊 일별 신규 가입자 (최근 {{ DAYS }}일)</h2>
@@ -144,7 +144,7 @@ const tierCounts = computed(() => {
         </div>
       </section>
 
-      <section class="rounded-2xl bg-surface border border-border p-5">
+      <section class="glass p-5">
         <h2 class="text-sm font-bold text-ink mb-4">🏅 등급별 분포 ({{ users.length }}명)</h2>
         <div class="space-y-3">
           <div v-for="t in tiers" :key="t" class="flex items-center gap-3">

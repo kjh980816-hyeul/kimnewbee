@@ -56,12 +56,12 @@ function isActive(item: AdminMenu): boolean {
   >
     <div class="max-w-md w-full text-center">
       <div class="text-6xl mb-4">🔒</div>
-      <h1 class="text-2xl font-extrabold text-ink mb-2">로그인이 필요해요</h1>
+      <h1 class="text-2xl font-extrabold text-ink mb-2 font-serif">로그인이 필요해요</h1>
       <p class="text-sm text-ink-muted mb-6">관리자 페이지는 발주인(OWNER) 권한이 있어야 들어올 수 있어요. 먼저 네이버 계정으로 로그인해주세요.</p>
       <div class="flex items-center justify-center gap-2">
         <RouterLink
           to="/login"
-          class="rounded-full bg-violet-deep px-6 py-2.5 text-sm font-semibold text-ink hover:bg-violet-deep/80 transition-colors"
+          class="btn-primary"
         >
           네이버 로그인
         </RouterLink>
@@ -81,11 +81,11 @@ function isActive(item: AdminMenu): boolean {
   >
     <div class="max-w-md w-full text-center">
       <div class="text-6xl mb-4">🚫</div>
-      <h1 class="text-2xl font-extrabold text-ink mb-2">접근 권한이 없어요</h1>
+      <h1 class="text-2xl font-extrabold text-ink mb-2 font-serif">접근 권한이 없어요</h1>
       <p class="text-sm text-ink-muted mb-6">관리자 페이지는 발주인(OWNER) 등급만 들어올 수 있어요. 권한이 필요하면 운영자에게 문의해주세요.</p>
       <RouterLink
         to="/"
-        class="inline-block rounded-full bg-violet-deep px-6 py-2.5 text-sm font-semibold text-ink hover:bg-violet-deep/80 transition-colors"
+        class="inline-block btn-primary"
       >
         홈으로 돌아가기
       </RouterLink>
@@ -96,7 +96,7 @@ function isActive(item: AdminMenu): boolean {
     <aside class="w-60 shrink-0 bg-surface border-r border-border flex flex-col">
       <div class="px-6 pt-6 pb-2">
         <div class="text-[11px] tracking-widest text-cheek font-semibold mb-2">ADMIN</div>
-        <h1 class="text-xl font-extrabold text-ink leading-tight">
+        <h1 class="text-xl font-extrabold text-ink leading-tight font-serif">
           <span class="text-pepper">🌶</span> 고추밭 관리자
         </h1>
         <div class="mt-1 text-xs text-corn">👑 발주인 (김늉비)</div>

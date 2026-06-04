@@ -102,7 +102,7 @@ function formatDate(iso: string): string {
   <div class="p-8">
     <header class="mb-6 flex items-end justify-between gap-4 flex-wrap">
       <div>
-        <h1 class="text-4xl font-extrabold text-ink leading-tight">공지사항 📢</h1>
+        <h1 class="text-4xl font-extrabold text-ink leading-tight font-serif">공지사항 📢</h1>
         <p class="mt-2 text-sm text-ink-muted">밭주인이 직접 작성하는 공지를 관리해요</p>
       </div>
       <button
@@ -117,7 +117,7 @@ function formatDate(iso: string): string {
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek mb-3">{{ error }}</p>
 
-    <div v-else class="rounded-2xl bg-surface border border-border overflow-hidden">
+    <div v-else class="glass overflow-hidden">
       <div class="grid grid-cols-[40px_1fr_120px_80px_120px] gap-3 px-5 py-3 text-[11px] text-ink-muted border-b border-border tracking-wide">
         <span class="text-right">#</span>
         <span>제목</span>
@@ -172,7 +172,7 @@ function formatDate(iso: string): string {
       class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
       @click.self="showModal = false"
     >
-      <div class="rounded-2xl bg-surface border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="glass w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <header class="px-6 py-4 border-b border-border flex items-center justify-between">
           <div>
             <h2 class="text-2xl font-extrabold text-ink">{{ isEdit ? '공지 수정 ✏️' : '새 공지 작성 ✨' }}</h2>
@@ -189,7 +189,7 @@ function formatDate(iso: string): string {
               type="text"
               maxlength="200"
               placeholder="예: 5월 정기 점검 안내"
-              class="w-full rounded-lg bg-elevated border border-border px-3 py-2 text-sm text-ink"
+              class="w-full field-input"
             />
           </label>
           <label class="block">
@@ -198,7 +198,7 @@ function formatDate(iso: string): string {
               v-model="form.content"
               rows="12"
               placeholder="공지 내용을 작성해주세요. 줄바꿈은 그대로 표시됩니다."
-              class="w-full rounded-lg bg-elevated border border-border px-3 py-2 text-sm text-ink resize-y"
+              class="w-full field-input resize-y"
             ></textarea>
           </label>
         </div>

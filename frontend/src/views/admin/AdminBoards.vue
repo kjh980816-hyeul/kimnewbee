@@ -142,7 +142,7 @@ async function onDelete(board: Board): Promise<void> {
   <div class="p-8">
     <header class="mb-6 flex items-end justify-between gap-4 flex-wrap">
       <div>
-        <h1 class="text-4xl font-extrabold text-ink leading-tight">게시판 관리 📁</h1>
+        <h1 class="text-4xl font-extrabold text-ink leading-tight font-serif">게시판 관리 📁</h1>
         <p class="mt-2 text-sm text-ink-muted">드래그로 순서 변경 · 게시판마다 표시 형식과 권한을 지정할 수 있어요</p>
       </div>
       <div class="flex items-center gap-2">
@@ -165,7 +165,7 @@ async function onDelete(board: Board): Promise<void> {
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
     <p v-else-if="error" class="text-cheek mb-3">{{ error }}</p>
 
-    <div v-else class="rounded-2xl bg-surface border border-border overflow-hidden mb-8">
+    <div v-else class="glass overflow-hidden mb-8">
       <div class="grid grid-cols-[24px_50px_1fr_120px_100px_110px_90px] gap-3 px-5 py-3 text-[11px] text-ink-muted border-b border-border tracking-wide">
         <span></span>
         <span>순서</span>
@@ -255,7 +255,7 @@ async function onDelete(board: Board): Promise<void> {
       class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
       @click.self="showCreateModal = false"
     >
-      <div class="rounded-2xl bg-surface border border-border w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <div class="glass w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <header class="px-6 py-4 border-b border-border flex items-center justify-between">
           <div>
             <h2 class="text-2xl font-extrabold text-ink">게시판 만들기 ✨</h2>
@@ -278,7 +278,7 @@ async function onDelete(board: Board): Promise<void> {
                   v-model="newBoard.name"
                   type="text"
                   placeholder="예: 늉비 일상샷"
-                  class="w-full rounded-lg bg-elevated border border-border px-3 py-2 text-sm text-ink"
+                  class="w-full field-input"
                 />
               </label>
               <label class="block mb-2">
@@ -287,7 +287,7 @@ async function onDelete(board: Board): Promise<void> {
                   v-model="newBoard.slug"
                   type="text"
                   placeholder="my-board"
-                  class="w-full rounded-lg bg-elevated border border-border px-3 py-2 text-sm text-ink font-mono"
+                  class="w-full field-input font-mono"
                 />
               </label>
             </div>
@@ -324,7 +324,7 @@ async function onDelete(board: Board): Promise<void> {
               <h3 class="text-sm font-bold text-ink mb-2">🔒 권한 설정</h3>
               <label class="block mb-2">
                 <span class="block text-xs text-ink-muted mb-1">읽기</span>
-                <select v-model="newBoard.readTier" class="w-full rounded-lg bg-elevated border border-border px-3 py-2 text-sm text-ink">
+                <select v-model="newBoard.readTier" class="w-full field-input">
                   <option v-for="t in tiers" :key="t" :value="t.toUpperCase()">
                     {{ TIER_META[t].emoji }} {{ TIER_META[t].label }} 이상
                   </option>
@@ -332,7 +332,7 @@ async function onDelete(board: Board): Promise<void> {
               </label>
               <label class="block">
                 <span class="block text-xs text-ink-muted mb-1">글쓰기</span>
-                <select v-model="newBoard.writeTier" class="w-full rounded-lg bg-elevated border border-border px-3 py-2 text-sm text-ink">
+                <select v-model="newBoard.writeTier" class="w-full field-input">
                   <option v-for="t in tiers" :key="t" :value="t.toUpperCase()">
                     {{ TIER_META[t].emoji }} {{ TIER_META[t].label }} 이상
                   </option>

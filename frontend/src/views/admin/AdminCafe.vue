@@ -114,7 +114,7 @@ function resetChanges(): void {
   <div class="p-8">
     <header class="mb-6 flex items-end justify-between gap-4 flex-wrap">
       <div>
-        <h1 class="text-4xl font-extrabold text-ink leading-tight">카페 꾸미기 🎨</h1>
+        <h1 class="text-4xl font-extrabold text-ink leading-tight font-serif">카페 꾸미기 🎨</h1>
         <p class="mt-2 text-sm text-ink-muted">홈 화면의 배너·인사말·푸터를 자유롭게 꾸며보세요</p>
       </div>
       <div class="flex items-center gap-2">

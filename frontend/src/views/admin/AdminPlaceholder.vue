@@ -10,7 +10,7 @@ defineProps<{
 <template>
   <div class="p-8">
     <header class="mb-6">
-      <h1 class="text-4xl font-extrabold text-ink leading-tight">{{ title }} {{ emoji }}</h1>
+      <h1 class="text-4xl font-extrabold text-ink leading-tight font-serif">{{ title }} {{ emoji }}</h1>
       <p class="mt-2 text-sm text-ink-muted">{{ description }}</p>
     </header>
 

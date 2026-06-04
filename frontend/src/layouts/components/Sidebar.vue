@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import { fetchAttendanceStatus } from '@/api/attendance';
 import { useBoards, boardLink, boardIcon, tierRank } from '@/composables/useBoards';
 import { useCurrentUser } from '@/composables/useCurrentUser';
+import { useSidebarDrawer } from '@/composables/useSidebarDrawer';
 
 const route = useRoute();
 const streak = ref<number | null>(null);
+
+const { open: drawerOpen, close: closeDrawer } = useSidebarDrawer();
+// 라우트 바뀌면 모바일 드로어 자동 닫기.
+watch(() => route.fullPath, closeDrawer);
 
 interface MenuItem {
   to: string;
@@ -60,7 +65,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <aside class="sidebar">
+  <div v-if="drawerOpen" class="drawer-backdrop" @click="closeDrawer"></div>
+  <aside class="sidebar" :class="{ 'drawer-open': drawerOpen }">
     <div class="side-card">
       <svg class="harmonica" width="70" height="35" viewBox="0 0 40 20" fill="none">
         <rect x="2" y="4" width="36" height="12" rx="2" fill="#5FC76B" opacity=".5" stroke="#3C8C3B"></rect>
@@ -207,9 +213,36 @@ onMounted(async () => {
   font-weight: 700;
 }
 
+.drawer-backdrop {
+  display: none;
+}
+
 @media (max-width: 980px) {
   .sidebar {
-    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 60;
+    width: 264px;
+    max-height: 100vh;
+    background: var(--plum-800);
+    border-right: 1px solid var(--line);
+    padding-top: 18px;
+    transform: translateX(-100%);
+    transition: transform 0.25s var(--ease);
+  }
+  .sidebar.drawer-open {
+    transform: translateX(0);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+  }
+  .drawer-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
   }
 }
 </style>

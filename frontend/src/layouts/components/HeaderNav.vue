@@ -10,11 +10,13 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
 } from '@/api/notification';
+import { useSidebarDrawer } from '@/composables/useSidebarDrawer';
 import type { CurrentUser } from '@/types/user';
 import type { NotificationItem, NotificationType } from '@/types/notification';
 
 const route = useRoute();
 const router = useRouter();
+const { toggle: toggleDrawer } = useSidebarDrawer();
 const me = ref<CurrentUser | null>(null);
 const menuOpen = ref(false);
 const searchKeyword = ref('');
@@ -156,6 +158,11 @@ function onSearch(e: Event) {
 
 <template>
   <header class="header">
+    <button type="button" class="hamburger" aria-label="메뉴" @click="toggleDrawer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"></path>
+      </svg>
+    </button>
     <RouterLink to="/" class="brand">
       <svg class="logo-pep" viewBox="0 0 40 40" fill="none">
         <path d="M14 8 Q22 6 24 10 Q22 11 22 13" stroke="#A3EC8E" stroke-width="2" stroke-linecap="round"></path>
@@ -471,16 +478,35 @@ function onSearch(e: Event) {
   justify-content: center;
 }
 
+.hamburger {
+  display: none;
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.hamburger:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+
 @media (max-width: 980px) {
   .nav {
     display: none;
   }
   .search {
-    width: 180px;
+    width: 150px;
   }
   .header {
-    gap: 14px;
-    padding: 0 16px;
+    gap: 12px;
+    padding: 0 14px;
+  }
+  .hamburger {
+    display: flex;
   }
 }
 </style>
