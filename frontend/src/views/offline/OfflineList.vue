@@ -45,7 +45,7 @@ async function removePost(id: number): Promise<void> {
   <main class="min-h-screen bg-paper text-ink p-8">
     <header class="mb-6 flex items-end justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-pepper">오프 후기</h1>
+        <h1 class="text-3xl font-extrabold text-ink font-serif">오프 후기 📸</h1>
         <p class="mt-1 text-ink-muted text-sm">
           정모/번개 후기 — 🌽 옥수수 등급 이상 열람
         </p>
@@ -53,7 +53,7 @@ async function removePost(id: number): Promise<void> {
       <RouterLink
         v-if="!accessDenied"
         :to="{ name: 'offline-write' }"
-        class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep transition-colors"
+        class="btn-primary whitespace-nowrap"
       >
         후기 쓰기
       </RouterLink>

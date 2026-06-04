@@ -39,15 +39,10 @@ async function removePost(id: number): Promise<void> {
   <main class="min-h-screen bg-paper text-ink p-8">
     <header class="mb-6 flex items-end justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-pepper">영상/클립</h1>
+        <h1 class="text-3xl font-extrabold text-ink font-serif">영상/클립 🎬</h1>
         <p class="mt-1 text-ink-muted text-sm">치지직/유튜브 영상 모음</p>
       </div>
-      <RouterLink
-        :to="{ name: 'clip-write' }"
-        class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep transition-colors"
-      >
-        영상 등록
-      </RouterLink>
+      <RouterLink :to="{ name: 'clip-write' }" class="btn-primary whitespace-nowrap">영상 등록</RouterLink>
     </header>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>

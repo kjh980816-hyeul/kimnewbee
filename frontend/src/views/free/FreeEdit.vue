@@ -115,7 +115,7 @@ async function onSubmit(): Promise<void> {
       ← 취소
     </button>
 
-    <h1 class="text-2xl font-bold text-pepper mb-6">자유게시판 글 수정</h1>
+    <h1 class="text-2xl font-bold text-ink font-serif mb-6">자유게시판 글 수정</h1>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
 
@@ -128,7 +128,7 @@ async function onSubmit(): Promise<void> {
           type="text"
           maxlength="120"
           placeholder="제목을 입력하세요"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          class="field-input"
         />
       </div>
 
@@ -149,7 +149,7 @@ async function onSubmit(): Promise<void> {
           v-model="content"
           rows="14"
           placeholder="내용을 입력하세요"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper resize-y font-mono text-sm"
+          class="field-input resize-y font-mono text-sm"
         />
         <p v-if="imageError" class="mt-1 text-xs text-cheek">{{ imageError }}</p>
       </div>
@@ -160,7 +160,7 @@ async function onSubmit(): Promise<void> {
         <button
           type="submit"
           :disabled="submitting"
-          class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep disabled:opacity-50"
+          class="btn-primary disabled:opacity-50"
         >
           {{ submitting ? '저장 중...' : '저장하기' }}
         </button>

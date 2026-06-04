@@ -88,7 +88,7 @@ async function onSubmit(): Promise<void> {
       ← 취소
     </button>
 
-    <h1 class="text-2xl font-bold text-pepper mb-6">영상/클립 수정</h1>
+    <h1 class="text-2xl font-bold text-ink font-serif mb-6">영상/클립 수정</h1>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
 
@@ -100,7 +100,7 @@ async function onSubmit(): Promise<void> {
           v-model="title"
           type="text"
           maxlength="120"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          class="field-input"
         />
       </div>
 
@@ -111,7 +111,7 @@ async function onSubmit(): Promise<void> {
           v-model="videoUrl"
           type="url"
           placeholder="https://youtu.be/... 또는 https://chzzk.naver.com/..."
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          class="field-input"
         />
       </div>
 
@@ -121,7 +121,7 @@ async function onSubmit(): Promise<void> {
           id="clip-desc"
           v-model="description"
           rows="6"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper resize-y"
+          class="field-input resize-y"
         />
       </div>
 
@@ -131,7 +131,7 @@ async function onSubmit(): Promise<void> {
         <button
           type="submit"
           :disabled="submitting"
-          class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep disabled:opacity-50"
+          class="btn-primary disabled:opacity-50"
         >
           {{ submitting ? '저장 중...' : '저장하기' }}
         </button>

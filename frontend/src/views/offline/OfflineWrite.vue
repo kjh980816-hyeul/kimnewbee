@@ -68,7 +68,7 @@ async function onSubmit(): Promise<void> {
       ← 취소
     </button>
 
-    <h1 class="text-2xl font-bold text-pepper mb-2">오프 후기 쓰기</h1>
+    <h1 class="text-2xl font-bold text-ink font-serif mb-2">오프 후기 쓰기</h1>
     <p class="mb-6 text-sm text-ink-muted">🌽 옥수수 등급 이상만 작성 가능</p>
 
     <form class="space-y-4 max-w-2xl" @submit.prevent="onSubmit">
@@ -80,7 +80,7 @@ async function onSubmit(): Promise<void> {
           type="text"
           maxlength="120"
           placeholder="4월 서울 정모 후기"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+          class="field-input"
         />
       </div>
 
@@ -93,7 +93,7 @@ async function onSubmit(): Promise<void> {
             type="text"
             maxlength="60"
             placeholder="서울 홍대"
-            class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+            class="field-input"
           />
         </div>
         <div>
@@ -115,7 +115,7 @@ async function onSubmit(): Promise<void> {
             v-model="imageUrl"
             type="text"
             placeholder="https://... 또는 우측 업로드"
-            class="flex-1 rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper"
+            class="field-input flex-1"
           />
           <label
             class="cursor-pointer rounded-md border border-border px-3 py-2 text-sm text-ink-muted hover:text-pepper hover:border-pepper"
@@ -138,7 +138,7 @@ async function onSubmit(): Promise<void> {
           v-model="content"
           rows="10"
           placeholder="모임 분위기, 인상 깊었던 순간 등"
-          class="w-full rounded-md bg-surface border border-border px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-pepper resize-y"
+          class="field-input resize-y"
         />
       </div>
 
@@ -148,7 +148,7 @@ async function onSubmit(): Promise<void> {
         <button
           type="submit"
           :disabled="submitting"
-          class="rounded-md bg-pepper px-4 py-2 text-sm font-medium text-paper hover:bg-pepper-deep disabled:opacity-50"
+          class="btn-primary disabled:opacity-50"
         >
           {{ submitting ? '등록 중...' : '등록하기' }}
         </button>

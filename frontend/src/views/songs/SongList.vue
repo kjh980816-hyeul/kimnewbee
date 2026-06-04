@@ -59,15 +59,10 @@ function authorInitial(name: string): string {
 
     <header class="mb-6 flex items-end justify-between gap-4 flex-wrap">
       <div>
-        <h1 class="text-4xl font-extrabold text-ink leading-tight">노래추천 🎵</h1>
+        <h1 class="text-4xl font-extrabold text-ink leading-tight font-serif">노래추천 🎵</h1>
         <p class="mt-2 text-sm text-ink-muted">늉비가 불러줬으면 하는 곡 추천해주세요~</p>
       </div>
-      <RouterLink
-        :to="{ name: 'song-add' }"
-        class="rounded-full bg-violet-deep px-5 py-2 text-sm font-semibold text-ink hover:bg-violet-deep/80 transition-colors whitespace-nowrap"
-      >
-        + 노래 추천하기
-      </RouterLink>
+      <RouterLink :to="{ name: 'song-add' }" class="btn-primary whitespace-nowrap">+ 노래 추천하기</RouterLink>
     </header>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>

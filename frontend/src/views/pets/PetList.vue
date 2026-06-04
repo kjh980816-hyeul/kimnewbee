@@ -55,15 +55,10 @@ async function removePost(id: number): Promise<void> {
 
     <header class="mb-6 flex items-end justify-between gap-4 flex-wrap">
       <div>
-        <h1 class="text-4xl font-extrabold text-ink leading-tight">반려동물 사진 🐾</h1>
+        <h1 class="text-4xl font-extrabold text-ink leading-tight font-serif">반려동물 사진 🐾</h1>
         <p class="mt-2 text-sm text-ink-muted">우리집 댕댕이 냥냥이 자랑하는 시간</p>
       </div>
-      <RouterLink
-        :to="{ name: 'pet-write' }"
-        class="rounded-full bg-violet-deep px-5 py-2 text-sm font-semibold text-ink hover:bg-violet-deep/80 transition-colors whitespace-nowrap"
-      >
-        ✏ 사진 올리기
-      </RouterLink>
+      <RouterLink :to="{ name: 'pet-write' }" class="btn-primary whitespace-nowrap">✏ 사진 올리기</RouterLink>
     </header>
 
     <div class="flex items-center gap-2 mb-6 flex-wrap">
