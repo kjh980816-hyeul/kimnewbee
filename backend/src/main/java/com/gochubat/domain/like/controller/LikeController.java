@@ -44,4 +44,14 @@ public class LikeController extends AuthenticatedController {
 	public LikeToggleResponse toggleOffline(@PathVariable Long id, Authentication authentication) {
 		return likeService.toggle(BoardType.OFFLINE, id, requireUserId(authentication));
 	}
+
+	// 관리자가 만든 커스텀 게시판 글 좋아요. 글 타입이 CUSTOM이어야 통과(아니면 404).
+	@PostMapping("/api/board-posts/{slug}/{id}/like")
+	public LikeToggleResponse toggleBoardPost(
+			@PathVariable String slug,
+			@PathVariable Long id,
+			Authentication authentication
+	) {
+		return likeService.toggle(BoardType.CUSTOM, id, requireUserId(authentication));
+	}
 }

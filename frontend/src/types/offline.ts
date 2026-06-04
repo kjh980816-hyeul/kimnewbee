@@ -17,6 +17,7 @@ export interface OfflineReviewListItem {
 export interface OfflineReview extends OfflineReviewListItem {
   content: string;
   imageUrl: string;
+  authorTier?: string | null;
   viewCount: number;
   updatedAt: string;
   likedByMe: boolean;

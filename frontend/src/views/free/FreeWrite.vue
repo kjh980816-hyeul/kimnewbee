@@ -4,11 +4,13 @@ import { useRouter } from 'vue-router';
 import { createFreePost } from '@/api/free';
 import { uploadImage } from '@/api/upload';
 import { isHttpStatus } from '@/api/error';
+import { FREE_CATEGORIES } from '@/types/free';
 
 const router = useRouter();
 
 const title = ref('');
 const content = ref('');
+const category = ref<string>(FREE_CATEGORIES[0]);
 const contentTextarea = ref<HTMLTextAreaElement | null>(null);
 const submitting = ref(false);
 const error = ref<string | null>(null);
@@ -68,6 +70,7 @@ async function onSubmit(): Promise<void> {
     const post = await createFreePost({
       title: title.value,
       content: content.value,
+      category: category.value,
     });
     await router.push({ name: 'free-detail', params: { id: post.id } });
   } catch (e) {
@@ -91,6 +94,26 @@ async function onSubmit(): Promise<void> {
     <h1 class="text-2xl font-bold text-pepper mb-6">자유게시판 글쓰기</h1>
 
     <form class="space-y-4" @submit.prevent="onSubmit">
+      <div>
+        <span class="block text-sm text-ink-muted mb-1">분류</span>
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="cat in FREE_CATEGORIES"
+            :key="cat"
+            type="button"
+            class="px-4 py-1.5 rounded-full text-sm transition-colors"
+            :class="
+              category === cat
+                ? 'bg-violet-deep/40 text-ink font-semibold'
+                : 'bg-surface border border-border text-ink-muted hover:text-ink'
+            "
+            @click="category = cat"
+          >
+            {{ cat }}
+          </button>
+        </div>
+      </div>
+
       <div>
         <label class="block text-sm text-ink-muted mb-1" for="post-title">제목</label>
         <input

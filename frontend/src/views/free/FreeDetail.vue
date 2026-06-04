@@ -66,7 +66,7 @@ async function onLike(): Promise<void> {
       <span class="mx-2">›</span>
       <RouterLink :to="{ name: 'free' }" class="hover:text-ink">자유게시판</RouterLink>
       <span class="mx-2">›</span>
-      <span class="text-ink">잡담</span>
+      <span class="text-ink">{{ post?.category ?? '잡담' }}</span>
     </nav>
 
     <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
@@ -84,13 +84,14 @@ async function onLike(): Promise<void> {
         :title="post.title"
         :author="post.author"
         :author-avatar="post.authorProfileImage"
+        :author-tier="post.authorTier"
         :created-at="post.createdAt"
         :view-count="post.viewCount"
         :content="post.content"
         :liked-by-me="post.likedByMe"
         :like-count="post.likeCount"
         :can-delete="canDelete"
-        category="잡담"
+        :category="post.category ?? '잡담'"
         @like="onLike"
         @delete="handleDelete"
       >

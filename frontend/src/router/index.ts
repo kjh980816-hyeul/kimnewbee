@@ -39,6 +39,10 @@ export const router = createRouter({
     { path: '/songs', name: 'songs', component: () => import('@/views/songs/SongList.vue') },
     { path: '/songs/add', name: 'song-add', component: () => import('@/views/songs/SongAdd.vue') },
 
+    { path: '/board/:slug', name: 'board', component: () => import('@/views/board/BoardView.vue') },
+    { path: '/board/:slug/write', name: 'board-write', component: () => import('@/views/board/BoardWrite.vue') },
+    { path: '/board/:slug/post/:id(\\d+)', name: 'board-post-detail', component: () => import('@/views/board/BoardPostDetail.vue') },
+
     { path: '/offline', name: 'offline', component: () => import('@/views/offline/OfflineList.vue') },
     { path: '/offline/write', name: 'offline-write', component: () => import('@/views/offline/OfflineWrite.vue') },
     { path: '/offline/:id(\\d+)', name: 'offline-detail', component: () => import('@/views/offline/OfflineDetail.vue') },

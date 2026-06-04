@@ -83,6 +83,7 @@ async function onLike(): Promise<void> {
         :title="fanart.title"
         :author="fanart.author"
         :author-avatar="fanart.authorProfileImage"
+        :author-tier="fanart.authorTier"
         :created-at="fanart.createdAt"
         :view-count="fanart.viewCount"
         :content="fanart.content"

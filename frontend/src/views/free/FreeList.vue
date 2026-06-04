@@ -4,14 +4,16 @@ import { RouterLink } from 'vue-router';
 import { fetchFreePosts } from '@/api/free';
 import { deletePost } from '@/api/post';
 import { useCurrentUser } from '@/composables/useCurrentUser';
-import type { FreePostListItem } from '@/types/free';
+import { FREE_FILTER_TABS, type FreePostListItem } from '@/types/free';
 
 const posts = ref<FreePostListItem[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
-const categories = ['전체', '공지', '잡담', '질문', '후기', '정보'];
-const activeCategory = ref('전체');
+const categories = FREE_FILTER_TABS;
+const activeCategory = ref<string>('전체');
+
+const DEFAULT_CATEGORY = '잡담';
 
 const sortOptions = [
   { value: 'recent', label: '최신순' },
@@ -22,8 +24,15 @@ const activeSort = ref<'recent' | 'popular' | 'comment'>('recent');
 
 const HOT_THRESHOLD = 10;
 
+function categoryOf(p: FreePostListItem): string {
+  return p.category && p.category.trim() ? p.category : DEFAULT_CATEGORY;
+}
+
 const sortedPosts = computed(() => {
-  const list = [...posts.value];
+  let list = [...posts.value];
+  if (activeCategory.value !== '전체') {
+    list = list.filter((p) => categoryOf(p) === activeCategory.value);
+  }
   if (activeSort.value === 'popular') list.sort((a, b) => b.likeCount - a.likeCount);
   else if (activeSort.value === 'comment') list.sort((a, b) => b.commentCount - a.commentCount);
   else list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -155,7 +164,7 @@ async function removePost(id: number): Promise<void> {
               class="grid grid-cols-[70px_1fr_140px_90px_90px] gap-3 px-5 py-3 items-center text-sm"
             >
               <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-violet/20 text-violet text-center">
-                잡담
+                {{ categoryOf(p) }}
               </span>
               <div class="min-w-0 flex items-center gap-2">
                 <span class="text-ink truncate">{{ p.title }}</span>
@@ -168,8 +177,14 @@ async function removePost(id: number): Promise<void> {
                 </span>
               </div>
               <div class="flex items-center gap-2 min-w-0">
-                <span class="w-5 h-5 rounded-full bg-violet/30 flex items-center justify-center text-[10px] font-bold text-ink shrink-0">
-                  {{ authorInitial(p.author) }}
+                <span class="w-5 h-5 rounded-full bg-violet/30 flex items-center justify-center text-[10px] font-bold text-ink shrink-0 overflow-hidden">
+                  <img
+                    v-if="p.authorProfileImage"
+                    :src="p.authorProfileImage"
+                    :alt="p.author"
+                    class="w-full h-full object-cover"
+                  />
+                  <template v-else>{{ authorInitial(p.author) }}</template>
                 </span>
                 <span class="text-xs text-ink-muted truncate">{{ p.author }}</span>
               </div>

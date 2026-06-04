@@ -63,6 +63,14 @@ public class Post {
 	@Column(name = "meetup_date")
 	private LocalDate meetupDate;
 
+	// 자유게시판 분류(잡담/질문/후기/정보). free 외 게시판은 null.
+	@Column(name = "category", length = 20)
+	private String category;
+
+	// 관리자가 만든 커스텀 게시판의 slug. 기본 8개 게시판(FREE 등)은 null.
+	@Column(name = "board_slug", length = 60)
+	private String boardSlug;
+
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
@@ -77,7 +85,9 @@ public class Post {
 			String mediaUrl,
 			ClipSource clipSource,
 			String location,
-			LocalDate meetupDate
+			LocalDate meetupDate,
+			String category,
+			String boardSlug
 	) {
 		this.type = type;
 		this.title = title;
@@ -87,23 +97,29 @@ public class Post {
 		this.clipSource = clipSource;
 		this.location = location;
 		this.meetupDate = meetupDate;
+		this.category = category;
+		this.boardSlug = boardSlug;
 		this.viewCount = 0L;
 	}
 
 	public static Post createFree(String title, String content, User author) {
-		return new Post(BoardType.FREE, title, content, author, null, null, null, null);
+		return createFree(title, content, author, "잡담");
+	}
+
+	public static Post createFree(String title, String content, User author, String category) {
+		return new Post(BoardType.FREE, title, content, author, null, null, null, null, category, null);
 	}
 
 	public static Post createFanart(String title, String content, User author, String imageUrl) {
-		return new Post(BoardType.FANART, title, content, author, imageUrl, null, null, null);
+		return new Post(BoardType.FANART, title, content, author, imageUrl, null, null, null, null, null);
 	}
 
 	public static Post createClip(String title, String description, User author, String videoUrl) {
-		return new Post(BoardType.CLIP, title, description, author, videoUrl, ClipSource.detect(videoUrl), null, null);
+		return new Post(BoardType.CLIP, title, description, author, videoUrl, ClipSource.detect(videoUrl), null, null, null, null);
 	}
 
 	public static Post createPet(String title, String content, User author, String imageUrl) {
-		return new Post(BoardType.PET, title, content, author, imageUrl, null, null, null);
+		return new Post(BoardType.PET, title, content, author, imageUrl, null, null, null, null, null);
 	}
 
 	public static Post createOffline(
@@ -114,7 +130,12 @@ public class Post {
 			String location,
 			LocalDate meetupDate
 	) {
-		return new Post(BoardType.OFFLINE, title, content, author, imageUrl, null, location, meetupDate);
+		return new Post(BoardType.OFFLINE, title, content, author, imageUrl, null, location, meetupDate, null, null);
+	}
+
+	// 관리자가 만든 커스텀 게시판 글. mediaUrl은 갤러리/영상형 레이아웃용(선택).
+	public static Post createCustom(String boardSlug, String title, String content, User author, String mediaUrl) {
+		return new Post(BoardType.CUSTOM, title, content, author, mediaUrl, null, null, null, null, boardSlug);
 	}
 
 	public void incrementViewCount() {

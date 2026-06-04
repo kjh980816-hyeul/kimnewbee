@@ -109,7 +109,7 @@ public class CommentService {
 
 	private void dispatchCommentNotification(Post post, User commenter, Comment saved, Comment parent) {
 		Long postAuthorId = post.getAuthor().getId();
-		String link = "/" + boardSlug(post.getType()) + "/" + post.getId();
+		String link = linkFor(post);
 		String snippet = truncate(saved.getContent(), NOTIFICATION_PREVIEW_LENGTH);
 		boolean isReply = parent != null;
 		Long parentAuthorId = isReply ? parent.getAuthor().getId() : null;
@@ -133,6 +133,14 @@ public class CommentService {
 		}
 	}
 
+	// 알림 클릭 시 이동할 게시글 경로. 커스텀 게시판은 /board/{slug}/post/{id}.
+	private String linkFor(Post post) {
+		if (post.getType() == BoardType.CUSTOM) {
+			return "/board/" + post.getBoardSlug() + "/post/" + post.getId();
+		}
+		return "/" + boardSlug(post.getType()) + "/" + post.getId();
+	}
+
 	private String boardSlug(BoardType type) {
 		return switch (type) {
 			case FREE -> "free";
@@ -140,6 +148,7 @@ public class CommentService {
 			case CLIP -> "clips";
 			case PET -> "pets";
 			case OFFLINE -> "offline";
+			case CUSTOM -> "board";
 		};
 	}
 

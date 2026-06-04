@@ -21,6 +21,10 @@ export async function createLetter(input: CreateLetterInput): Promise<Letter> {
   return res.data;
 }
 
+export async function deleteLetter(id: number): Promise<void> {
+  await apiClient.delete(`/api/letters/${id}`);
+}
+
 export async function fetchAdminViewerInfo(): Promise<AdminViewerInfo> {
   const res = await apiClient.get<AdminViewerInfo>('/api/me/admin');
   return res.data;

@@ -1,12 +1,27 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
-import { fetchSongs, toggleSongVote } from '@/api/song';
+import { fetchSongs, toggleSongVote, deleteSong } from '@/api/song';
+import { useCurrentUser } from '@/composables/useCurrentUser';
 import type { SongRecommendation } from '@/types/song';
 
 const songs = ref<SongRecommendation[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
+
+const { currentUser, isOwner } = useCurrentUser();
+function canDelete(song: SongRecommendation): boolean {
+  return isOwner.value || currentUser.value?.nickname === song.submittedBy;
+}
+async function removeSong(song: SongRecommendation): Promise<void> {
+  if (!confirm(`'${song.title}' 추천을 삭제할까요?`)) return;
+  try {
+    await deleteSong(song.id);
+    songs.value = songs.value.filter((s) => s.id !== song.id);
+  } catch {
+    alert('삭제에 실패했어요');
+  }
+}
 
 const sortedSongs = computed(() => [...songs.value].sort((a, b) => b.voteCount - a.voteCount));
 const topSong = computed(() => sortedSongs.value[0] ?? null);
@@ -68,6 +83,14 @@ function authorInitial(name: string): string {
         <div class="flex items-center gap-2 text-xs text-corn font-semibold mb-2">
           <span>🌟 이번 주 많이 추천한 곡</span>
           <span class="text-cheek">♥ {{ topSong.voteCount }}</span>
+          <button
+            v-if="canDelete(topSong)"
+            type="button"
+            class="ml-auto rounded-md border border-cheek/40 px-2 py-0.5 text-[11px] font-semibold text-cheek hover:bg-cheek hover:text-paper transition-colors"
+            @click="removeSong(topSong)"
+          >
+            🗑 삭제
+          </button>
         </div>
         <h2 class="text-2xl font-extrabold text-ink leading-tight">
           {{ topSong.title }}
@@ -113,6 +136,14 @@ function authorInitial(name: string): string {
           >
             <span>▶</span><span>듣기</span>
           </a>
+          <button
+            v-if="canDelete(song)"
+            type="button"
+            class="rounded-full border border-cheek/40 px-2.5 py-1.5 text-xs text-cheek hover:bg-cheek hover:text-paper transition-colors shrink-0"
+            @click="removeSong(song)"
+          >
+            🗑
+          </button>
         </li>
       </ol>
     </template>

@@ -12,6 +12,7 @@ export interface PetListItem {
 export interface Pet extends PetListItem {
   imageUrl: string;
   content: string;
+  authorTier?: string | null;
   viewCount: number;
   updatedAt: string;
   likedByMe: boolean;

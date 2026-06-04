@@ -71,6 +71,8 @@ public class SecurityConfig {
 						.requestMatchers("/api/songs/**").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/boards").permitAll()
 						.requestMatchers("/api/boards/**").authenticated()
+						.requestMatchers(HttpMethod.GET, "/api/board-posts/**").permitAll()
+						.requestMatchers("/api/board-posts/**").authenticated()
 						.requestMatchers(HttpMethod.GET, "/api/cafe/config").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/chzzk/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/stats/**").permitAll()

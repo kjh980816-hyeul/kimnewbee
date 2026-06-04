@@ -5,5 +5,6 @@ public enum BoardType {
 	FANART,
 	CLIP,
 	PET,
-	OFFLINE
+	OFFLINE,
+	CUSTOM
 }

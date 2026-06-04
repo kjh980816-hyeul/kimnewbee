@@ -20,3 +20,7 @@ export async function toggleSongVote(id: number): Promise<VoteToggleResponse> {
   const res = await apiClient.post<VoteToggleResponse>(`/api/songs/${id}/vote`);
   return res.data;
 }
+
+export async function deleteSong(id: number): Promise<void> {
+  await apiClient.delete(`/api/songs/${id}`);
+}

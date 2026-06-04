@@ -5,15 +5,14 @@ import com.gochubat.domain.post.service.PostBoardAssembler.DetailCounts;
 
 import java.time.LocalDateTime;
 
-public record ClipDetailResponse(
+public record BoardPostDetailResponse(
 		Long id,
 		String title,
+		String content,
 		String author,
 		String authorProfileImage,
 		String authorTier,
-		String videoUrl,
-		String source,
-		String description,
+		String mediaUrl,
 		LocalDateTime createdAt,
 		LocalDateTime updatedAt,
 		long viewCount,
@@ -22,16 +21,15 @@ public record ClipDetailResponse(
 		boolean likedByMe
 ) {
 
-	public static ClipDetailResponse from(Post post, DetailCounts counts) {
-		return new ClipDetailResponse(
+	public static BoardPostDetailResponse from(Post post, DetailCounts counts) {
+		return new BoardPostDetailResponse(
 				post.getId(),
 				post.getTitle(),
+				post.getContent(),
 				post.getAuthor().getNickname(),
 				post.getAuthor().getProfileImage(),
 				post.getAuthor().getTier().toApiValue(),
 				post.getMediaUrl(),
-				post.getClipSource() != null ? post.getClipSource().toApiValue() : null,
-				post.getContent(),
 				post.getCreatedAt(),
 				post.getUpdatedAt(),
 				post.getViewCount(),

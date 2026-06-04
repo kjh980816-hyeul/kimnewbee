@@ -14,6 +14,7 @@ export interface ClipListItem {
 
 export interface Clip extends ClipListItem {
   description: string;
+  authorTier?: string | null;
   viewCount: number;
   updatedAt: string;
   likedByMe: boolean;

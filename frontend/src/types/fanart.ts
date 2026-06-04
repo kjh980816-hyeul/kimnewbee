@@ -12,6 +12,7 @@ export interface FanartListItem {
 export interface Fanart extends FanartListItem {
   imageUrl: string;
   content: string;
+  authorTier?: string | null;
   viewCount: number;
   updatedAt: string;
   likedByMe: boolean;

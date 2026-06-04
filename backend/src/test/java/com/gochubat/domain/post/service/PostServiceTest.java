@@ -1,5 +1,6 @@
 package com.gochubat.domain.post.service;
 
+import com.gochubat.domain.board.repository.BoardRepository;
 import com.gochubat.domain.comment.repository.CommentRepository;
 import com.gochubat.domain.like.repository.PostLikeRepository;
 import com.gochubat.domain.point.PointService;
@@ -29,6 +30,7 @@ class PostServiceTest {
 	private PointService pointService;
 	private CommentRepository commentRepository;
 	private PostLikeRepository postLikeRepository;
+	private BoardRepository boardRepository;
 	private PostService postService;
 	private User author;
 
@@ -39,7 +41,8 @@ class PostServiceTest {
 		pointService = Mockito.mock(PointService.class);
 		commentRepository = Mockito.mock(CommentRepository.class);
 		postLikeRepository = Mockito.mock(PostLikeRepository.class);
-		postService = new PostService(postRepository, userRepository, pointService, commentRepository, postLikeRepository);
+		boardRepository = Mockito.mock(BoardRepository.class);
+		postService = new PostService(postRepository, userRepository, pointService, commentRepository, postLikeRepository, boardRepository);
 		author = TestUserFactory.create("nv-a", "작성자", Tier.PEPPER);
 		TestUserFactory.setId(author, 1L);
 	}

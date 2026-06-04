@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import { fetchAttendanceStatus } from '@/api/attendance';
+import { useBoards, boardLink, boardIcon, tierRank } from '@/composables/useBoards';
+import { useCurrentUser } from '@/composables/useCurrentUser';
 
 const route = useRoute();
 const streak = ref<number | null>(null);
@@ -13,8 +15,8 @@ interface MenuItem {
   count?: number;
 }
 
-const menu: MenuItem[] = [
-  { to: '/', label: '홈', icon: '⌂' },
+// API가 비거나 로딩 전이면 보여줄 정적 폴백(기본 게시판).
+const FALLBACK_MENU: MenuItem[] = [
   { to: '/notices', label: '공지사항', icon: '★' },
   { to: '/free', label: '자유게시판', icon: '💬' },
   { to: '/fanart', label: '팬아트 갤러리', icon: '🎨' },
@@ -23,6 +25,18 @@ const menu: MenuItem[] = [
   { to: '/letters', label: '팬레터', icon: '✉' },
   { to: '/clips', label: '클립 공유', icon: '🎬' },
 ];
+
+const { boards } = useBoards();
+const { currentUser } = useCurrentUser();
+
+// 읽기 권한(readTier)이 내 등급 이하인 게시판만 노출. 비로그인은 새싹 취급.
+const boardMenu = computed<MenuItem[]>(() => {
+  if (boards.value.length === 0) return FALLBACK_MENU;
+  const myRank = tierRank(currentUser.value?.tier);
+  return boards.value
+    .filter((b) => b.active && tierRank(b.readTier) <= myRank)
+    .map((b) => ({ to: boardLink(b), label: b.name, icon: boardIcon(b) }));
+});
 
 const myMenu: { to: string; label: string; icon: string; badgeKey?: 'streak' }[] = [
   { to: '/me', label: '내 활동', icon: '👤' },
@@ -73,7 +87,21 @@ onMounted(async () => {
     <div class="px-6 pb-2 text-[10px] tracking-[0.15em] text-ink-muted/70 font-semibold">MENU</div>
     <nav class="px-3">
       <ul class="space-y-0.5">
-        <li v-for="item in menu" :key="item.to">
+        <li>
+          <RouterLink
+            to="/"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"
+            :class="
+              isActive('/')
+                ? 'bg-violet-deep/40 text-ink font-semibold'
+                : 'text-ink-muted hover:text-ink hover:bg-elevated'
+            "
+          >
+            <span class="w-5 text-center shrink-0">⌂</span>
+            <span class="flex-1 truncate">홈</span>
+          </RouterLink>
+        </li>
+        <li v-for="item in boardMenu" :key="item.to">
           <RouterLink
             :to="item.to"
             class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors"

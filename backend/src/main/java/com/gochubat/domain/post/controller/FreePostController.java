@@ -62,7 +62,7 @@ public class FreePostController extends AuthenticatedController {
 			@Valid @RequestBody FreePostWriteRequest request
 	) {
 		User author = postService.loadAuthor(requireUserId(authentication));
-		Post saved = postService.save(Post.createFree(request.title(), request.content(), author));
+		Post saved = postService.save(Post.createFree(request.title(), request.content(), author, request.categoryOrDefault()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(FreePostDetailResponse.from(saved, DetailCounts.zero()));
 	}
 }

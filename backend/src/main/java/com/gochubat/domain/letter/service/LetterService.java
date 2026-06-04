@@ -47,4 +47,13 @@ public class LetterService {
 		Letter saved = letterRepository.save(Letter.create(author, request.content()));
 		return LetterDetailResponse.from(saved);
 	}
+
+	// 팬레터는 관리자(OWNER) 전용 열람이라 삭제도 OWNER만(컨트롤러 @PreAuthorize) 가능.
+	@Transactional
+	public void delete(Long letterId) {
+		if (!letterRepository.existsById(letterId)) {
+			throw new CustomException(ErrorCode.NOT_FOUND);
+		}
+		letterRepository.deleteById(letterId);
+	}
 }

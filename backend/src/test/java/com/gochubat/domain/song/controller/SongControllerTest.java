@@ -23,6 +23,7 @@ import jakarta.servlet.http.Cookie;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -52,15 +53,19 @@ class SongControllerTest {
 
 	private User user;
 	private User other;
+	private User owner;
 	private String userToken;
 	private String otherToken;
+	private String ownerToken;
 
 	@BeforeEach
 	void setUp() {
 		user = userRepository.save(TestUserFactory.create("nv-song-1", "추천1", Tier.PEPPER));
 		other = userRepository.save(TestUserFactory.create("nv-song-2", "추천2", Tier.PEPPER));
+		owner = userRepository.save(TestUserFactory.create("nv-song-o", "주인", Tier.OWNER));
 		userToken = jwtUtil.generateAccessToken(user.getId(), user.getTier().name());
 		otherToken = jwtUtil.generateAccessToken(other.getId(), other.getTier().name());
+		ownerToken = jwtUtil.generateAccessToken(owner.getId(), owner.getTier().name());
 	}
 
 	@AfterEach
@@ -150,5 +155,49 @@ class SongControllerTest {
 		mockMvc.perform(post("/api/songs/99999/vote")
 						.cookie(new Cookie("access_token", userToken)))
 				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void submitter_deletes_own_song_and_clears_votes() throws Exception {
+		Song song = songRepository.save(Song.create("APT", "Rosé", "https://link", user));
+		mockMvc.perform(post("/api/songs/" + song.getId() + "/vote")
+						.cookie(new Cookie("access_token", otherToken)));
+
+		mockMvc.perform(delete("/api/songs/" + song.getId())
+						.cookie(new Cookie("access_token", userToken)))
+				.andExpect(status().isNoContent());
+
+		assertThat(songRepository.existsById(song.getId())).isFalse();
+		assertThat(songVoteRepository.countBySongId(song.getId())).isZero();
+	}
+
+	@Test
+	void owner_deletes_others_song() throws Exception {
+		Song song = songRepository.save(Song.create("APT", "Rosé", "https://link", user));
+
+		mockMvc.perform(delete("/api/songs/" + song.getId())
+						.cookie(new Cookie("access_token", ownerToken)))
+				.andExpect(status().isNoContent());
+
+		assertThat(songRepository.existsById(song.getId())).isFalse();
+	}
+
+	@Test
+	void stranger_cannot_delete_others_song() throws Exception {
+		Song song = songRepository.save(Song.create("APT", "Rosé", "https://link", user));
+
+		mockMvc.perform(delete("/api/songs/" + song.getId())
+						.cookie(new Cookie("access_token", otherToken)))
+				.andExpect(status().isForbidden());
+
+		assertThat(songRepository.existsById(song.getId())).isTrue();
+	}
+
+	@Test
+	void delete_requires_auth() throws Exception {
+		Song song = songRepository.save(Song.create("APT", "Rosé", "https://link", user));
+
+		mockMvc.perform(delete("/api/songs/" + song.getId()))
+				.andExpect(status().isUnauthorized());
 	}
 }

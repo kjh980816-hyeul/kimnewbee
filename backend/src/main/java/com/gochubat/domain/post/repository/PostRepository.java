@@ -19,6 +19,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	@Query("select p from Post p join fetch p.author where p.id = :id and p.type = :type")
 	Optional<Post> findByIdAndTypeWithAuthor(@Param("id") Long id, @Param("type") BoardType type);
 
+	@Query("select p from Post p join fetch p.author where p.boardSlug = :slug order by p.createdAt desc, p.id desc")
+	List<Post> findByBoardSlugWithAuthor(@Param("slug") String slug);
+
+	@Query("select p from Post p join fetch p.author where p.id = :id and p.boardSlug = :slug")
+	Optional<Post> findByIdAndBoardSlugWithAuthor(@Param("id") Long id, @Param("slug") String slug);
+
 	long countByAuthorId(Long authorId);
 
 	long countByCreatedAtGreaterThanEqual(java.time.LocalDateTime since);

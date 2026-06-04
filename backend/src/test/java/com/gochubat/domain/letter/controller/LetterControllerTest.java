@@ -22,6 +22,7 @@ import jakarta.servlet.http.Cookie;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -141,6 +142,35 @@ class LetterControllerTest {
 	@Test
 	void detail_returns_404_when_letter_missing() throws Exception {
 		mockMvc.perform(get("/api/letters/99999")
+						.cookie(new Cookie("access_token", ownerToken)))
+				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void owner_deletes_letter() throws Exception {
+		Letter letter = letterRepository.save(Letter.create(pepper, "지울 편지"));
+
+		mockMvc.perform(delete("/api/letters/" + letter.getId())
+						.cookie(new Cookie("access_token", ownerToken)))
+				.andExpect(status().isNoContent());
+
+		assertThat(letterRepository.existsById(letter.getId())).isFalse();
+	}
+
+	@Test
+	void pepper_cannot_delete_letter() throws Exception {
+		Letter letter = letterRepository.save(Letter.create(pepper, "비밀 편지"));
+
+		mockMvc.perform(delete("/api/letters/" + letter.getId())
+						.cookie(new Cookie("access_token", pepperToken)))
+				.andExpect(status().isForbidden());
+
+		assertThat(letterRepository.existsById(letter.getId())).isTrue();
+	}
+
+	@Test
+	void delete_returns_404_when_letter_missing() throws Exception {
+		mockMvc.perform(delete("/api/letters/99999")
 						.cookie(new Cookie("access_token", ownerToken)))
 				.andExpect(status().isNotFound());
 	}

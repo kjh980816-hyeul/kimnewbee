@@ -83,6 +83,7 @@ async function onLike(): Promise<void> {
         :title="pet.title"
         :author="pet.author"
         :author-avatar="pet.authorProfileImage"
+        :author-tier="pet.authorTier"
         :created-at="pet.createdAt"
         :view-count="pet.viewCount"
         :content="pet.content"

@@ -65,6 +65,18 @@ public class SongService {
 		return SongResponse.from(saved, 0L, false);
 	}
 
+	// 추천한 본인이거나 관리자(OWNER)면 삭제. 투표 기록도 함께 정리.
+	@Transactional
+	public void delete(Long songId, Long requesterId, boolean isOwner) {
+		Song song = songRepository.findById(songId)
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+		if (!isOwner && !song.getSubmittedBy().getId().equals(requesterId)) {
+			throw new CustomException(ErrorCode.FORBIDDEN);
+		}
+		songVoteRepository.deleteBySongId(songId);
+		songRepository.deleteById(songId);
+	}
+
 	@Transactional
 	public VoteToggleResponse toggleVote(Long songId, Long userId) {
 		if (!songRepository.existsById(songId)) {

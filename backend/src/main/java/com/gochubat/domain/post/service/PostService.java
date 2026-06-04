@@ -1,5 +1,7 @@
 package com.gochubat.domain.post.service;
 
+import com.gochubat.domain.board.entity.Board;
+import com.gochubat.domain.board.repository.BoardRepository;
 import com.gochubat.domain.comment.repository.CommentRepository;
 import com.gochubat.domain.like.repository.PostLikeRepository;
 import com.gochubat.domain.point.PointReason;
@@ -25,19 +27,22 @@ public class PostService {
 	private final PointService pointService;
 	private final CommentRepository commentRepository;
 	private final PostLikeRepository postLikeRepository;
+	private final BoardRepository boardRepository;
 
 	public PostService(
 			PostRepository postRepository,
 			UserRepository userRepository,
 			PointService pointService,
 			CommentRepository commentRepository,
-			PostLikeRepository postLikeRepository
+			PostLikeRepository postLikeRepository,
+			BoardRepository boardRepository
 	) {
 		this.postRepository = postRepository;
 		this.userRepository = userRepository;
 		this.pointService = pointService;
 		this.commentRepository = commentRepository;
 		this.postLikeRepository = postLikeRepository;
+		this.boardRepository = boardRepository;
 	}
 
 	public List<Post> list(BoardType type) {
@@ -50,6 +55,40 @@ public class PostService {
 				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 		post.incrementViewCount();
 		return post;
+	}
+
+	// === 관리자가 만든 커스텀 게시판 ===
+
+	public Board requireBoard(String slug) {
+		return boardRepository.findBySlug(slug)
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+	}
+
+	public List<Post> listCustom(String slug) {
+		requireBoard(slug);
+		return postRepository.findByBoardSlugWithAuthor(slug);
+	}
+
+	@Transactional
+	public Post viewDetailCustom(String slug, Long id) {
+		Post post = postRepository.findByIdAndBoardSlugWithAuthor(id, slug)
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+		post.incrementViewCount();
+		return post;
+	}
+
+	@Transactional
+	public Post createCustomPost(String slug, Long userId, String title, String content, String mediaUrl) {
+		Board board = requireBoard(slug);
+		if (!board.isActive()) {
+			throw new CustomException(ErrorCode.NOT_FOUND);
+		}
+		User author = loadAuthor(userId);
+		// 등급(Tier) 순서: SEED < PEPPER < CORN < OWNER. 작성 권한 등급 미달이면 차단.
+		if (author.getTier().ordinal() < board.getWriteTier().ordinal()) {
+			throw new CustomException(ErrorCode.FORBIDDEN);
+		}
+		return save(Post.createCustom(slug, title, content, author, mediaUrl));
 	}
 
 	@Transactional

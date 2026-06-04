@@ -104,6 +104,7 @@ async function onLike(): Promise<void> {
         :title="review.title"
         :author="review.author"
         :author-avatar="review.authorProfileImage"
+        :author-tier="review.authorTier"
         :created-at="review.createdAt"
         :view-count="review.viewCount"
         :content="review.content"

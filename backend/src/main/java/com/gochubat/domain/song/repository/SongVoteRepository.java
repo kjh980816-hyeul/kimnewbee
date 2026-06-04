@@ -2,6 +2,7 @@ package com.gochubat.domain.song.repository;
 
 import com.gochubat.domain.song.entity.SongVote;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,6 +15,9 @@ public interface SongVoteRepository extends JpaRepository<SongVote, Long> {
 	Optional<SongVote> findBySongIdAndUserId(Long songId, Long userId);
 
 	long countBySongId(Long songId);
+
+	@Modifying
+	void deleteBySongId(Long songId);
 
 	@Query("select sv.songId as songId, count(sv) as cnt from SongVote sv "
 			+ "where sv.songId in :songIds group by sv.songId")

@@ -93,6 +93,7 @@ async function onLike(): Promise<void> {
         :title="clip.title"
         :author="clip.author"
         :author-avatar="clip.authorProfileImage"
+        :author-tier="clip.authorTier"
         :created-at="clip.createdAt"
         :view-count="clip.viewCount"
         :content="clip.description"
