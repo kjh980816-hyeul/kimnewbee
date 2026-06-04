@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router';
 import { fetchFreePosts } from '@/api/free';
 import { deletePost } from '@/api/post';
 import { useCurrentUser } from '@/composables/useCurrentUser';
+import Skeleton from '@/components/ui/Skeleton.vue';
 import { FREE_FILTER_TABS, type FreePostListItem } from '@/types/free';
 
 const posts = ref<FreePostListItem[]>([]);
@@ -133,7 +134,9 @@ async function removePost(id: number): Promise<void> {
       </div>
     </div>
 
-    <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
+    <div v-if="loading" class="glass card-pad">
+      <Skeleton variant="rows" :count="8" />
+    </div>
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <template v-else>
       <div class="glass overflow-hidden">

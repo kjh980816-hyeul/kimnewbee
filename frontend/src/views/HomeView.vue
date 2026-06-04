@@ -17,6 +17,7 @@ import type { PetListItem } from '@/types/pet';
 import type { LetterListItem } from '@/types/letter';
 import type { CafeConfig } from '@/types/cafe';
 import LiveBanner from '@/components/home/LiveBanner.vue';
+import Skeleton from '@/components/ui/Skeleton.vue';
 
 const notices = ref<NoticeListItem[]>([]);
 const freePosts = ref<FreePostListItem[]>([]);
@@ -151,7 +152,7 @@ function relTime(iso: string): string {
           <h3>🔥 이번 주 베스트</h3>
           <span class="sub">좋아요순</span>
         </div>
-        <p v-if="loading" class="text-sm py-2" style="color: var(--text-mute)">불러오는 중...</p>
+        <Skeleton v-if="loading" variant="rows" :count="5" />
         <template v-else-if="bestPosts.length > 0">
           <RouterLink
             v-for="(p, i) in bestPosts"
@@ -175,7 +176,7 @@ function relTime(iso: string): string {
           <span class="sub">실시간</span>
           <RouterLink to="/free" class="more">전체 ▸</RouterLink>
         </div>
-        <p v-if="loading" class="text-sm py-2" style="color: var(--text-mute)">불러오는 중...</p>
+        <Skeleton v-if="loading" variant="rows" :count="5" />
         <template v-else-if="freeLatest.length > 0">
           <RouterLink v-for="p in freeLatest" :key="p.id" :to="`/free/${p.id}`" class="row">
             <span class="tag" :class="catTag(p.category).cls">{{ catTag(p.category).label }}</span>
@@ -199,7 +200,10 @@ function relTime(iso: string): string {
           <h3>🎨 팬아트 갤러리</h3>
           <RouterLink to="/fanart" class="more">더 보기 ▸</RouterLink>
         </div>
-        <div v-if="fanarts.length > 0" class="grid grid-cols-2 sm:grid-cols-4 gap-[9px]">
+        <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-4 gap-[9px]">
+          <div v-for="i in 4" :key="i" class="skeleton aspect-square rounded-[14px]"></div>
+        </div>
+        <div v-else-if="fanarts.length > 0" class="grid grid-cols-2 sm:grid-cols-4 gap-[9px]">
           <RouterLink
             v-for="a in fanarts.slice(0, 4)"
             :key="a.id"
@@ -243,7 +247,7 @@ function relTime(iso: string): string {
         <h3>💌 오늘의 팬레터</h3>
         <RouterLink to="/letters" class="more">전체 ▸</RouterLink>
       </div>
-      <p v-if="loading" class="text-sm py-2" style="color: var(--text-mute)">불러오는 중...</p>
+      <Skeleton v-if="loading" variant="rows" :count="2" />
       <div v-else-if="letterLatest.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <RouterLink
           v-for="l in letterLatest"

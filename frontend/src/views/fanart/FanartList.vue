@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router';
 import { fetchFanartList } from '@/api/fanart';
 import { deletePost } from '@/api/post';
 import { useCurrentUser } from '@/composables/useCurrentUser';
+import Skeleton from '@/components/ui/Skeleton.vue';
 import type { FanartListItem } from '@/types/fanart';
 
 const items = ref<FanartListItem[]>([]);
@@ -82,7 +83,7 @@ function isNew(iso: string): boolean {
       </button>
     </div>
 
-    <p v-if="loading" class="text-ink-muted">불러오는 중...</p>
+    <Skeleton v-if="loading" variant="gallery" :count="8" />
     <p v-else-if="error" class="text-cheek">{{ error }}</p>
     <ul
       v-else-if="items.length > 0"
