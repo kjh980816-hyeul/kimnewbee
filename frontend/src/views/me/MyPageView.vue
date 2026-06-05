@@ -326,7 +326,7 @@ async function saveNickname(): Promise<void> {
           <span>🌱 새싹</span>
           <span>🌶 고추</span>
           <span>🌽 옥수수</span>
-          <span>👑 발주인</span>
+          <span>👑 밭주인</span>
         </div>
       </section>
 

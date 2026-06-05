@@ -81,7 +81,7 @@ async function onLogin(): Promise<void> {
               <span>›</span>
               <span class="px-1.5 py-0.5 rounded bg-corn/20 text-corn">🌽 옥수수</span>
               <span>›</span>
-              <span class="px-1.5 py-0.5 rounded bg-violet/30 text-violet">👑 발주인</span>
+              <span class="px-1.5 py-0.5 rounded bg-violet/30 text-violet">👑 밭주인</span>
             </li>
           </ul>
         </div>

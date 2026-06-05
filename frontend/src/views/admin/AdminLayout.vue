@@ -57,7 +57,7 @@ function isActive(item: AdminMenu): boolean {
     <div class="max-w-md w-full text-center">
       <div class="text-6xl mb-4">🔒</div>
       <h1 class="text-2xl font-extrabold text-ink mb-2 font-serif">로그인이 필요해요</h1>
-      <p class="text-sm text-ink-muted mb-6">관리자 페이지는 발주인(OWNER) 권한이 있어야 들어올 수 있어요. 먼저 네이버 계정으로 로그인해주세요.</p>
+      <p class="text-sm text-ink-muted mb-6">관리자 페이지는 밭주인(OWNER) 권한이 있어야 들어올 수 있어요. 먼저 네이버 계정으로 로그인해주세요.</p>
       <div class="flex items-center justify-center gap-2">
         <RouterLink
           to="/login"
@@ -82,7 +82,7 @@ function isActive(item: AdminMenu): boolean {
     <div class="max-w-md w-full text-center">
       <div class="text-6xl mb-4">🚫</div>
       <h1 class="text-2xl font-extrabold text-ink mb-2 font-serif">접근 권한이 없어요</h1>
-      <p class="text-sm text-ink-muted mb-6">관리자 페이지는 발주인(OWNER) 등급만 들어올 수 있어요. 권한이 필요하면 운영자에게 문의해주세요.</p>
+      <p class="text-sm text-ink-muted mb-6">관리자 페이지는 밭주인(OWNER) 등급만 들어올 수 있어요. 권한이 필요하면 운영자에게 문의해주세요.</p>
       <RouterLink
         to="/"
         class="inline-block btn-primary"
@@ -99,7 +99,7 @@ function isActive(item: AdminMenu): boolean {
         <h1 class="text-xl font-extrabold text-ink leading-tight font-serif">
           <span class="text-pepper">🌶</span> 고추밭 관리자
         </h1>
-        <div class="mt-1 text-xs text-corn">👑 발주인 (김늉비)</div>
+        <div class="mt-1 text-xs text-corn">👑 밭주인 (김늉비)</div>
       </div>
 
       <nav class="flex-1 px-3 py-5 overflow-y-auto">

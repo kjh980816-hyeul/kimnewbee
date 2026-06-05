@@ -62,7 +62,7 @@ function formatDate(iso: string): string {
         <div class="min-w-0">
           <div class="flex items-center gap-2">
             <span class="text-sm font-semibold text-ink">{{ notice.author }}</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-cheek/20 text-cheek font-semibold">발주인</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-cheek/20 text-cheek font-semibold">밭주인</span>
           </div>
           <div class="mt-0.5 text-xs text-ink-muted">
             {{ formatDate(notice.createdAt) }} · 조회 {{ notice.viewCount }}

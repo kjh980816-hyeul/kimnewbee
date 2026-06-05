@@ -31,7 +31,7 @@ const TIER_META: Record<Tier, { label: string; emoji: string }> = {
   seed: { label: '새싹', emoji: '🌱' },
   pepper: { label: '고추', emoji: '🌶' },
   corn: { label: '옥수수', emoji: '🌽' },
-  owner: { label: '발주인', emoji: '👑' },
+  owner: { label: '밭주인', emoji: '👑' },
 };
 
 const showCreateModal = ref(false);

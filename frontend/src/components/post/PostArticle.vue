@@ -30,7 +30,7 @@ const tierMap: Record<string, TierMeta> = {
   seed: { label: '새싹', badgeClass: 'bg-pepper/20 text-pepper' },
   pepper: { label: '고추', badgeClass: 'bg-violet-deep/30 text-violet' },
   corn: { label: '옥수수', badgeClass: 'bg-corn/20 text-corn' },
-  owner: { label: '발주인', badgeClass: 'bg-cheek/20 text-cheek' },
+  owner: { label: '밭주인', badgeClass: 'bg-cheek/20 text-cheek' },
 };
 
 const tier = computed<TierMeta>(() => {

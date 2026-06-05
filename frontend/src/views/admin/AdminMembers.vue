@@ -18,7 +18,7 @@ const tierMeta: Record<Tier, { label: string; emoji: string; chip: string }> = {
   seed: { label: '새싹', emoji: '🌱', chip: 'bg-pepper/20 text-pepper' },
   pepper: { label: '고추', emoji: '🌶', chip: 'bg-violet/25 text-violet' },
   corn: { label: '옥수수', emoji: '🌽', chip: 'bg-corn/20 text-corn' },
-  owner: { label: '발주인', emoji: '👑', chip: 'bg-cheek/20 text-cheek' },
+  owner: { label: '밭주인', emoji: '👑', chip: 'bg-cheek/20 text-cheek' },
 };
 
 const tierOrder: Tier[] = ['seed', 'pepper', 'corn', 'owner'];
@@ -55,7 +55,7 @@ onMounted(async () => {
 async function onTierChange(user: AdminUser, next: Tier): Promise<void> {
   if (user.tier === next) return;
   if (user.id === myId.value && next !== 'owner') {
-    alert('본인을 발주인 외 등급으로 변경할 수 없어요');
+    alert('본인을 밭주인 외 등급으로 변경할 수 없어요');
     // select 값을 원복하기 위해 다시 렌더 트리거
     users.value = [...users.value];
     return;

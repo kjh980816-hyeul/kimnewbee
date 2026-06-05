@@ -50,7 +50,7 @@ const tierMeta: Record<string, { label: string; emoji: string; level: number }> 
   seed: { label: '새싹', emoji: '🌱', level: 1 },
   pepper: { label: '고추', emoji: '🌶', level: 2 },
   corn: { label: '옥수수', emoji: '🌽', level: 3 },
-  owner: { label: '발주인', emoji: '👑', level: 99 },
+  owner: { label: '밭주인', emoji: '👑', level: 99 },
 };
 
 const NOTIF_ICON: Record<NotificationType, string> = {

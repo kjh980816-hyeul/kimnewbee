@@ -13,7 +13,7 @@ const TIER_META: Record<Tier, { label: string; emoji: string; color: string; bg:
   seed: { label: '새싹', emoji: '🌱', color: 'text-green-400', bg: 'bg-green-400' },
   pepper: { label: '고추', emoji: '🌶', color: 'text-pepper', bg: 'bg-pepper' },
   corn: { label: '옥수수', emoji: '🌽', color: 'text-corn', bg: 'bg-corn' },
-  owner: { label: '발주인', emoji: '👑', color: 'text-violet', bg: 'bg-violet' },
+  owner: { label: '밭주인', emoji: '👑', color: 'text-violet', bg: 'bg-violet' },
 };
 
 onMounted(async () => {
