@@ -20,3 +20,15 @@ export interface UserStats {
   likeGivenCount: number;
   attendanceStreak: number;
 }
+
+export interface MyActivityItem {
+  id: number;
+  boardType: string;
+  title: string;
+  preview: string;
+  link: string;
+  thumbnailUrl: string | null;
+  commentCount: number;
+  likeCount: number;
+  createdAt: string;
+}

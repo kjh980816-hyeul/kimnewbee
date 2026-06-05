@@ -20,6 +20,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	@Query("select count(c) from Comment c where c.author.id = :authorId and c.deleted = false")
 	long countActiveByAuthorId(@Param("authorId") Long authorId);
 
+	@Query("select c.postId from Comment c where c.author.id = :authorId and c.deleted = false "
+			+ "group by c.postId order by max(c.createdAt) desc")
+	List<Long> findDistinctPostIdsByAuthorIdOrderByLatest(@Param("authorId") Long authorId);
+
 	@Query("select c.postId as postId, count(c) as cnt from Comment c "
 			+ "where c.postId in :postIds and c.deleted = false group by c.postId")
 	List<PostCommentCount> countActiveByPostIds(@Param("postIds") Collection<Long> postIds);

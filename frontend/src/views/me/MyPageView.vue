@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
-import { fetchMe, fetchMyStats, updateMyProfileImage, updateMyNickname } from '@/api/me';
+import {
+  fetchMe,
+  fetchMyStats,
+  updateMyProfileImage,
+  updateMyNickname,
+  fetchMyPosts,
+  fetchMyCommentedPosts,
+  fetchMyLikedPosts,
+} from '@/api/me';
 import { uploadImage } from '@/api/upload';
 import { logout } from '@/api/auth';
-import { isHttpStatus } from '@/api/error';
-import type { CurrentUser, UserStats } from '@/types/user';
+import { isHttpStatus, errorMessage } from '@/api/error';
+import type { CurrentUser, UserStats, MyActivityItem } from '@/types/user';
 import type { Tier } from '@/types/offline';
 
 const router = useRouter();
@@ -16,7 +24,54 @@ const loading = ref(true);
 const notLoggedIn = ref(false);
 const error = ref<string | null>(null);
 
-const activeTab = ref<'posts' | 'comments' | 'liked' | 'scraps'>('posts');
+type ActivityTab = 'posts' | 'comments' | 'liked' | 'scraps';
+const activeTab = ref<ActivityTab>('posts');
+
+const activityFetchers: Record<'posts' | 'comments' | 'liked', () => Promise<MyActivityItem[]>> = {
+  posts: fetchMyPosts,
+  comments: fetchMyCommentedPosts,
+  liked: fetchMyLikedPosts,
+};
+const tabCache = ref<Partial<Record<ActivityTab, MyActivityItem[]>>>({});
+const tabLoading = ref(false);
+const tabError = ref<string | null>(null);
+
+const currentItems = computed<MyActivityItem[]>(() => tabCache.value[activeTab.value] ?? []);
+
+const boardTypeLabel: Record<string, string> = {
+  FREE: '자유',
+  FANART: '팬아트',
+  CLIP: '클립',
+  PET: '반려동물',
+  OFFLINE: '오프라인',
+  CUSTOM: '게시판',
+};
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+}
+
+async function loadTab(tab: ActivityTab): Promise<void> {
+  if (tab === 'scraps') return; // 스크랩 기능 미구현
+  if (tabCache.value[tab]) return; // 이미 로드됨
+  tabLoading.value = true;
+  tabError.value = null;
+  try {
+    tabCache.value = { ...tabCache.value, [tab]: await activityFetchers[tab]() };
+  } catch (e) {
+    tabError.value = errorMessage(e, '목록을 불러올 수 없어요');
+  } finally {
+    tabLoading.value = false;
+  }
+}
+
+function selectTab(tab: ActivityTab): void {
+  activeTab.value = tab;
+  tabError.value = null;
+  void loadTab(tab);
+}
 
 const tierMeta: Record<Tier, { label: string; emoji: string }> = {
   seed: { label: '새싹', emoji: '🌱' },
@@ -58,6 +113,7 @@ onMounted(async () => {
     const [me, myStats] = await Promise.all([fetchMe(), fetchMyStats()]);
     user.value = me;
     stats.value = myStats;
+    void loadTab('posts');
   } catch (e) {
     if (isHttpStatus(e, 401)) {
       notLoggedIn.value = true;
@@ -336,7 +392,7 @@ async function saveNickname(): Promise<void> {
             type="button"
             class="px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors"
             :class="activeTab === 'posts' ? 'border-pepper text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
-            @click="activeTab = 'posts'"
+            @click="selectTab('posts')"
           >
             내가 쓴 글 <span class="text-ink-muted ml-0.5 text-xs">{{ stats?.postCount ?? 0 }}</span>
           </button>
@@ -344,7 +400,7 @@ async function saveNickname(): Promise<void> {
             type="button"
             class="px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors"
             :class="activeTab === 'comments' ? 'border-pepper text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
-            @click="activeTab = 'comments'"
+            @click="selectTab('comments')"
           >
             댓글 단 글 <span class="text-ink-muted ml-0.5 text-xs">{{ stats?.commentCount ?? 0 }}</span>
           </button>
@@ -352,7 +408,7 @@ async function saveNickname(): Promise<void> {
             type="button"
             class="px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors"
             :class="activeTab === 'liked' ? 'border-pepper text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
-            @click="activeTab = 'liked'"
+            @click="selectTab('liked')"
           >
             좋아요한 글 <span class="text-ink-muted ml-0.5 text-xs">{{ stats?.likeGivenCount ?? 0 }}</span>
           </button>
@@ -360,13 +416,56 @@ async function saveNickname(): Promise<void> {
             type="button"
             class="px-4 py-2.5 text-sm border-b-2 -mb-px transition-colors"
             :class="activeTab === 'scraps' ? 'border-pepper text-ink font-semibold' : 'border-transparent text-ink-muted hover:text-ink'"
-            @click="activeTab = 'scraps'"
+            @click="selectTab('scraps')"
           >
             스크랩 <span class="text-ink-muted ml-0.5 text-xs">0</span>
           </button>
         </div>
-        <div class="rounded-b-2xl bg-surface border-x border-b border-border px-5 py-10 text-center text-sm text-ink-muted">
-          탭별 글 리스트는 백엔드 endpoint 추가 후 표시됩니다.
+
+        <div class="rounded-b-2xl bg-surface border-x border-b border-border">
+          <p v-if="activeTab === 'scraps'" class="px-5 py-10 text-center text-sm text-ink-muted">
+            스크랩 기능은 곧 추가될 예정이에요 🌶
+          </p>
+          <p v-else-if="tabLoading" class="px-5 py-10 text-center text-sm text-ink-muted">
+            불러오는 중...
+          </p>
+          <p v-else-if="tabError" class="px-5 py-10 text-center text-sm text-cheek">
+            ⚠ {{ tabError }}
+          </p>
+          <p v-else-if="currentItems.length === 0" class="px-5 py-10 text-center text-sm text-ink-muted">
+            <template v-if="activeTab === 'posts'">아직 작성한 글이 없어요</template>
+            <template v-else-if="activeTab === 'comments'">아직 댓글을 단 글이 없어요</template>
+            <template v-else>아직 좋아요한 글이 없어요</template>
+          </p>
+          <ul v-else class="divide-y divide-border">
+            <li v-for="item in currentItems" :key="item.boardType + '-' + item.id">
+              <RouterLink
+                :to="item.link"
+                class="flex items-center gap-3 px-5 py-3.5 hover:bg-elevated/60 transition-colors"
+              >
+                <img
+                  v-if="item.thumbnailUrl"
+                  :src="item.thumbnailUrl"
+                  alt=""
+                  class="w-12 h-12 rounded-lg object-cover shrink-0 bg-elevated"
+                />
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-paper/40 text-ink-muted shrink-0">
+                      {{ boardTypeLabel[item.boardType] ?? item.boardType }}
+                    </span>
+                    <span class="text-sm text-ink font-medium truncate">{{ item.title }}</span>
+                  </div>
+                  <p class="mt-0.5 text-xs text-ink-muted truncate">{{ item.preview }}</p>
+                </div>
+                <div class="flex items-center gap-2.5 text-[11px] text-ink-muted shrink-0">
+                  <span title="댓글">💬 {{ item.commentCount }}</span>
+                  <span title="좋아요">♥ {{ item.likeCount }}</span>
+                  <span class="hidden sm:inline">{{ formatDate(item.createdAt) }}</span>
+                </div>
+              </RouterLink>
+            </li>
+          </ul>
         </div>
       </section>
 

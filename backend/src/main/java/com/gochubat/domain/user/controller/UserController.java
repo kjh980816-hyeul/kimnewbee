@@ -2,6 +2,7 @@ package com.gochubat.domain.user.controller;
 
 import com.gochubat.domain.user.dto.AdminViewerInfoResponse;
 import com.gochubat.domain.user.dto.CurrentUserResponse;
+import com.gochubat.domain.user.dto.MyActivityItemResponse;
 import com.gochubat.domain.user.dto.NicknameUpdateRequest;
 import com.gochubat.domain.user.dto.ProfileImageUpdateRequest;
 import com.gochubat.domain.user.dto.UserStatsResponse;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/me")
@@ -51,6 +54,21 @@ public class UserController extends AuthenticatedController {
 	@GetMapping("/stats")
 	public UserStatsResponse stats(Authentication authentication) {
 		return userService.getStats(requireUserId(authentication));
+	}
+
+	@GetMapping("/posts")
+	public List<MyActivityItemResponse> myPosts(Authentication authentication) {
+		return userService.getMyPosts(requireUserId(authentication));
+	}
+
+	@GetMapping("/commented")
+	public List<MyActivityItemResponse> commentedPosts(Authentication authentication) {
+		return userService.getCommentedPosts(requireUserId(authentication));
+	}
+
+	@GetMapping("/liked")
+	public List<MyActivityItemResponse> likedPosts(Authentication authentication) {
+		return userService.getLikedPosts(requireUserId(authentication));
 	}
 
 	@GetMapping("/admin")

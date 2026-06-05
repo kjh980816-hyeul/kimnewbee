@@ -18,6 +18,9 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
 
 	long countByUserId(Long userId);
 
+	@Query("select pl.postId from PostLike pl where pl.userId = :userId order by pl.id desc")
+	List<Long> findPostIdsByUserId(@Param("userId") Long userId);
+
 	@Query("select pl.postId as postId, count(pl) as cnt from PostLike pl "
 			+ "where pl.postId in :postIds group by pl.postId")
 	List<PostLikeCount> countByPostIds(@Param("postIds") Collection<Long> postIds);
